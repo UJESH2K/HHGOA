@@ -1,0 +1,20 @@
+# --- data layer (installed, verified) ---
+pandas>=2.2
+pyarrow>=21.0
+numpy>=2.2
+
+# --- agent layer ---
+langgraph>=0.2
+langchain>=0.3
+langchain-anthropic>=0.3        # MISSING - pip install
+langchain-mcp-adapters>=0.1     # MISSING - pip install, for MultiServerMCPClient
+anthropic>=0.40
+
+# --- graph + vectors ---
+pyTigerGraph>=1.8               # MISSING - pip install
+voyageai>=0.3                   # MISSING - pip install
+
+# --- validation / test ---
+pydantic>=2.11
+jsonschema>=4.25
+pytest>=8.4

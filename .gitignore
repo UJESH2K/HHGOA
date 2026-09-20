@@ -1,0 +1,26 @@
+# secrets
+.env
+*.key
+
+# derived data — rebuild with `python -m src.features.build`
+data/
+analysis/*.csv
+!analysis/exam_triage.csv
+
+# the source dataset ships separately (675 MB)
+drive-download-*/
+drive-download-*.zip
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# editors / os
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
