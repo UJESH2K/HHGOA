@@ -1,5 +1,7 @@
 # secrets
 .env
+.env.local
+.env.*.local
 *.key
 
 # derived data — rebuild with `python -m src.features.build`

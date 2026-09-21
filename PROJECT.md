@@ -135,7 +135,34 @@ out-of-region 955 · **card_testing 16** · **undocumented 9** · none 900.
 **Read all 9 `undocumented` analyst notes by hand.** They are the highest-value text in the
 dataset and retrieval will almost never surface them (9 in 5,565).
 
-### The closed cases are a labelled dev set — use them
+### ⚠ The closed cases cannot be used as supervised training data
+
+Measured 2026-09-21, and it overturned a planned approach. **Every one of the 900 cleared cases
+has `risk_score` ≥ 0.81.** Confirmed fraud spans 0.01–0.98. So below 0.81 the history contains
+**0 legitimate examples and 4,038 fraud examples**.
+
+This is not a data bug — it is what "closed case" means. A cleared case is an alert that fired
+and was dismissed, and alerts fire on high scores; confirmed fraud also arrives via customer
+reports, which carry low scores. Realistic sampling, fatal consequence:
+
+- A classifier fitted on this set learns **`risk_score` < 0.81 ⟹ fraud**, which is the inverse
+  of how the score actually works and pure sampling artifact. A first attempt scored AUC 0.991 /
+  Brier 0.026 — entirely this leak.
+- **17 of the 20 exam cases sit below 0.81**, in the region where the training data has never
+  seen a legitimate outcome. The model would call all 17 fraud with near-total confidence, and
+  be catastrophically wrong on the half the brief says are legitimate.
+- Inside the only comparable stratum (`risk_score` ≥ 0.81, n=1,527, 41% fraud), the surviving
+  features are themselves inverted in suspicious ways — `device_new` AUC 0.18, `profile_is_full`
+  0.28 — so that stratum is not obviously trustworthy either, and it covers just 3 exam cases.
+
+**Consequence:** `fraud_probability` comes from a transparent, hand-specified rubric with weights
+grounded in measured base rates, **not** from a model fitted to closed-case labels. The closed
+cases remain what the brief calls them — case memory for retrieval and pattern vocabulary — and
+are used for that, plus qualitative backtesting. They are not a training set.
+
+Reproduce: `python -m src.scoring.diagnose`.
+
+### The closed cases are a labelled dev set — with the caveat above
 The answer key for the 20 is hidden, but 5,565 labelled investigations are not. Replay closed
 cases as if they were fresh alerts (feed the agent the first fraud txn + customer, hide the
 outcome) and score verdict / pattern / action-combo against truth. Suggested split by open date:
@@ -288,6 +315,8 @@ the agent from the first node, not reconstructed at the end. Design for this in 
 | Data pass | Ring filter = full profile + ≤10 global cards + ≥2 cards + ≤14d window | Cuts Nov–Dec candidates 1,671 → 266; naive rule would fire on half the book |
 | Data pass | Backtest on closed cases (Jul–Sep dev / Oct+ holdout) before touching the 20 | Hidden answer key; this is the only pre-submission accuracy signal available |
 | Data pass | Feature/graph layer must run without TigerGraph (parquet fallback) | Savanna or MCP outage cannot be allowed to block producing 20 answer files |
+| 2026-09-21 | **Rejected** fitting a calibrated classifier on closed cases | All 900 cleared cases have risk_score ≥ 0.81; below that the history is 100% fraud. 17/20 exam cases live there. A fitted model scores AUC 0.991 by learning the sampling artifact and would call all 17 fraud. See §3 |
+| 2026-09-21 | `fraud_probability` from a transparent weighted rubric instead | Weights grounded in measured distributions, not fitted to a biased label set. Auditable, and the reasoning is citable as evidence — which the fitted model's coefficients were not |
 
 ---
 
