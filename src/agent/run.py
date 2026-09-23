@@ -31,7 +31,9 @@ import argparse
 import json
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
+from typing import Any
 
 import pandas as pd
 
@@ -40,10 +42,11 @@ from ..graph.local import _region_code as _region
 from ..graph.interface import GraphBackend
 from ..graph.local import LocalBackend
 from ..io.answer import Answer, Case, Evidence, EvidenceRequest, SAR
+from ..io.ledger import load_ledger
 from ..policy.actions import Action, Decision, compose
 from ..policy.rules import PolicyContext, evaluate, should_stop
 from ..scoring.patterns import CARD_TESTING, NONE, PatternVerdict, classify
-from ..scoring.rubric import RubricInput, RubricScore, score
+from ..scoring.rubric import BASE_PRIOR, RubricInput, RubricScore, score
 from .context import build_policy_context
 from .meter import Meter, roll_up
 from .simulate import respond
@@ -94,6 +97,7 @@ class CaseState:
         self.evidence.append(Evidence(claim=claim, source=source, ref=ref,
                                       entity_ids=[str(e) for e in entity_ids]))
         meter.record_evidence(source)
+        meter.event("evidence", source=source, ref=ref, claim=claim)
 
     def decide(self, text: str) -> None:
         self.decisions.append(text)
@@ -103,17 +107,55 @@ class CaseState:
 # Stage 1 + 2: investigate and gather evidence
 # --------------------------------------------------------------------------------------------
 
+def fetch(be: GraphBackend, meter: Meter, calls: dict[str, tuple]) -> dict[str, Any]:
+    """Run independent graph reads, concurrently where the backend is remote.
+
+    Against TigerGraph every read is an HTTPS round trip, and the reads in one wave of `gather`
+    depend on nothing but the case pack - so nine sequential round trips become two waves. The
+    parquet backend runs in-process under the GIL and gains nothing from threads, so it keeps
+    running them in order, which also keeps the offline run exactly reproducible.
+    """
+    def one(name: str):
+        fn, args, kwargs = calls[name]
+        return meter.measure(f"graph.{name}")(fn)(*args, **kwargs)
+
+    if not getattr(be, "concurrent_reads", False) or len(calls) == 1:
+        return {name: one(name) for name in calls}
+    with ThreadPoolExecutor(max_workers=len(calls)) as pool:
+        futures = {name: pool.submit(one, name) for name in calls}
+        return {name: f.result() for name, f in futures.items()}
+
+
 def gather(be: GraphBackend, state: CaseState, meter: Meter) -> None:
     """Pull every piece of evidence the closed query set can produce, and log each one.
 
-    Order matters for cost, not for correctness: the cheapest and highest-value reads come
-    first (prior cases are free evidence for 16 of the 20 real cases), and the device and ring
-    queries only run when the channel makes them meaningful.
+    Two waves. The first needs only what the case pack already says - the transaction, the
+    customer, the card and the time - so all seven reads go out together. The second needs the
+    channel and amount the first wave returned. The evidence is then written up in a fixed
+    order, so the case record reads the same however the reads were scheduled.
     """
-    txn = meter.measure("graph.get_transaction")(be.get_transaction)(state.flagged_txn_id)
+    wave = fetch(be, meter, {
+        "get_transaction": (be.get_transaction, (state.flagged_txn_id,), {}),
+        "get_customer": (be.get_customer, (state.customer_id,), {}),
+        "card_baseline": (be.card_baseline, (state.card_key, state.flagged_txn_id), {}),
+        "recurring_charge": (be.recurring_charge, (state.card_key, state.flagged_txn_id), {}),
+        "card_testing_episode": (be.card_testing_episode, (state.card_key, state.opened_at), {}),
+        "ring_signals": (be.ring_signals, (state.card_key, state.opened_at), {}),
+        "prior_cases_for_customer": (be.prior_cases_for_customer,
+                                     (state.customer_id, state.opened_at), {}),
+    })
+    txn = wave["get_transaction"]
     amount = float(txn["TransactionAmt"])
     channel = str(txn["channel"])
     risk = float(txn["risk_score"])
+
+    second = {"similar_closed_cases": (be.similar_closed_cases, (),
+                                       {"as_of": state.opened_at, "channel": channel,
+                                        "exposure_usd": amount, "k": 3})}
+    if channel == "online":
+        second["device_for_transaction"] = (be.device_for_transaction,
+                                            (state.flagged_txn_id,), {})
+    wave.update(fetch(be, meter, second))
 
     state.note(
         f"The flagged transaction is a {channel.replace('_', '-')} authorisation of "
@@ -129,11 +171,10 @@ def gather(be: GraphBackend, state: CaseState, meter: Meter) -> None:
                    f"{state.narrative}",
                    "external", "case_pack.trigger", [state.flagged_txn_id], meter)
 
-    customer = meter.measure("graph.get_customer")(be.get_customer)(state.customer_id)
+    customer = wave["get_customer"]
     state.n_cards = int(customer["n_cards"])
 
-    baseline = meter.measure("graph.card_baseline")(be.card_baseline)(
-        state.card_key, state.flagged_txn_id)
+    baseline = wave["card_baseline"]
     if baseline.amt_pctile_prior is not None and baseline.n_prior_txns:
         state.note(
             f"Against this card's own prior history of {baseline.n_prior_txns:,} transactions, "
@@ -155,8 +196,7 @@ def gather(be: GraphBackend, state: CaseState, meter: Meter) -> None:
 
     device = None
     if channel == "online":
-        device = meter.measure("graph.device_for_transaction")(be.device_for_transaction)(
-            state.flagged_txn_id)
+        device = wave["device_for_transaction"]
         if device:
             state.note(
                 f"The transaction ran on device profile `{device['device_profile']}`, reported as "
@@ -176,14 +216,12 @@ def gather(be: GraphBackend, state: CaseState, meter: Meter) -> None:
                    "true of every in-person transaction in the book, and not a signal.",
                    "graph", "query:device_for_transaction", [state.flagged_txn_id], meter)
 
-    recurrence = meter.measure("graph.recurring_charge")(be.recurring_charge)(
-        state.card_key, state.flagged_txn_id)
+    recurrence = wave["recurring_charge"]
     state.recurrence = recurrence
     state.note(recurrence.as_evidence_claim(), "graph", "query:recurring_charge",
                [state.flagged_txn_id, *recurrence.prior_txn_ids], meter)
 
-    episode = meter.measure("graph.card_testing_episode")(be.card_testing_episode)(
-        state.card_key, state.opened_at)
+    episode = wave["card_testing_episode"]
     if episode:
         state.episode_txn_ids = [str(t) for t in episode["small_txn_ids"]]
         state.note(
@@ -195,8 +233,7 @@ def gather(be: GraphBackend, state: CaseState, meter: Meter) -> None:
             "graph", "query:card_testing_episode",
             [state.flagged_txn_id, *state.episode_txn_ids], meter)
 
-    rings = meter.measure("graph.ring_signals")(be.ring_signals)(
-        state.card_key, state.opened_at)
+    rings = wave["ring_signals"]
     ring = next((r for r in rings if not r.volume_artefact_risk), rings[0] if rings else None)
     if ring:
         state.ring_element = ring.element
@@ -212,8 +249,7 @@ def gather(be: GraphBackend, state: CaseState, meter: Meter) -> None:
             "graph", "query:ring_signals",
             [state.flagged_txn_id, ring.device_profile, *ring.card_ids], meter)
 
-    prior = meter.measure("graph.prior_cases_for_customer")(be.prior_cases_for_customer)(
-        state.customer_id, state.opened_at)
+    prior = wave["prior_cases_for_customer"]
     n_fraud = int((prior.outcome == "confirmed_fraud").sum()) if len(prior) else 0
     n_cleared = int((prior.outcome == "cleared").sum()) if len(prior) else 0
     if len(prior):
@@ -227,8 +263,7 @@ def gather(be: GraphBackend, state: CaseState, meter: Meter) -> None:
         state.note("This customer has no closed investigations before this alert.",
                    "graph", "query:prior_cases_for_customer", [state.customer_id], meter)
 
-    similar = meter.measure("graph.similar_closed_cases")(be.similar_closed_cases)(
-        as_of=state.opened_at, channel=channel, exposure_usd=amount, k=3)
+    similar = wave["similar_closed_cases"]
     if len(similar):
         state.similar_cases = similar.case_id.tolist()
         top = similar.iloc[0]
@@ -307,6 +342,11 @@ def context_for(state: CaseState, s: RubricScore, pattern: PatternVerdict,
     )
 
 
+def _assessment_event(s: RubricScore, pattern: PatternVerdict) -> dict:
+    return {"p": round(s.probability, 3), "verdict": s.verdict, "pattern": pattern.pattern,
+            "families": list(s.families), "n_signals": s.n_independent_signals}
+
+
 def assess_and_act(be: GraphBackend, state: CaseState, meter: Meter,
                    amounts: dict[str, float]) -> tuple[RubricScore, PatternVerdict, float]:
     """Score, recommend, decide whether to ask for more, and recommend again.
@@ -328,6 +368,8 @@ def assess_and_act(be: GraphBackend, state: CaseState, meter: Meter,
         s, pattern, exposure, ctx = evaluate_now(False)
         decision = evaluate(ctx)
         state.initial_pairs = [(Action(r.action), r.reason) for r in decision.recommendations]
+        meter.event("assessment", label="initial", **_assessment_event(s, pattern))
+        meter.event("recommendation", label="initial", actions=decision.action_names)
         state.decide(
             f"Initial assessment: probability {s.probability:.2f} on "
             f"{s.n_independent_signals} independent signal(s) "
@@ -351,6 +393,10 @@ def assess_and_act(be: GraphBackend, state: CaseState, meter: Meter,
                                            evidence_requested=True),
                 already_requested=tuple(r.type for r in state.requests))
             state.voi_log.append({"loop": state.loops + 1, "options": selection.to_json()})
+            meter.event("evidence_value", loop=state.loops + 1,
+                        options=[{"request_type": o["request_type"],
+                                  "net_value": o["net_value"], "selected": o["selected"]}
+                                 for o in selection.to_json()])
 
             stop, why = should_stop(ctx, state.loops, MAX_EVIDENCE_LOOPS)
             if stop:
@@ -369,6 +415,8 @@ def assess_and_act(be: GraphBackend, state: CaseState, meter: Meter,
                 f"Requested {option.request_type} because it carried the highest expected "
                 f"change in the recommendation ({option.evoi:.2f} against friction "
                 f"{option.friction:.2f}). {option.rationale()}")
+            meter.event("request", type=option.request_type,
+                        response=f"{simulated.statement} {simulated.counterfactual}")
             state.requests.append(EvidenceRequest(
                 type=option.request_type,
                 asked_after_step=3 + state.loops,
@@ -380,6 +428,8 @@ def assess_and_act(be: GraphBackend, state: CaseState, meter: Meter,
             state.rubric_input = simulated.apply(state.rubric_input)
             state.loops += 1
             s, pattern, exposure, ctx = evaluate_now(True)
+            meter.event("assessment", label=f"after {option.request_type}",
+                        **_assessment_event(s, pattern))
             state.decide(
                 f"Reassessed after {option.request_type}: probability {s.probability:.2f} on "
                 f"{s.n_independent_signals} independent signal(s); pattern {pattern.pattern}.")
@@ -394,6 +444,8 @@ def assess_and_act(be: GraphBackend, state: CaseState, meter: Meter,
     with meter.stage("take_action"):
         final_decision = evaluate(ctx)
         state.final_pairs = [(Action(r.action), r.reason) for r in final_decision.recommendations]
+        meter.event("recommendation", label="final", actions=final_decision.action_names,
+                    stop_reason=state.stop_reason)
         state.decide(f"Final recommendation: {', '.join(final_decision.action_names)}.")
 
     return s, pattern, exposure
@@ -503,6 +555,8 @@ def investigate(be: GraphBackend, row: pd.Series, amounts: dict[str, float],
                       or getattr(row, "narrative", "") or ""),
         opened_at=pd.Timestamp(row.opened_at),
     )
+    meter.event("open", trigger=state.trigger_type, flagged_txn_id=state.flagged_txn_id,
+                card_id=state.card_id, prior=BASE_PRIOR)
 
     with meter.stage("investigate"):
         gather(be, state, meter)
@@ -559,8 +613,11 @@ def investigate(be: GraphBackend, row: pd.Series, amounts: dict[str, float],
             graph_case_id = meter.measure("graph.write_case")(be.write_case)(record)
             # `written_to_graph` must reflect a real write, so read it back rather than trust it
             written = meter.measure("graph.read_case")(be.read_case)(graph_case_id) is not None
+            meter.event("memory", graph_case_id=graph_case_id, read_back=written)
         except Exception as exc:                            # noqa: BLE001 - reported, not fatal
             state.decide(f"Case memory write failed: {type(exc).__name__}: {exc}")
+
+    meter.finish()
 
     # Diagnostics live BESIDE the answer, never inside it. The answer schema is fixed and
     # "nothing extra, nothing missing"; the rubric's contributions, the value-of-information
@@ -581,6 +638,7 @@ def investigate(be: GraphBackend, row: pd.Series, amounts: dict[str, float],
         "card": {"card_id": state.card_id, "card_key": state.card_key,
                  "n_cards": state.n_cards},
         "meter": meter.to_json(),
+        "trace": meter.trace,
     }
 
     answer = Answer(
@@ -687,12 +745,7 @@ def main() -> int:
     # activity dates come from the same place. Both are read from parquet whichever backend is
     # driving the investigation: pulling 590,742 amounts back over HTTP to sum two of them would
     # be a strange way to use a graph.
-    ledger = pd.read_parquet(os.path.join(a.data, "txns.parquet"),
-                             columns=["TransactionID", "TransactionAmt", "ts"])
-    amounts = {str(k): float(v) for k, v in
-               zip(ledger.TransactionID.astype(str), ledger.TransactionAmt)}
-    timestamps = {str(k): str(v) for k, v in
-                  zip(ledger.TransactionID.astype(str), ledger.ts)}
+    amounts, timestamps = load_ledger(a.data)
 
     os.makedirs(a.out, exist_ok=True)
     meters: list[Meter] = []

@@ -44,6 +44,9 @@ class TigerGraphBackend(GraphBackend):
     `TG_HOST`, `TG_GRAPH`, and either `TG_SECRET` or `TG_USERNAME`/`TG_PASSWORD`.
     """
 
+    # every read is an independent HTTPS request, so `agent.run.fetch` may issue a wave at once
+    concurrent_reads = True
+
     def __init__(self, host: str | None = None, graph: str | None = None,
                  secret: str | None = None, username: str | None = None,
                  password: str | None = None, timeout: int = 60):
@@ -72,6 +75,7 @@ class TigerGraphBackend(GraphBackend):
             self.conn.getToken(secret)
         self.timeout = timeout
         self._case_writes: dict[str, str] = {}
+        self._closed_pool: pd.DataFrame | None = None
 
     # --- plumbing ---------------------------------------------------------------------------
 
@@ -377,17 +381,26 @@ class TigerGraphBackend(GraphBackend):
         filters, and the scorer then ranks within what came back, so it needs more than `k`
         candidates to rank between.
         """
-        rows = self._rows(self._block(
-            self._run("similar_closed_cases", as_of=as_of,
-                      k=20000),
-            "Ranked"))
-        if not rows:
+        # The closed-case history is immutable reference data, and the query has to hand over
+        # the whole visible pool (see the GSQL for why the relaxable filters cannot run there).
+        # Shipping ~5,500 rows per case cost 1.4-1.9s of every investigation, so the pool is
+        # read from the graph once per process and the as-of cut - the one filter that must
+        # never be relaxed - is applied to it here, exactly as the query applies it.
+        if self._closed_pool is None:
+            rows = self._rows(self._block(
+                self._run("similar_closed_cases", as_of=pd.Timestamp("2100-01-01"), k=20000),
+                "Ranked"))
+            pool = pd.DataFrame(rows)
+            for col in ("opened_at", "closed_at"):
+                if col in pool.columns:
+                    pool[col] = pd.to_datetime(pool[col])
+            self._closed_pool = pool
+        pool = self._closed_pool
+        df = (pool[pool.closed_at < pd.Timestamp(as_of)].sort_values("closed_at", ascending=False)
+              if len(pool) else pool)
+        if not len(df):
             return pd.DataFrame(columns=["case_id", "outcome", "pattern", "exposure_usd",
                                          "channel", "closed_at", "similarity"])
-        df = pd.DataFrame(rows)
-        for col in ("opened_at", "closed_at"):
-            if col in df.columns:
-                df[col] = pd.to_datetime(df[col])
         staged = casesim.narrow(df, channel=channel, pattern=pattern,
                                 exposure_usd=exposure_usd, k=k)
         return casesim.score(staged, as_of=as_of, channel=channel, pattern=pattern,
@@ -438,22 +451,27 @@ class TigerGraphBackend(GraphBackend):
             "evidence_json": json.dumps(case.get("evidence", []), default=str),
             "decisions_json": json.dumps(case.get("decisions", []), default=str),
         }
-        self.conn.upsertVertex("FraudCase", graph_case_id, attrs)
-
+        # One REST++ request for the vertex and every edge. Written as separate upserts this
+        # was eight or more sequential round trips - 1.6s of each case - for one logical write.
+        edges: dict[str, dict] = {}
         if case.get("customer_id"):
-            self.conn.upsertEdge("FraudCase", graph_case_id, "ABOUT", "Customer",
-                                 case["customer_id"])
+            edges["ABOUT"] = {"Customer": {case["customer_id"]: {}}}
         if case.get("card_key"):
-            self.conn.upsertEdge("FraudCase", graph_case_id, "CASE_CARD", "PaymentCard",
-                                 case["card_key"])
-        for txn_id in case.get("affected_txn_ids", []) or []:
-            self.conn.upsertEdge("FraudCase", graph_case_id, "TRIGGERED_BY", "Transaction",
-                                 str(txn_id))
+            edges["CASE_CARD"] = {"PaymentCard": {case["card_key"]: {}}}
+        if case.get("affected_txn_ids"):
+            edges["TRIGGERED_BY"] = {"Transaction": {str(t): {}
+                                                     for t in case["affected_txn_ids"]}}
         # SIMILAR_TO only for prior cases the reasoning actually used - padding this edge set
         # pollutes `similar_prior_cases`, which is scored
-        for prior in case.get("similar_prior_cases", []) or []:
-            self.conn.upsertEdge("FraudCase", graph_case_id, "SIMILAR_TO", "ClosedCase", str(prior),
-                                 attributes={"score": 0.0, "basis": "structural+vector"})
+        if case.get("similar_prior_cases"):
+            edges["SIMILAR_TO"] = {"ClosedCase": {
+                str(p): {"score": {"value": 0.0}, "basis": {"value": "structural+vector"}}
+                for p in case["similar_prior_cases"]}}
+        self.conn.upsertData({
+            "vertices": {"FraudCase": {graph_case_id: {k: {"value": v}
+                                                       for k, v in attrs.items()}}},
+            "edges": {"FraudCase": {graph_case_id: edges}} if edges else {},
+        })
         self._case_writes[graph_case_id] = case.get("case_id", "")
         return graph_case_id
 

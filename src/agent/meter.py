@@ -92,10 +92,16 @@ class Meter:
     replayed concurrently, and concurrency is exactly how 200 replays become affordable.
     """
     case_id: str = ""
-    started_at: float = field(default_factory=time.monotonic)
+    started_at: float = field(default_factory=time.perf_counter)
     llm_calls: list[LLMCall] = field(default_factory=list)
     tool_calls_log: list[ToolCall] = field(default_factory=list)
     evidence_by_source: dict[str, int] = field(default_factory=lambda: defaultdict(int))
+    # Ordered record of what the investigation did and when, in milliseconds from the start of
+    # the case. The UI replays it; nothing in the answer depends on it.
+    trace: list[dict] = field(default_factory=list)
+    # Set by `finish()`. Without it `latency_s` kept counting after the case was done, so a run
+    # manifest written at the end credited every case with the time spent on the cases after it.
+    finished_at: float | None = None
     _stage: str = "init"
     _stage_times: dict[str, float] = field(default_factory=dict)
 
@@ -110,12 +116,12 @@ class Meter:
         is the difference between reporting a number and acting on one.
         """
         previous, self._stage = self._stage, name
-        t0 = time.monotonic()
+        t0 = time.perf_counter()
         try:
             yield self
         finally:
             self._stage = previous
-            self._stage_times[name] = self._stage_times.get(name, 0.0) + (time.monotonic() - t0)
+            self._stage_times[name] = self._stage_times.get(name, 0.0) + (time.perf_counter() - t0)
 
     # --- recording -------------------------------------------------------------------------
 
@@ -144,6 +150,15 @@ class Meter:
         self.tool_calls_log.append(
             ToolCall(name=name, stage=stage or self._stage, latency_s=latency_s, ok=ok,
                      error=error))
+        started = (time.perf_counter() - latency_s - self.started_at) * 1000
+        self.trace.append({"t_ms": round(started, 2), "kind": "query", "name": name,
+                           "stage": stage or self._stage, "ms": round(latency_s * 1000, 2),
+                           "ok": ok, **({"error": error} if error else {})})
+
+    def event(self, kind: str, **data: Any) -> None:
+        """Append a step to the trace - an assessment, a request, a recommendation."""
+        self.trace.append({"t_ms": round((time.perf_counter() - self.started_at) * 1000, 2),
+                           "kind": kind, "stage": self._stage, **data})
 
     def record_evidence(self, source: str) -> None:
         """Count an evidence item by where it came from: graph | document | customer | external.
@@ -161,14 +176,14 @@ class Meter:
         def outer(fn: Callable) -> Callable:
             @wraps(fn)
             def inner(*a, **kw):
-                t0 = time.monotonic()
+                t0 = time.perf_counter()
                 try:
                     out = fn(*a, **kw)
                 except Exception as exc:                      # noqa: BLE001 - recorded, re-raised
-                    self.record_tool(name, time.monotonic() - t0, ok=False,
+                    self.record_tool(name, time.perf_counter() - t0, ok=False,
                                      error=f"{type(exc).__name__}: {exc}")
                     raise
-                self.record_tool(name, time.monotonic() - t0)
+                self.record_tool(name, time.perf_counter() - t0)
                 return out
             return inner
         return outer
@@ -192,7 +207,11 @@ class Meter:
 
     @property
     def latency_s(self) -> float:
-        return time.monotonic() - self.started_at
+        return (self.finished_at or time.perf_counter()) - self.started_at
+
+    def finish(self) -> None:
+        if self.finished_at is None:
+            self.finished_at = time.perf_counter()
 
     @property
     def cost(self) -> float:

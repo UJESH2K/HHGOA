@@ -41,6 +41,19 @@ class LocalBackend(GraphBackend):
                                 .drop_duplicates("card_id").set_index("card_id", drop=False))
         self.profiles = pd.read_parquet(os.path.join(data_dir, "device_profiles.parquet"))
 
+        # Indexes built once, so no per-case lookup scans a whole table. Before these, a warm
+        # investigation spent most of its ~100ms in `get_customer` and `ring_signals` doing
+        # full-column comparisons over 590,742 transactions and 144,432 identity rows.
+        self._rows_by_customer = self.txns.groupby("customer_id", sort=False).indices
+        self._specific_profiles = frozenset(
+            self.profiles.loc[rings.is_specific(self.profiles), "device_profile"])
+        self._global_cards = dict(zip(self.profiles.device_profile,
+                                      self.profiles.global_card_count))
+        self._txns_by_profile = {
+            prof: self.identity.TransactionID.iloc[pos].to_numpy()
+            for prof, pos in self.identity.groupby("device_profile", sort=False).indices.items()}
+        self._cases_written: dict[str, dict] = {}
+
         ct_path = os.path.join(data_dir, "card_testing.parquet")
         self.card_testing = pd.read_parquet(ct_path) if os.path.exists(ct_path) else pd.DataFrame()
         self._cases_path = os.path.join(data_dir, "cases_written.jsonl")
@@ -53,7 +66,7 @@ class LocalBackend(GraphBackend):
 
     def get_customer(self, customer_id: str) -> dict[str, Any]:
         cards = self.customer_cards(customer_id)
-        t = self.txns[self.txns.customer_id == customer_id]
+        t = self.txns.iloc[self._rows_by_customer.get(customer_id, [])]
         return {"customer_id": customer_id, "n_cards": len(cards), "n_txns": len(t),
                 "first_seen": str(t.ts.min()) if len(t) else None,
                 "last_seen": str(t.ts.max()) if len(t) else None,
@@ -158,13 +171,12 @@ class LocalBackend(GraphBackend):
         if not my_profiles:
             return []
 
-        specific = set(self.profiles.loc[rings.is_specific(self.profiles), "device_profile"])
-        my_profiles &= specific
+        my_profiles &= self._specific_profiles
         if not my_profiles:
             return []
 
-        j = self._ident_by_txn[self._ident_by_txn.device_profile.isin(my_profiles)]
-        j = self.txns[self.txns.TransactionID.isin(j.TransactionID)]
+        ids = np.concatenate([self._txns_by_profile[p] for p in sorted(my_profiles)])
+        j = self._by_txn.loc[self._by_txn.index.intersection(ids)].reset_index(drop=True)
         j = j[(j.ts >= window_start) & (j.ts < as_of)]
         # reset_index: `_ident_by_txn` keeps TransactionID as BOTH index and column, and
         # merging on an ambiguous key raises rather than picking one.
@@ -181,8 +193,7 @@ class LocalBackend(GraphBackend):
                 continue
             vols = [len(self._by_card.get(k, [])) for k in keys]
             ids = [self._card_by_key.loc[k, "card_id"] for k in keys]
-            global_cards = int(self.profiles.loc[
-                self.profiles.device_profile == prof, "global_card_count"].iloc[0])
+            global_cards = int(self._global_cards[prof])
             strength = rings.link_strength(global_cards)
             n_customers = grp.customer_id.nunique()
             # A moderate-strength profile is a common-ish device model; two cards on one is a
@@ -245,9 +256,13 @@ class LocalBackend(GraphBackend):
         record = {**case, "graph_case_id": graph_case_id}
         with open(self._cases_path, "a", encoding="utf-8") as fh:
             fh.write(json.dumps(record, default=str) + "\n")
+        # the file is the durable record; this is what spares read-back a re-scan of it
+        self._cases_written[graph_case_id] = json.loads(json.dumps(record, default=str))
         return graph_case_id
 
     def read_case(self, graph_case_id: str) -> dict | None:
+        if graph_case_id in self._cases_written:
+            return self._cases_written[graph_case_id]
         if not os.path.exists(self._cases_path):
             return None
         with open(self._cases_path, encoding="utf-8") as fh:
