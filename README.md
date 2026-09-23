@@ -1,4 +1,72 @@
-# Agentic Fraud Investigation — Dataset Guide
+# Tidewatch — agentic fraud investigation on TigerGraph
+
+Built at **Hacker House Goa** for the TigerGraph × HHGOA Agentic Fraud Investigation challenge.
+
+Tidewatch works a fraud alert the way a careful analyst would. It queries the transaction graph on
+**TigerGraph Savanna**, scores the evidence with a transparent rubric, prices every question it
+could ask the customer and asks only the one worth asking, then recommends actions routed by the
+bank's Fraud Policy. The finished case is written back into the graph for the next investigation
+to find. **Claude** sits beside the analyst as a copilot that explains the decision and challenges
+it. It never makes the decision.
+
+| | |
+|---|---|
+| 20 graded cases | 5 fraud · 10 uncertain · 5 legitimate · 3 reports filed · 0 validator errors |
+| Speed | **~50 ms per case** on the warm parquet engine (all 20 in about 1 s of investigation time); ~3 s per case against Savanna, with independent GSQL reads sent in concurrent waves |
+| Cost | **$0.00** model spend on decisions. The copilot costs about $0.02 a question on a cached prefix |
+| Graph | 590,742 transactions · 144,432 device records · 575,849 `NEXT_TXN` · 128,852 `SHARES_DEVICE` on Savanna 4.2.5; all 20 cases written back as `FraudCase` vertices and read back before they count |
+| Autonomous track | a live monitor over the 4,462 high-risk alerts in the book: runs what policy routes `auto`, queues `L1`/`L2` for a human |
+| Tests | 273 passing, plus a two-backend contract suite (parquet vs GSQL) |
+
+The 20 answer files are in [`cases/`](cases/). The live console is `src/ui/`.
+
+## Run it
+
+```bash
+pip install -r requirements.txt
+python -m src.features.build            # dataset -> data/*.parquet (needs the organizers' files)
+python -m src.agent.run                 # investigate the 20 cases -> cases/*.json
+python -m src.io.validate cases         # the 12 answer-file invariants
+python -m src.ui.app                    # console at http://127.0.0.1:8000
+```
+
+`ANTHROPIC_API_KEY` in `.env` turns the copilot on. The TigerGraph backend reads `TG_HOST`,
+`TG_GRAPH` and `TG_SECRET`. Use `python -m src.agent.run --backend tigergraph` to run against it,
+and `python -m src.graph.publish` to write the cases to the graph. `python -m src.doctor` checks
+all of this and prints a fix under anything missing.
+
+Without the dataset, `python -m src.fixtures.generate` builds a synthetic book with the same
+schema so the whole pipeline runs anyway: `--data data_fixture --out cases_fixture`.
+
+## The console
+
+- **Overview:** where the 20 cases landed, and how far asking for evidence moved each one.
+- **Cases:** a timed replay of each investigation (every graph query, evidence item, assessment
+  and recommendation, with its real millisecond timestamp), a live re-run on the warm engine, the
+  case's neighbourhood in the graph schema's own vertex and edge names, the probability drivers,
+  the before/after actions with approvals for `L1`/`L2`, and the Claude copilot.
+- **Live monitor:** the autonomous track, streaming real investigations of unseen alerts.
+- **How it works:** the architecture and its known limits.
+
+## Deploy
+
+The transaction data belongs to the organizers and is not redistributed here, so public deploys
+serve the recorded runs: the answer files, their timed traces, a monitor session recorded from
+the live engine, and copilot answers recorded on the flagship cases. All of it is labelled as
+recorded wherever it appears.
+
+- **Static (GitHub Pages):** `python -m src.ui.build_static` writes `docs/index.html`. In the repo
+  settings, go to Pages and choose *Deploy from branch*, `main`, folder `/docs`.
+- **Server (Render):** `render.yaml` is a one-click blueprint. Set `ANTHROPIC_API_KEY` in the
+  dashboard to turn on the live copilot. `COPILOT_DAILY_BUDGET_USD` and `COPILOT_PER_HOUR` cap
+  spending on a public URL.
+- **Everything live:** run `python -m src.ui.app` on a machine that has `data/`.
+
+Design notes: [`STRATEGY.md`](STRATEGY.md) · [`PLAN.md`](PLAN.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
+---
+
+# Dataset guide
 
 Data reference for the TigerGraph × Hacker House Goa fraud investigation task (IEEE-CIS edition).
 Every number below was measured from the files in `drive-download-20260919T105649Z-1-001/`, not copied from the brief.

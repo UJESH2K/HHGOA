@@ -79,7 +79,7 @@
         ]
       },
       {
-        "claim": "device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081` links 4 cards across 4 customers within 4.0 days, and appears on only 6 cards book-wide.",
+        "claim": "Earlier in the same window this card was also used on a different device from the flagged transaction: device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081`. That profile links 4 cards across 4 customers within 4.0 days, and appears on only 6 cards book-wide.",
         "source": "graph",
         "ref": "query:ring_signals",
         "entity_ids": [
@@ -183,7 +183,7 @@
   "sar": {
     "file": true,
     "reason": "R2: case connects to device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081`",
-    "narrative": "Customer C11923, holder of card C11923-K2 and 1 other card(s) on the same account. 1 transaction(s) totalling $131.30 are reported as suspicious. The activity occurred between 2016-12-29 and 2016-12-29. The activity was online and ran on device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081`. The pattern identified is undocumented. a rare device profile links 4 cards belonging to 4 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The assessment rests on: a rare, fully specified device profile links 4 cards across 4 different customers inside a 14-day window; $131.30 sits at the 97% percentile of this card's own history; the cardholder does not recognise the transaction (arrived as the trigger). The resulting fraud probability is 0.98. The investigation was opened following customer report. Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368. The shared origin also touches card(s) C05416-K1, C08450-K2, C11000-K2, held by other customers, which is why this filing covers activity beyond a single account.",
+    "narrative": "Customer C11923, holder of card C11923-K2 and 1 other card(s) on the same account. 1 transaction(s) totalling $131.30 are reported as suspicious. The activity occurred between 2016-12-29 and 2016-12-29. The activity was online and ran on device profile `SM-G610F Build/NRD90M | ? | chrome 66.0 for android | ?`. Within the same window the card was also used on device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081`, which is shared with other customers' cards. The pattern identified is undocumented. A rare device profile links 4 cards belonging to 4 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The assessment rests on: a rare, fully specified device profile links 4 cards across 4 different customers inside a 14-day window; $131.30 sits at the 97% percentile of this card's own history; the cardholder does not recognise the transaction (arrived as the trigger). The resulting fraud probability is 0.98. The investigation was opened following customer report. Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368. The shared origin also touches card(s) C05416-K1, C08450-K2, C11000-K2, held by other customers, which is why this filing covers activity beyond a single account.",
     "subjects": [
       "C11923"
     ],

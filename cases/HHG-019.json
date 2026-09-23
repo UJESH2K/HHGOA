@@ -165,7 +165,7 @@
   "sar": {
     "file": true,
     "reason": "R6: several cards show fraud from device profile `Windows | other | chrome 61.0 | 1280x720`",
-    "narrative": "Customer C07987, holder of card C07987-K2 and 1 other card(s) on the same account. 1 transaction(s) totalling $99.92 are reported as suspicious. The activity occurred between 2016-12-01 and 2016-12-01. The activity was online and ran on device profile `Windows | other | chrome 61.0 | 1280x720`. The pattern identified is undocumented. a rare device profile links 3 cards belonging to 3 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The assessment rests on: a rare, fully specified device profile links 3 cards across 3 different customers inside a 14-day window. The resulting fraud probability is 0.81. The investigation was opened following risk score. Real-time model scored transaction 3503878 ($99.92, online) at 0.90. Review and decide. The shared origin also touches card(s) C06224-K2, C11309-K1, held by other customers, which is why this filing covers activity beyond a single account.",
+    "narrative": "Customer C07987, holder of card C07987-K2 and 1 other card(s) on the same account. 1 transaction(s) totalling $99.92 are reported as suspicious. The activity occurred between 2016-12-01 and 2016-12-01. The activity was online and ran on device profile `Windows | other | chrome 61.0 | 1280x720`. The pattern identified is undocumented. A rare device profile links 3 cards belonging to 3 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The assessment rests on: a rare, fully specified device profile links 3 cards across 3 different customers inside a 14-day window. The resulting fraud probability is 0.81. The investigation was opened following risk score. Real-time model scored transaction 3503878 ($99.92, online) at 0.90. Review and decide. The shared origin also touches card(s) C06224-K2, C11309-K1, held by other customers, which is why this filing covers activity beyond a single account.",
     "subjects": [
       "C07987"
     ],
@@ -178,5 +178,5 @@
   "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
   "tool_calls": 11,
   "tokens": 0,
-  "latency_s": 0.06
+  "latency_s": 0.07
 }

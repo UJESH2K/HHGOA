@@ -1,0 +1,181 @@
+{
+ "recorded_at": "2026-09-23T19:45:41",
+ "cases": {
+  "HHG-014": {
+   "Why this verdict?": {
+    "text": "The verdict is `uncertain` at 0.501 because only **one** material signal moved it off the 0.30 prior:\n\n- **Shared device profile [E7], [E5]** — the fully specified profile `SM-G935F … 1920x1080` links 20 cards across 20 different customers within 8 days, and sits on 52 cards book-wide (+0.80 log-odds, the sole driver). That is a real link, but a common Android model, so the engine treated it as possible shared use rather than a proven shared origin — which is also why it declined the `undocumented`/R9 route.\n- Everything else was **non-material**: the amount is unremarkable for this card (79th percentile, mean $58 [E3]), no velocity burst [E4], the bank's model scored it 0.05, below its 0.12 median [E1], and \"device New to account\" is true of 43% of records [E5]. No recurring-charge match [E6], no prior cases for the customer [E8].\n- Pattern `card_not_present_new_device` follows from the online channel plus the New-device flag and anonymous proxy [E1], [E5]; account takeover was rejected because the device spans 20 customers, not one account.\n\nWith a single signal below 0.70, R1 forces verification before any block: `STEP_UP_AUTH` + `VERIFY_WITH_CUSTOMER`, plus `MONITOR_CONNECTED_CARDS` and `CREATE_CASE` under R6/3a. Exposure $74.96 and no confirmed shared-origin fraud keep it below the FILE_REPORT bar (3a).\n\nOne tension worth noting: [E9] shows the nearest prior case, CC-5542 ($73.98 online), closed as **confirmed fraud**, and the diagnostics' own step-up branch says a *failed* step-up would put this at 0.88 — so the verification actions are worth actually executing (both `auto`) rather than treating \"stop\" as the end.",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 11.9,
+    "first_token_s": 2.39,
+    "usage": {
+     "input_tokens": 53,
+     "output_tokens": 641,
+     "cache_read_tokens": 0,
+     "cache_write_tokens": 10569
+    },
+    "cost_usd": 0.08235
+   },
+   "Challenge it": {
+    "text": "**The case against the decision**\n\n- The engine calls the device profile \"common enough that shared use is not yet shared fraud,\" but 52 cards book-wide is not common, and 20 of those 52 appear across 20 *different* customers inside 8 days [E5][E7]. That concentration is the signature of a shared origin (R6), not of a popular handset — a genuinely common Galaxy S7 profile would spread evenly across the book, not cluster.\n- The proxy is being ignored. `IP_PROXY:ANONYMOUS` plus a device new to the account [E5] is deliberate origin concealment, not a coincidence of a new phone. The diagnostics scored `device_state_new` at 0.15 and never scored the proxy at all.\n- The nearest closed comparator, CC-5542, was a $73.98 online transaction closed as **confirmed fraud** with a CNP pattern [E9] — near-identical amount and channel, which cuts against the low probability.\n- Because everything loaded onto one signal family, the engine reached 0.50 with `n_independent_signals = 1` and so suppressed R9 and the SAR. If the cross-customer clustering is read as coordinated abuse, R9 and section 3a (\"connects to a shared device profile... or the pattern is coordinated\") would mandate `FILE_REPORT` plus `ESCALATE_TO_ANALYST`.\n- The stop reason is also weak on its own terms: step-up had positive net value (+0.032) and its failure branch lands at 0.88 fraud. It was declined on friction grounds while still being recommended as an action — internally inconsistent.\n\n**Would I change it?**\n\nPartly. I'd keep `STEP_UP_AUTH`, `VERIFY_WITH_CUSTOMER`, `MONITOR_CONNECTED_CARDS` and `CREATE_CASE` — the flagged transaction itself is unremarkable ($74.96 at the 79th percentile, model score 0.05 [E1][E3]), so R1 still bars a block and $74.96 exposure doesn't justify one. I would **add `ESCALATE_TO_ANALYST`** (route `auto`) so a human assesses the 20-card/20-customer cluster as a ring rather than as 20 separate ambiguous alerts; the trigger was an analyst's cross-card observation [E2] and this case answers it only for one card.\n\nI would **not** file a SAR yet. R9/3a require confirmed or strongly suspected fraud, and at 0.50 on a single signal family with no denial and no confirmed fraud on any of the 16–20 linked cards, the filing isn't supportable. If step-up fails (posterior 0.88 per the SIMULATED branch analysis in diagnostics — an assumed response, not collected evidence), or if any linked card confirms fraud, then `FILE_REPORT` becomes mandatory under R6/3a at route `L2`.",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 18.63,
+    "first_token_s": 5.0,
+    "usage": {
+     "input_tokens": 56,
+     "output_tokens": 1177,
+     "cache_read_tokens": 10569,
+     "cache_write_tokens": 0
+    },
+    "cost_usd": 0.03499
+   },
+   "Brief my approver": {
+    "text": "**No L1 or L2 sign-off is required on this case.**\n\n- All four recommended actions — `STEP_UP_AUTH`, `VERIFY_WITH_CUSTOMER`, `MONITOR_CONNECTED_CARDS`, `CREATE_CASE` (initial and final, unchanged) — are `auto` route under policy section 2, executable by the agent without approval.\n- Nothing escalatory was recommended: no `DECLINE_TRANSACTION` or `BLOCK_CARD` (L1), and no `BLOCK_ALL_CARDS` or `FILE_REPORT` (L2). R1 bars a block here — probability 0.50 on a single signal, the shared device profile [E7] — and the SAR test in 3a is not met: exposure $74.96, fraud neither confirmed nor strongly suspected.\n- For awareness rather than approval: the only L2-adjacent question is whether the 20-card/20-customer device link [E5][E7] is a shared origin under R6 warranting `FILE_REPORT`. The engine judged the profile common (52 cards book-wide) and so shared use, not shared fraud. If the analyst request or a ring review later shows confirmed fraud on another card sharing that profile, R6/3a would put `FILE_REPORT` on your desk at L2.",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 7.89,
+    "first_token_s": 2.26,
+    "usage": {
+     "input_tokens": 71,
+     "output_tokens": 458,
+     "cache_read_tokens": 10569,
+     "cache_write_tokens": 0
+    },
+    "cost_usd": 0.01709
+   }
+  },
+  "HHG-011": {
+   "Why this verdict?": {
+    "text": "The verdict is `fraud` at 0.978, built from three independent signal families (not one signal, so R1's verify-first constraint doesn't apply):\n\n- **Shared origin (strongest, +1.6 log-odds)** — [E7]: the card was used in the same window on device profile `SAMSUNG SM-G965U... 2220x1081`, which appears on only 6 cards book-wide yet links 4 cards across 4 *different* customers within 4 days. That cross-account link is what drives both the `undocumented` pattern call and R6/R9.\n- **Amount behaviour (+1.373)** — [E3]: $131.30 is at the 97th percentile of this card's own 10,306-transaction history (mean $39.42).\n- **Customer response (+0.8)** — [E2]: the cardholder reported the charge as unrecognised, which triggers R2 directly (block + case, plus report given the shared device profile under 3a).\n\nNotably the bank's model score of 0.39 [E1] contributed nothing, and \"new device\" [E5] and 24h velocity [E4] were scored immaterial. [E6] was checked and rejected as a recurring charge (irregular spacing), so R7 doesn't apply. The stop at 0.978 is defensible: all three simulated evidence requests were modelled as leaving the recommendation unchanged.\n\nOne thing worth your eye: the exposure is only $131.30, so `BLOCK_CARD` routes L1, and the SAR narrative mixes the two device profiles — the flagged transaction ran on `SM-G610F` [E5], while the ring link is on the *other* profile [E7]. That's accurate but easy to misread.",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 10.03,
+    "first_token_s": 2.59,
+    "usage": {
+     "input_tokens": 53,
+     "output_tokens": 557,
+     "cache_read_tokens": 0,
+     "cache_write_tokens": 10513
+    },
+    "cost_usd": 0.0799
+   },
+   "Challenge it": {
+    "text": "**Steelman for \"the decision is wrong\":**\n\n- The amount signal is weak. $131.30 sits at the 97th percentile, but **17 prior charges of about $131.30 already exist on this card** [E6] — the amount is not novel to the cardholder at all, just irregularly spaced. Scoring `amt_pctile_prior` at +1.37 log-odds (the second-largest driver) arguably double-counts a value the card has seen 17 times.\n- The bank's own model scored it **0.39** [E1], near the book mean, and diagnostics itself marks that non-material.\n- The flagged transaction did **not** run on the ring device. It ran on `SM-G610F...` [E5]; the shared profile `SAMSUNG SM-G965U...` was a *different, earlier* session [E7]. So the +1.6 shared-origin driver — the single largest — is not attached to the disputed authorisation. The SAR narrative blurs this.\n- The \"ring\" is thin: 4 cards, 4 customers, profile on 6 cards book-wide [E7]. Partially-specified Android profiles collide; no shared merchant, region, or product is shown. R6 wants the shared element *named and evidenced across fraud on several cards* — we have co-occurrence, not confirmed fraud on the other three.\n- The card ran 26 authorisations in 24 hours [E4] on a high-volume card (10,306 prior txns). A customer who has had 10 prior confirmed-fraud cases [E8] may also simply not recognise one of many charges.\n- Exposure is **$131.30** — below the $1,000 SAR threshold. The filing rests entirely on the contested shared-device link (3a).\n\n**Would I change it?** Only partly. R2 is triggered outright by the cardholder's dispute [E2], so `BLOCK_CARD` (L1), `CREATE_CASE`, `MONITOR_CONNECTED_CARDS` and `ESCALATE_TO_ANALYST` stand regardless of the ring argument — those I'd keep. I would **hold `FILE_REPORT`** pending the analyst confirming that the three connected cards [C05416-K1, C08450-K2, C11000-K2] actually show fraud rather than mere device co-occurrence, and that the device string is genuinely rare rather than a generic collision. With exposure at $131.30, the report depends solely on that link (3a); if it's a collision, the case is an ordinary CNP dispute and R9 does not apply. Withdrawing a recommended `FILE_REPORT` is an L2 decision, so the fraud manager would need to sign off on holding it; `ESCALATE_TO_ANALYST` is `auto` and gets you the answer quickly.",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 16.09,
+    "first_token_s": 2.07,
+    "usage": {
+     "input_tokens": 56,
+     "output_tokens": 916,
+     "cache_read_tokens": 10513,
+     "cache_write_tokens": 0
+    },
+    "cost_usd": 0.02844
+   },
+   "Brief my approver": {
+    "text": "**For approval — card C11923-K2, case HHG-011:**\n\n- **BLOCK_CARD — L1** (exposure $131.30, ≤ $2,500). The cardholder reported the 2016-12-29 online charge of $131.30 as unrecognised [E1][E2], which triggers R2 directly. Supporting: amount sits at the 97th percentile of this card's own 10,306-transaction history [E3], and the transaction ran on a device new to the account [E5]. Note the bank's model scored it only 0.39 [E1] — the case does not rest on the model.\n\n- **FILE_REPORT — L2.** Justified under R2/R6 and section 3a's \"connects to a shared device profile\" limb, not on exposure ($131.30 is well under $1,000). The link is [E7]: the card was also used in the same window on `SAMSUNG SM-G965U … 2220x1081`, a profile on only 6 cards book-wide that ties 4 cards across 4 different customers within 4 days. Worth checking before signing: the *flagged* transaction itself ran on a **different** profile (`SM-G610F …`, 4 cards book-wide) [E5], so the shared-origin link is to adjacent activity on the card, not to the disputed charge. The SAR narrative states both profiles — confirm it reads clearly to the regulator.\n\n- **Pattern is recorded as undocumented (R9), which is defensible.** The cross-customer device link, with no shared region or product, is the anomaly rather than any single transaction; the nearest documented fit, card-not-present from a new device, scored 0.65 against 0.90. The `ESCALATE_TO_ANALYST` and `MONITOR_CONNECTED_CARDS` items (cards C05416-K1, C08450-K2, C11000-K2) are `auto` and need no signature. No further evidence was requested; all simulated options showed zero decision change, and R2 applies without re-asking the customer.",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 12.01,
+    "first_token_s": 2.52,
+    "usage": {
+     "input_tokens": 71,
+     "output_tokens": 698,
+     "cache_read_tokens": 10513,
+     "cache_write_tokens": 0
+    },
+    "cost_usd": 0.02306
+   }
+  },
+  "HHG-010": {
+   "Why this verdict?": {
+    "text": "**Verdict: fraud, p=0.886, pattern `card_not_present_new_device`, exposure $1,000.03.** It rests on two independent signal families:\n\n- **Amount behaviour [E3]** — the strongest driver (log-odds 1.6). $1,000.03 is the largest charge this card has ever made: all 33 prior transactions were smaller, mean $131.25, previous max $670.04. No recurring-charge explanation [E5].\n- **Shared origin [E6]** — log-odds 0.8. Earlier in the same window the card was used on device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900`, which links 17 cards across 17 different customers in 12.6 days and sits on only 27 cards book-wide — rare enough to be a real link, not just a popular device.\n\nTwo further items were **not** material: the new-device flag on the flagged transaction's own profile [E4] (new devices are 43% of records, and that Windows profile is on 209 cards), and the 0.90 model score [E1, E2], which under section 0 is a reason to look, not a verdict. The customer's one prior case was cleared [E7], so no history weighed in; the nearest similar case CC-5147 ($999.91 online) closed as confirmed fraud [E8], which is corroborative only.\n\nPattern choice: CNP-with-new-device beat plain CNP (0.65 vs 0.40) on [E4]; account takeover was rejected because the shared profile spans 17 customers, which is cross-account abuse rather than one account compromised; R9/undocumented was rejected on the view that a 27-card profile is a common device model.\n\nStopping was justified under section 6 — 0.886 is outside the 0.15–0.85 band on two independent signals, and the diagnostics show every evidence request had negative or negligible net value. One caveat worth your judgement: the shared-origin finding is what lifts this over the band, and the case both calls that profile \"a real link\" (to justify R6 and the SAR) and \"shared use, not shared fraud\" (to reject R9). If you read it the other way, R9 would apply and the actions would gain `ESCALATE_TO_ANALYST` (auto).",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 13.41,
+    "first_token_s": 2.72,
+    "usage": {
+     "input_tokens": 53,
+     "output_tokens": 735,
+     "cache_read_tokens": 0,
+     "cache_write_tokens": 10634
+    },
+    "cost_usd": 0.0851
+   },
+   "Challenge it": {
+    "text": "**Strongest case against the verdict:**\n\n- The probability leans heavily on one driver: the amount percentile (log-odds 1.6 of 2.4 material). But \"largest ever on this card\" is weak on a card whose mean is only $131 and whose prior max was $670 [E3] — a single legitimate big-ticket purchase produces exactly this shape. There is nothing about the merchant, product code R, or region that is off [E1], and the billing region is one the card already uses (diagnostics, pattern alternatives).\n- The shared-origin signal is arguably mis-weighted. The diagnostics themselves reject the `undocumented` pattern on the grounds that a profile on 27 cards book-wide is \"a common device model, which is shared use rather than a shared origin\" — yet the same profile is then credited +0.8 log-odds as a real ring link, and drives 14 connected cards into the SAR narrative [E6]. You cannot have it both ways. Also note the shared profile is *not* the profile the flagged transaction ran on; that one (`Windows | Windows 10 | edge 16.0`) appears on 209 cards and is unremarkable [E4].\n- The new-device flag is explicitly immaterial (true of 43% of device records), yet the chosen pattern is `card_not_present_new_device` — the pattern label rests on a signal the model itself discounted.\n- The customer has one prior investigation, cleared, no fraud history [E7].\n- Strip the contested shared-origin weight and you are near 0.70 on a single amount signal — R1 territory, and no SAR under 3a's \"strongly suspected\" bar.\n\n**Would I change it?** Only partly. I'd keep VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS and CREATE_CASE (all `auto`) — they're right either way and the current actions are appropriately restrained (no block, correctly, since no denial exists yet under R2). But I would **hold FILE_REPORT** until the verification comes back. Exposure of $1,000.03 clears the 3a threshold by three cents, and the \"connects to another customer's fraud\" limb is asserted from a device profile the diagnostics elsewhere call ordinary shared use — no confirmed fraud on any of the 14 connected cards is shown. A SAR is an external filing; it should not rest on a contested link plus a $0.03 margin when a cheap `auto` verification is already pending. If the customer denies, file immediately under R2.\n\nHolding the filing needs no new approval (it's the removal of an L2 recommendation); re-adding FILE_REPORT after a denial stays L2.",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 16.45,
+    "first_token_s": 2.85,
+    "usage": {
+     "input_tokens": 56,
+     "output_tokens": 886,
+     "cache_read_tokens": 10634,
+     "cache_write_tokens": 0
+    },
+    "cost_usd": 0.02775
+   },
+   "Brief my approver": {
+    "text": "**For the L2 approver — one item: `FILE_REPORT`** (no L1 actions on this case; the other three are `auto`).\n\n- **What you're signing.** A SAR on customer C10434, card C10434-K1, for a single online transaction of $1,000.03 on 2016-12-02 [E1]. Exposure is $1,000.03, which clears the $1,000 threshold in policy 3a by three cents — the filing also rests on the second 3a limb: the card was used in the same window on device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900`, shared with 16 other customers' cards [E6].\n- **Strength of the case.** Probability 0.886 on two independent signals: the amount is the largest in the card's 33-transaction history (prior max $670.04) [E3], and the shared device profile links 17 cards across 17 customers in 12.6 days, on only 27 cards book-wide [E6]. The flagged transaction itself ran on a *different*, common device (`Windows 10 | edge 16.0`, 209 cards) marked New [E4]; new-device status alone was scored immaterial. Nearest prior case CC-5147 ($999.91, online) closed as confirmed fraud [E8].\n- **What would change it.** No cardholder response is on record — `VERIFY_WITH_CUSTOMER` runs in parallel and is unanswered. A customer confirmation would drop probability to ~0.39 and the posture to case-plus-escalate, i.e. no SAR. Given that, filing and asking simultaneously is defensible but slightly front-runs the evidence; if you prefer, hold the SAR 24 hours pending the reply and re-approve under R2/3a. That is a timing change only, still your L2 route.",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 11.3,
+    "first_token_s": 2.58,
+    "usage": {
+     "input_tokens": 71,
+     "output_tokens": 608,
+     "cache_read_tokens": 10634,
+     "cache_write_tokens": 0
+    },
+    "cost_usd": 0.02087
+   }
+  },
+  "HHG-006": {
+   "Why this verdict?": {
+    "text": "The verdict rests on three independent signals, not the model score:\n\n- **Customer dispute [E2]** — the cardholder's own report is the trigger, worth +0.80 log-odds and triggering R2 directly.\n- **Amount out of character [E3]** — $482.12 sits at the 97th percentile of this card's 101 prior transactions (mean $115.15); the largest driver at +1.40.\n- **Velocity [E4]** — 3 prior authorisations in the preceding hour, +0.70.\n\nTogether these take the probability from a 0.30 prior to 0.901, above the 0.85 stop threshold with two-plus independent families (amount_behaviour, sequence_velocity, customer_response), so the investigation stopped.\n\nTwo things notably did *not* count: the model's 0.25 risk score [E1] is near the book mean of 0.17 and contributed nothing, and the \"New\" device flag [E5] was scored immaterial (+0.15) since it's true of 43% of device records — and that profile appears on 547 cards book-wide, so it isn't a distinguishing link. The `account_takeover` label leans on that weak device signal plus the burst; `card_not_present_new_device` scored 0.65 and is arguably the better fit, matching the nearest prior case CC-5345 [E8]. The pattern label doesn't change the actions (BLOCK_CARD at L1, CREATE_CASE at auto under R2) or the exposure of $482.12, which stays under the $1,000 SAR threshold in 3a.",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 8.72,
+    "first_token_s": 2.08,
+    "usage": {
+     "input_tokens": 53,
+     "output_tokens": 509,
+     "cache_read_tokens": 0,
+     "cache_write_tokens": 8383
+    },
+    "cost_usd": 0.06538
+   },
+   "Challenge it": {
+    "text": "**The strongest case against the verdict:**\n\n- The device signal is hollow. [E5] shows that profile on 547 cards book-wide — it's a generic IE11/Win7 desktop fingerprint, not a shared fraud device. Diagnostics themselves mark `device_state_new` immaterial (log-odds 0.15, true of 43% of records). Yet the *pattern* call, account takeover, rests almost entirely on that device plus the burst. Strip it and the better label is `card_not_present_new_device` (alt score 0.65), consistent with the nearest prior case CC-5345 [E8]. That's a mislabel, not a wrong fraud finding.\n- The amount driver is overstated. It carries the largest weight (1.403) on \"largest or near-largest ever,\" but [E3] says the card previously authorised $1,104 — so $482 is not a record. The narrative in the case summary is factually loose.\n- [E6] is incoherent evidence: two prior charges \"of about $482.12\" recurring every 0.0 days. Either it's a duplicate/split billing artefact or the query is broken. If a merchant double-posted a genuine charge, the \"velocity\" signal [E4] and the amount anomaly could both be the same benign artefact counted twice — weakening the claim of three *independent* signals.\n- The model scored it 0.25, near book mean [E1] — no corroboration there.\n- Exposure of $482.12 counts only the flagged transaction, while [E4]/[E6] suggest 3 related authorisations in the hour. If those are fraud too, exposure may cross $1,000 and trigger `FILE_REPORT` under 3a — i.e. the SAR \"no\" may be wrong in the *opposite* direction to this argument.\n\n**Would I change it?** No, not the verdict or the actions. R2 is dispositive: the cardholder denies the charge [E2], so `BLOCK_CARD` (L1, exposure ≤ $2,500) plus `CREATE_CASE` follow regardless of pattern, and step-up/re-verification is pointless when the dispute is already on record. Two changes I would make: relabel the pattern to `card_not_present_new_device`, since the takeover call leans on a 547-card generic device profile; and resolve [E6]/[E4] — pull the three preceding authorisations and check whether they are fraudulent or a duplicate posting. If they are fraud, exposure exceeds $1,000 and `FILE_REPORT` becomes required under 3a (route L2). Both are `auto`-route investigative steps; only the SAR would need L2.",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 15.32,
+    "first_token_s": 2.19,
+    "usage": {
+     "input_tokens": 56,
+     "output_tokens": 863,
+     "cache_read_tokens": 8383,
+     "cache_write_tokens": 0
+    },
+    "cost_usd": 0.02605
+   },
+   "Brief my approver": {
+    "text": "**For approval: `BLOCK_CARD` only — route L1 (exposure $482.12, ≤ $2,500). No L2 items; `CREATE_CASE` is auto, and no SAR is filed.**\n\n- **Why block:** the cardholder himself reported the charge as unrecognised [E2], which triggers R2 (block + create case) directly; no further verification is warranted since customer validation is already on record.\n- **Supporting evidence:** $482.12 sits at the 97th percentile of this card's 101 prior transactions [E3], 3 prior authorisations in the preceding hour [E4], and the transaction ran on a device new to the account [E5]. Probability 0.901 on three independent signal families. Note the model's own risk score (0.25) was *not* material, and the \"new device\" profile appears on 547 cards book-wide [E5] — it is weak on its own, and it is the main basis for the `account_takeover` label over `card_not_present_new_device` (0.85 vs 0.65).\n- **What you are not signing:** no SAR (exposure under $1,000, no shared origin surviving the ring filter, not undocumented — consistent with 3a), and no `BLOCK_ALL_CARDS` despite the customer holding 2 cards (R10 bar not met: only one card shows fraud). Worth asking whether the second card warrants `MONITOR_CARD`, an auto-route addition, if account takeover rather than card compromise is the accepted read — the current actions do not cover it.",
+    "model": "claude-opus-5",
+    "stop_reason": "end_turn",
+    "latency_s": 9.83,
+    "first_token_s": 2.73,
+    "usage": {
+     "input_tokens": 71,
+     "output_tokens": 530,
+     "cache_read_tokens": 8383,
+     "cache_write_tokens": 0
+    },
+    "cost_usd": 0.0178
+   }
+  }
+ }
+}

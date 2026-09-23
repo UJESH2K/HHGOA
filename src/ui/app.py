@@ -38,6 +38,11 @@ import time
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
+# Module level, not inside build_app: with `from __future__ import annotations` FastAPI resolves
+# parameter annotations by name from module globals, and a locally imported `Request` resolved to
+# nothing - `/api/ask` then demanded `request` as a query parameter and answered 422.
+from fastapi import Request
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 HERE = os.path.dirname(os.path.abspath(__file__))
 CONSOLE = os.path.join(HERE, "console.html")
@@ -63,11 +68,19 @@ def read_cases(cases_dir: str) -> dict:
             obj = json.load(fh)
         payload["cases"][obj.get("case_id", name)] = obj
 
-    for key, fname in (("diagnostics", "_diagnostics.json"), ("manifest", "_run_manifest.json")):
+    for key, fname in (("diagnostics", "_diagnostics.json"), ("manifest", "_run_manifest.json"),
+                       # a monitor session recorded from the live engine, replayed where there
+                       # is no data to run one (src/ui/build_static.py --record)
+                       ("monitor_sample", "_monitor_sample.json"),
+                       # copilot answers recorded for the deploys that have no API key
+                       ("copilot_samples", "_copilot_samples.json")):
         fpath = os.path.join(path, fname)
         if os.path.exists(fpath):
             with open(fpath, encoding="utf-8") as fh:
                 payload[key] = json.load(fh)
+
+    from ..agent.copilot import PRESETS
+    payload["copilot_presets"] = PRESETS
 
     # Say plainly when the numbers on screen came from the synthetic fixture. A console that
     # shows made-up cases without saying so is the one thing this page must never do.
@@ -152,6 +165,42 @@ def monitor_row(a) -> SimpleNamespace:
         risk_score=float(a.risk_score))
 
 
+class CopilotGuard:
+    """Keeps a public deploy from spending someone's API key without limit.
+
+    Two brakes: questions per visitor per hour, and a hard daily dollar budget across everyone,
+    counted from the metered cost of each answer. Both are environment-tunable; neither matters
+    on a laptop.
+    """
+
+    def __init__(self):
+        self.per_hour = int(os.environ.get("COPILOT_PER_HOUR", "30"))
+        self.daily_usd = float(os.environ.get("COPILOT_DAILY_BUDGET_USD", "3.00"))
+        self.lock = threading.Lock()
+        self.hits: dict[str, list[float]] = {}
+        self.day = time.strftime("%Y-%m-%d")
+        self.spent = 0.0
+
+    def check(self, who: str) -> str | None:
+        with self.lock:
+            today = time.strftime("%Y-%m-%d")
+            if today != self.day:
+                self.day, self.spent = today, 0.0
+            if self.spent >= self.daily_usd:
+                return (f"the copilot's daily budget (${self.daily_usd:.2f}) is spent on this "
+                        "deploy - it resets at midnight UTC")
+            now = time.time()
+            recent = [t for t in self.hits.get(who, []) if now - t < 3600]
+            if len(recent) >= self.per_hour:
+                return f"limit of {self.per_hour} questions an hour reached - try again shortly"
+            self.hits[who] = recent + [now]
+            return None
+
+    def charge(self, usd: float) -> None:
+        with self.lock:
+            self.spent += float(usd or 0)
+
+
 def _sse(event: dict) -> str:
     return f"data: {json.dumps(event, default=str)}\n\n"
 
@@ -164,6 +213,7 @@ def build_app(cases_dir: str, data_dir: str):
 
     app = FastAPI(title="Tidewatch", docs_url=None, redoc_url=None)
     engine_box: dict = {}
+    guard = CopilotGuard()
     has_data = os.path.exists(os.path.join(_abs(data_dir), "case_pack.parquet"))
 
     def engine() -> Engine:
@@ -215,10 +265,15 @@ def build_app(cases_dir: str, data_dir: str):
                              "engine_load_s": e.load_s})
 
     @app.post("/api/ask")
-    def api_ask(body: dict = Body(...)):
+    def api_ask(request: Request, body: dict = Body(...)):
         """Stream the copilot's answer as server-sent events."""
         if not copilot.available():
             raise HTTPException(503, "ANTHROPIC_API_KEY is not set on this server")
+        who = (request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+               or (request.client.host if request.client else "anon"))
+        refused = guard.check(who)
+        if refused:
+            raise HTTPException(429, refused)
         case_id = str(body.get("case_id", ""))
         question = str(body.get("question", "")).strip()[:2000]
         if not question:
@@ -232,6 +287,8 @@ def build_app(cases_dir: str, data_dir: str):
         def stream():
             try:
                 for event in copilot.ask(answer, diag, question, body.get("history") or []):
+                    if event.get("type") == "done":
+                        guard.charge(event.get("cost_usd", 0))
                     yield _sse(event)
             except Exception as exc:                        # noqa: BLE001 - shown in the page
                 yield _sse({"type": "error", "message": f"{type(exc).__name__}: {exc}"})

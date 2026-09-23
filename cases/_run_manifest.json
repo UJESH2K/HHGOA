@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-23T19:33:36",
+  "generated_at": "2026-09-23T19:43:40",
   "backend": "local",
   "data_dir": "C:\\Users\\aadit\\OneDrive\\Documents\\GitHub\\fraud_analysis\\data",
   "llm": null,
@@ -13,7 +13,7 @@
     "total_tool_calls": 215,
     "total_llm_calls": 0,
     "total_latency_s": 0.9,
-    "mean_latency_s": 0.04,
+    "mean_latency_s": 0.05,
     "mean_cache_hit_rate": 0.0,
     "mean_deterministic_evidence_share": 0.8589,
     "failed_tool_calls": 0
@@ -23,7 +23,7 @@
       "case_id": "HHG-017",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.17,
+      "latency_s": 0.16,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -40,8 +40,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.041,
-          "wall_seconds": 0.042
+          "tool_seconds": 0.038,
+          "wall_seconds": 0.039
         },
         "update_memory": {
           "llm_calls": 0,
@@ -95,7 +95,7 @@
       "case_id": "HHG-015",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.07,
+      "latency_s": 0.06,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -112,8 +112,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.064,
-          "wall_seconds": 0.064
+          "tool_seconds": 0.061,
+          "wall_seconds": 0.061
         },
         "update_memory": {
           "llm_calls": 0,
@@ -184,7 +184,7 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.014,
+          "tool_seconds": 0.013,
           "wall_seconds": 0.014
         },
         "update_memory": {
@@ -205,7 +205,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.0
+          "wall_seconds": 0.001
         },
         "take_action": {
           "llm_calls": 0,
@@ -239,7 +239,7 @@
       "case_id": "HHG-014",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.06,
+      "latency_s": 0.07,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -256,8 +256,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.054,
-          "wall_seconds": 0.055
+          "tool_seconds": 0.063,
+          "wall_seconds": 0.063
         },
         "update_memory": {
           "llm_calls": 0,
@@ -328,8 +328,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.013,
-          "wall_seconds": 0.014
+          "tool_seconds": 0.015,
+          "wall_seconds": 0.016
         },
         "update_memory": {
           "llm_calls": 0,
@@ -383,7 +383,7 @@
       "case_id": "HHG-018",
       "tool_calls": 10,
       "tokens": 0,
-      "latency_s": 0.07,
+      "latency_s": 0.08,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -400,8 +400,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.064,
-          "wall_seconds": 0.065
+          "tool_seconds": 0.073,
+          "wall_seconds": 0.075
         },
         "update_memory": {
           "llm_calls": 0,
@@ -421,7 +421,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.0
+          "wall_seconds": 0.001
         },
         "take_action": {
           "llm_calls": 0,
@@ -454,7 +454,7 @@
       "case_id": "HHG-019",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.06,
+      "latency_s": 0.07,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -471,8 +471,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.058,
-          "wall_seconds": 0.058
+          "tool_seconds": 0.062,
+          "wall_seconds": 0.065
         },
         "update_memory": {
           "llm_calls": 0,
@@ -543,8 +543,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.06,
-          "wall_seconds": 0.06
+          "tool_seconds": 0.056,
+          "wall_seconds": 0.057
         },
         "update_memory": {
           "llm_calls": 0,
@@ -616,8 +616,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.013,
-          "wall_seconds": 0.013
+          "tool_seconds": 0.016,
+          "wall_seconds": 0.017
         },
         "update_memory": {
           "llm_calls": 0,
@@ -689,8 +689,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.014,
-          "wall_seconds": 0.014
+          "tool_seconds": 0.013,
+          "wall_seconds": 0.013
         },
         "update_memory": {
           "llm_calls": 0,
@@ -760,8 +760,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.015,
-          "wall_seconds": 0.016
+          "tool_seconds": 0.013,
+          "wall_seconds": 0.014
         },
         "update_memory": {
           "llm_calls": 0,
@@ -832,7 +832,7 @@
           "cost_usd": 0.0,
           "tool_calls": 9,
           "tool_seconds": 0.014,
-          "wall_seconds": 0.015
+          "wall_seconds": 0.014
         },
         "update_memory": {
           "llm_calls": 0,
@@ -852,7 +852,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.0
+          "wall_seconds": 0.001
         },
         "take_action": {
           "llm_calls": 0,
@@ -904,8 +904,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.059,
-          "wall_seconds": 0.059
+          "tool_seconds": 0.061,
+          "wall_seconds": 0.061
         },
         "update_memory": {
           "llm_calls": 0,
@@ -976,8 +976,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.057,
-          "wall_seconds": 0.059
+          "tool_seconds": 0.06,
+          "wall_seconds": 0.061
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1047,8 +1047,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.013,
-          "wall_seconds": 0.014
+          "tool_seconds": 0.015,
+          "wall_seconds": 0.015
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1119,8 +1119,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.054,
-          "wall_seconds": 0.054
+          "tool_seconds": 0.055,
+          "wall_seconds": 0.055
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1190,8 +1190,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.015,
-          "wall_seconds": 0.016
+          "tool_seconds": 0.013,
+          "wall_seconds": 0.014
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1211,7 +1211,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.0
+          "wall_seconds": 0.001
         },
         "take_action": {
           "llm_calls": 0,
@@ -1262,8 +1262,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.014,
-          "wall_seconds": 0.014
+          "tool_seconds": 0.015,
+          "wall_seconds": 0.015
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1283,7 +1283,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.0
+          "wall_seconds": 0.001
         },
         "take_action": {
           "llm_calls": 0,
@@ -1334,7 +1334,7 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.067,
+          "tool_seconds": 0.068,
           "wall_seconds": 0.068
         },
         "update_memory": {
@@ -1406,8 +1406,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.013,
-          "wall_seconds": 0.015
+          "tool_seconds": 0.014,
+          "wall_seconds": 0.016
         },
         "update_memory": {
           "llm_calls": 0,

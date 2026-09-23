@@ -478,7 +478,8 @@ async function load() {
   if (window.__CASES__) {
     const d = window.__CASES__;
     Object.assign(S, { cases: d.cases || {}, diag: d.diagnostics || {}, manifest: d.manifest || null,
-      monitorSample: d.monitor_sample || null });
+      monitorSample: d.monitor_sample || null, copilotSamples: d.copilot_samples || null });
+    PRESETS = d.copilot_presets || [];
     S.caps = { live: false, copilot: false, static: true };
     banner(d.banner);
     return;
@@ -487,7 +488,8 @@ async function load() {
   if (!r.ok) throw new Error("the case API returned " + r.status);
   const d = await r.json();
   Object.assign(S, { cases: d.cases || {}, diag: d.diagnostics || {}, manifest: d.manifest || null,
-    monitorSample: d.monitor_sample || null });
+    monitorSample: d.monitor_sample || null, copilotSamples: d.copilot_samples || null });
+  PRESETS = d.copilot_presets || [];
   S.caps = d.capabilities || S.caps;
   banner(d.banner);
 }
@@ -1054,20 +1056,18 @@ function graphView(c, d) {
 /* ===========================================================================
    COPILOT
    =========================================================================== */
-const PRESETS = [
-  ["Why this verdict?", "Explain why the investigation reached this verdict, citing the evidence items that mattered most."],
-  ["What would change it?", "What single piece of evidence would most change this recommendation, and in which direction?"],
-  ["Brief my approver", "Write a three-bullet brief for the approver who must sign off the actions routed L1 or L2 on this case. If none need sign-off, say so."],
-  ["Challenge it", "Argue the strongest case that the automated decision is wrong. Then say whether you would actually change it."],
-  ["Draft customer message", "Draft the short message to the cardholder that the recommended actions imply. Do not promise anything the policy does not allow."],
-];
+// Served by the backend from src/agent/copilot.py, so the buttons match the recorded answers.
+let PRESETS = [];
+const recorded = (id, label) => (((S.copilotSamples || {}).cases || {})[id] || {})[label];
 function openCopilot(id) {
   const box = $("copilot");
   box.hidden = false; $("fab").hidden = true;
   $("cp-title").textContent = `Copilot · ${id}`;
+  const hasRec = PRESETS.some(([l]) => recorded(id, l));
   $("cp-sub").textContent = S.caps.copilot ? `${S.caps.copilot_model || "Claude"} · reads the case file and the Fraud Policy · cannot change the decision`
+    : hasRec ? "recorded answers from the live copilot - this deploy has no API key, so free-text questions are off"
     : "not available on this deploy (no API key) - run locally with ANTHROPIC_API_KEY set";
-  $("cp-chips").innerHTML = PRESETS.map(([l], i) => `<button type="button" data-i="${i}" ${S.caps.copilot ? "" : "disabled"}>${esc(l)}</button>`).join("");
+  $("cp-chips").innerHTML = PRESETS.map(([l], i) => `<button type="button" data-i="${i}" ${S.caps.copilot || recorded(id, l) ? "" : "disabled"}>${esc(l)}</button>`).join("");
   $("cp-chips").querySelectorAll("button").forEach(b => b.onclick = () => ask(PRESETS[b.dataset.i][1], PRESETS[b.dataset.i][0]));
   $("cp-send").disabled = !S.caps.copilot; $("cp-in").disabled = !S.caps.copilot;
   renderChat();
@@ -1097,8 +1097,30 @@ function md(text) {
     return `<p>${inline(lines.join("<br>"))}</p>`;
   }).join("");
 }
+function playRecorded(id, label) {
+  const rec = recorded(id, label);
+  const turns = S.chats[id] = S.chats[id] || [];
+  turns.push({ role: "user", content: label, label });
+  const ans = { role: "assistant", content: "", streaming: true };
+  turns.push(ans);
+  const words = rec.text.split(/(\s+)/);
+  let i = 0;
+  const tick = () => {
+    ans.content += words.slice(i, i + 6).join(""); i += 6; renderChat();
+    if (i < words.length) setTimeout(tick, 22);
+    else {
+      const u = rec.usage || {};
+      ans.streaming = false;
+      ans.meta = `recorded · ${rec.model} · first token ${rec.first_token_s}s · ${(u.cache_read_tokens || 0).toLocaleString()} cached · ${(u.output_tokens || 0).toLocaleString()} out · $${Number(rec.cost_usd).toFixed(4)}`;
+      renderChat();
+    }
+  };
+  tick();
+}
 async function ask(question, label) {
-  const id = S.selected; if (!id || !S.caps.copilot) return;
+  const id = S.selected;
+  if (id && !S.caps.copilot && label && recorded(id, label)) return playRecorded(id, label);
+  if (!id || !S.caps.copilot) return;
   const turns = S.chats[id] = S.chats[id] || [];
   const history = turns.filter(t => !t.error).map(t => ({ role: t.role, content: t.content }));
   turns.push({ role: "user", content: question, label });

@@ -35,6 +35,22 @@ MODEL = os.environ.get("COPILOT_MODEL", "claude-opus-5")
 EFFORT = os.environ.get("COPILOT_EFFORT", "low")
 MAX_TOKENS = 4000
 
+# The one-click questions the console offers. Defined here, served to the page, and used by the
+# recorder in src/ui/build_static.py, so the buttons and the recorded answers cannot drift apart.
+PRESETS = [
+    ["Why this verdict?", "Explain why the investigation reached this verdict, citing the "
+                          "evidence items that mattered most."],
+    ["What would change it?", "What single piece of evidence would most change this "
+                              "recommendation, and in which direction?"],
+    ["Brief my approver", "Write a three-bullet brief for the approver who must sign off the "
+                          "actions routed L1 or L2 on this case. If none need sign-off, say so."],
+    ["Challenge it", "Argue the strongest case that the automated decision is wrong. Then say "
+                     "whether you would actually change it."],
+    ["Draft customer message", "Draft the short message to the cardholder that the recommended "
+                               "actions imply. Do not promise anything the policy does not "
+                               "allow."],
+]
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 POLICY_PATH = os.path.join(HERE, "policy_corpus.md")
 

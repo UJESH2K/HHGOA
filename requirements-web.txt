@@ -1,0 +1,5 @@
+# The public console: serves the recorded cases and the copilot. No dataset, no pandas.
+# Live re-runs and the live monitor need the full requirements.txt plus `data/`.
+fastapi>=0.110
+uvicorn>=0.29
+anthropic>=1.0

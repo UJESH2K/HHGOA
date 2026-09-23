@@ -1,0 +1,20 @@
+# One-click deploy of the Tidewatch console on Render (render.com -> New -> Blueprint -> this repo).
+# Serves the 20 graded cases, their replays and the recorded monitor session. Set
+# ANTHROPIC_API_KEY in the Render dashboard to switch the copilot on; the budget below caps it.
+services:
+  - type: web
+    name: tidewatch
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-web.txt
+    startCommand: python -m src.ui.app --host 0.0.0.0 --cases cases --data data
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.4"
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: COPILOT_DAILY_BUDGET_USD
+        value: "3.00"
+      - key: COPILOT_PER_HOUR
+        value: "30"

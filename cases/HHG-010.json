@@ -82,7 +82,7 @@
         ]
       },
       {
-        "claim": "device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900` links 17 cards across 17 customers within 12.6 days, and appears on only 27 cards book-wide.",
+        "claim": "Earlier in the same window this card was also used on a different device from the flagged transaction: device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900`. That profile links 17 cards across 17 customers within 12.6 days, and appears on only 27 cards book-wide.",
         "source": "graph",
         "ref": "query:ring_signals",
         "entity_ids": [
@@ -177,7 +177,7 @@
   "sar": {
     "file": true,
     "reason": "Policy 3a: fraud strongly suspected (probability 0.89) with exposure $1,000.03 over $1,000",
-    "narrative": "Customer C10434, holder of card C10434-K1. 1 transaction(s) totalling $1,000.03 are reported as suspicious. The activity occurred between 2016-12-02 and 2016-12-02. The activity was online and ran on device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900`. The pattern identified is card not present new device. a card-not-present transaction on a device new to the account. The assessment rests on: $1,000.03 is the largest or near-largest amount this card has ever authorised - 100% of its 33 prior transactions were smaller; a fully specified device profile links 17 cards across 17 different customers inside a 14-day window; the profile appears on 27 cards book-wide, so it is a real link rather than a rare one. The resulting fraud probability is 0.89. The investigation was opened following risk score. Real-time model scored transaction 3506725 ($1,000.03, online) at 0.90. Review and decide. The shared origin also touches card(s) C00854-K2, C02354-K2, C02375-K1, C03185-K1, C05245-K2, C05704-K2, C06224-K2, C07997-K1, C08918-K2, C09241-K2, C10422-K2, C11000-K2, C11309-K1, C11539-K2, held by other customers, which is why this filing covers activity beyond a single account.",
+    "narrative": "Customer C10434, holder of card C10434-K1. 1 transaction(s) totalling $1,000.03 are reported as suspicious. The activity occurred between 2016-12-02 and 2016-12-02. The activity was online and ran on device profile `Windows | Windows 10 | edge 16.0 | 1366x768`. Within the same window the card was also used on device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900`, which is shared with other customers' cards. The pattern identified is card not present new device. A card-not-present transaction on a device new to the account. The assessment rests on: $1,000.03 is the largest or near-largest amount this card has ever authorised - 100% of its 33 prior transactions were smaller; a fully specified device profile links 17 cards across 17 different customers inside a 14-day window; the profile appears on 27 cards book-wide, so it is a real link rather than a rare one. The resulting fraud probability is 0.89. The investigation was opened following risk score. Real-time model scored transaction 3506725 ($1,000.03, online) at 0.90. Review and decide. The shared origin also touches card(s) C00854-K2, C02354-K2, C02375-K1, C03185-K1, C05245-K2, C05704-K2, C06224-K2, C07997-K1, C08918-K2, C09241-K2, C10422-K2, C11000-K2, C11309-K1, C11539-K2, held by other customers, which is why this filing covers activity beyond a single account.",
     "subjects": [
       "C10434"
     ],

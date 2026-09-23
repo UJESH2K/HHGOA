@@ -83,6 +83,10 @@ class CaseState:
     ring_element: str = ""
     connected_card_ids: list[str] = field(default_factory=list)
     connected_profiles: list[str] = field(default_factory=list)
+    # The device the FLAGGED transaction ran on, kept apart from the ring's profile: the ring
+    # query looks at every device the card used in the window, and the two are not always the
+    # same device. The SAR once named the ring's profile as where the transaction "ran".
+    txn_profile: str = ""
     similar_cases: list[str] = field(default_factory=list)
     episode_txn_ids: list[str] = field(default_factory=list)
     n_cards: int = 1
@@ -207,6 +211,7 @@ def gather(be: GraphBackend, state: CaseState, meter: Meter) -> None:
                 "graph", "query:device_for_transaction",
                 [state.flagged_txn_id, device["device_profile"]], meter)
             state.connected_profiles = [device["device_profile"]]
+            state.txn_profile = device["device_profile"]
         else:
             state.note("No device or connection record exists for this transaction, which is "
                        "expected for some online product codes and is not itself a signal.",
@@ -239,8 +244,15 @@ def gather(be: GraphBackend, state: CaseState, meter: Meter) -> None:
         state.ring_element = ring.element
         state.connected_card_ids = [c for c in ring.card_ids if c != state.card_id]
         state.connected_profiles = sorted(set(state.connected_profiles) | {ring.device_profile})
+        # Say which device the link is on. When it is not the flagged transaction's own device,
+        # the link is evidence about the card - it has been used in a shared setting inside the
+        # window - not about the device this authorisation came from, and the claim says so.
+        elsewhere = bool(state.txn_profile) and ring.device_profile != state.txn_profile
         state.note(
-            f"{ring.element} links {ring.n_cards} cards across {ring.n_customers} customers "
+            ("Earlier in the same window this card was also used on a different device from the "
+             f"flagged transaction: {ring.element}. That profile " if elsewhere
+             else f"{ring.element} ")
+            + f"links {ring.n_cards} cards across {ring.n_customers} customers "
             f"within {ring.span_days:.1f} days, and appears on only "
             f"{ring.global_card_count} cards book-wide"
             + (" - but every card on it is high-volume, so the link may be an artefact of "
@@ -507,9 +519,14 @@ def sar_narrative(state: CaseState, s: RubricScore, pattern: PatternVerdict, exp
     when = (f"The activity occurred between {dates[0]} and {dates[-1]}."
             if dates else "The activity occurred on a single date.")
     where = (f"The activity was {state.rubric_input.channel.replace('_', '-')}"
-             + (f" and ran on device profile `{state.connected_profiles[0]}`."
-                if state.connected_profiles else "."))
-    how = f"The pattern identified is {pattern.pattern.replace('_', ' ')}. {pattern.rationale}."
+             + (f" and ran on device profile `{state.txn_profile}`." if state.txn_profile
+                else "."))
+    ring_elsewhere = [p for p in state.connected_profiles if p != state.txn_profile]
+    if state.rubric_input.ring_signal and ring_elsewhere:
+        where += (f" Within the same window the card was also used on device profile "
+                  f"`{ring_elsewhere[0]}`, which is shared with other customers' cards.")
+    rationale = pattern.rationale[:1].upper() + pattern.rationale[1:]
+    how = f"The pattern identified is {pattern.pattern.replace('_', ' ')}. {rationale}."
     why = ("The assessment rests on: "
            + "; ".join(c.note for c in s.drivers)
            + f". The resulting fraud probability is {s.probability:.2f}.")
