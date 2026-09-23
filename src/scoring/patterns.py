@@ -186,7 +186,15 @@ def _candidates(i: RubricInput, s: RubricScore) -> list[Candidate]:
     # Deliberately hard to reach. It requires a shared origin that survived the ring filter AND
     # a confident assessment, because R9 attaches FILE_REPORT and ESCALATE_TO_ANALYST to it and
     # only 9 of 5,565 closed cases ever used it.
-    if i.ring_signal and not i.ring_volume_artefact and s.probability >= FRAUD_AT:
+    #
+    # And the link must be STRONG - a rare profile on at most ten cards book-wide. A moderate
+    # link (a common device model on 11-60 cards) is shared use, not shared origin: R6 already
+    # declines to file on one. Accepting it here made `undocumented` the verdict on 90 of 300
+    # unseen high-risk alerts replayed through the live monitor - 30% against a closed-case base
+    # rate of 0.16% - and filed a report on every one through R9.
+    strong_link = i.ring_strength != "moderate"
+    if (i.ring_signal and strong_link and not i.ring_volume_artefact
+            and s.probability >= FRAUD_AT):
         out.append(Candidate(UNDOCUMENTED, 0.90 if cross_account else 0.75,
                              f"a rare device profile links {i.ring_n_cards} cards"
                              + (f" belonging to {i.ring_n_customers} different customers"
@@ -197,6 +205,10 @@ def _candidates(i: RubricInput, s: RubricScore) -> list[Candidate]:
         missing = []
         if not i.ring_signal:
             missing.append("no shared origin across accounts survived the ring filter")
+        elif not strong_link:
+            missing.append(f"the shared device profile sits on {i.ring_profile_cards} cards "
+                           "book-wide - a common device model, which is shared use rather than "
+                           "a shared origin")
         elif i.ring_volume_artefact:
             missing.append("the shared origin is a volume artefact, not a link")
         if s.probability < FRAUD_AT:

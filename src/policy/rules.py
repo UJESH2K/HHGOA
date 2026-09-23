@@ -271,6 +271,16 @@ def evaluate(c: PolicyContext) -> Decision:
                                       pattern=c.pattern, ring_strength=c.ring_strength)
     if not files_report:
         proposed = [(a, r) for a, r in proposed if a != Action.FILE_REPORT]
+    elif Action.FILE_REPORT not in {a for a, _ in proposed}:
+        # 3a is a rule in its own right, not only a filter on the others: strongly suspected
+        # fraud over $1,000 must be reported whatever raised the alert. Until the undocumented
+        # classification was tightened, HHG-010 ($1,000.03, p 0.89, a model-score trigger) only
+        # filed because R9 happened to fire; no rule proposed the report 3a itself requires.
+        proposed.append((Action.FILE_REPORT,
+                         f"Policy 3a: fraud strongly suspected (probability "
+                         f"{c.fraud_probability:.2f}) with exposure ${c.exposure_usd:,.2f} over "
+                         "$1,000" if c.exposure_usd > 1000 else
+                         "Policy 3a: fraud strongly suspected with an aggravating condition"))
 
     # A legitimate verdict cannot coexist with seizing the instrument. R2 fires on any dispute,
     # so a cardholder disputing a charge that the evidence explains - a subscription they forgot -

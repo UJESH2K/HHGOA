@@ -1,11 +1,11 @@
 {
   "case_id": "HHG-010",
   "case": {
-    "status": "escalated",
+    "status": "closed_fraud",
     "verdict": "fraud",
     "fraud_probability": 0.886,
-    "pattern": "undocumented",
-    "pattern_description": "Coordinated use of a single rare device profile across 17 cards belonging to different customers within a two-week window, with no shared billing region or product pattern. It fits none of the five documented typologies: the cards are not being tested, the activity is not confined to one cardholder's account, and the anomaly is the link between accounts rather than any single transaction.",
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
     "affected_txn_ids": [
       "3506725"
     ],
@@ -36,7 +36,7 @@
       "CC-5311",
       "CC-5048"
     ],
-    "summary": "The evidence supports fraud on this risk score alert for card C10434-K1, at a fraud probability of 0.89 resting on 2 independent signal(s): $1,000.03 is the largest or near-largest amount this card has ever authorised - 100% of its 33 prior transactions were smaller; a fully specified device profile links 17 cards across 17 different customers inside a 14-day window; the profile appears on 27 cards book-wide, so it is a real link rather than a rare one. The activity fits undocumented: a rare device profile links 17 cards belonging to 17 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The closest alternative was card_not_present_new_device (0.65 against 0.90): a card-not-present transaction on a device new to the account. Recommended actions: VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST, with exposure of $1,000.03.",
+    "summary": "The evidence supports fraud on this risk score alert for card C10434-K1, at a fraud probability of 0.89 resting on 2 independent signal(s): $1,000.03 is the largest or near-largest amount this card has ever authorised - 100% of its 33 prior transactions were smaller; a fully specified device profile links 17 cards across 17 different customers inside a 14-day window; the profile appears on 27 cards book-wide, so it is a real link rather than a rare one. The activity fits card not present new device: a card-not-present transaction on a device new to the account. The closest alternative was card_not_present_fraud (0.40 against 0.65): a card-not-present transaction; the new device makes the new-device variant the better fit. Recommended actions: VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE, FILE_REPORT, with exposure of $1,000.03.",
     "written_to_graph": true,
     "graph_case_id": "CASE-HHG-010",
     "evidence": [
@@ -147,12 +147,7 @@
       {
         "action": "FILE_REPORT",
         "route": "L2",
-        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
-      },
-      {
-        "action": "ESCALATE_TO_ANALYST",
-        "route": "auto",
-        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
+        "reason": "Policy 3a: fraud strongly suspected (probability 0.89) with exposure $1,000.03 over $1,000"
       }
     ],
     "final": [
@@ -174,20 +169,15 @@
       {
         "action": "FILE_REPORT",
         "route": "L2",
-        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
-      },
-      {
-        "action": "ESCALATE_TO_ANALYST",
-        "route": "auto",
-        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
+        "reason": "Policy 3a: fraud strongly suspected (probability 0.89) with exposure $1,000.03 over $1,000"
       }
     ],
     "what_changed": "nothing"
   },
   "sar": {
     "file": true,
-    "reason": "R9: coordinated or repeated abuse fitting none of the known patterns",
-    "narrative": "Customer C10434, holder of card C10434-K1. 1 transaction(s) totalling $1,000.03 are reported as suspicious. The activity occurred between 2016-12-02 and 2016-12-02. The activity was online and ran on device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900`. The pattern identified is undocumented. a rare device profile links 17 cards belonging to 17 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The assessment rests on: $1,000.03 is the largest or near-largest amount this card has ever authorised - 100% of its 33 prior transactions were smaller; a fully specified device profile links 17 cards across 17 different customers inside a 14-day window; the profile appears on 27 cards book-wide, so it is a real link rather than a rare one. The resulting fraud probability is 0.89. The investigation was opened following risk score. Real-time model scored transaction 3506725 ($1,000.03, online) at 0.90. Review and decide. The shared origin also touches card(s) C00854-K2, C02354-K2, C02375-K1, C03185-K1, C05245-K2, C05704-K2, C06224-K2, C07997-K1, C08918-K2, C09241-K2, C10422-K2, C11000-K2, C11309-K1, C11539-K2, held by other customers, which is why this filing covers activity beyond a single account.",
+    "reason": "Policy 3a: fraud strongly suspected (probability 0.89) with exposure $1,000.03 over $1,000",
+    "narrative": "Customer C10434, holder of card C10434-K1. 1 transaction(s) totalling $1,000.03 are reported as suspicious. The activity occurred between 2016-12-02 and 2016-12-02. The activity was online and ran on device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900`. The pattern identified is card not present new device. a card-not-present transaction on a device new to the account. The assessment rests on: $1,000.03 is the largest or near-largest amount this card has ever authorised - 100% of its 33 prior transactions were smaller; a fully specified device profile links 17 cards across 17 different customers inside a 14-day window; the profile appears on 27 cards book-wide, so it is a real link rather than a rare one. The resulting fraud probability is 0.89. The investigation was opened following risk score. Real-time model scored transaction 3506725 ($1,000.03, online) at 0.90. Review and decide. The shared origin also touches card(s) C00854-K2, C02354-K2, C02375-K1, C03185-K1, C05245-K2, C05704-K2, C06224-K2, C07997-K1, C08918-K2, C09241-K2, C10422-K2, C11000-K2, C11309-K1, C11539-K2, held by other customers, which is why this filing covers activity beyond a single account.",
     "subjects": [
       "C10434"
     ],
@@ -200,5 +190,5 @@
   "stop_reason": "Probability 0.89 is outside the 0.15-0.85 band on 2 independent pieces of evidence.",
   "tool_calls": 11,
   "tokens": 0,
-  "latency_s": 0.07
+  "latency_s": 0.06
 }

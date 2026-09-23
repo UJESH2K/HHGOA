@@ -130,6 +130,21 @@ def test_undocumented_is_refused_when_the_assessment_is_not_confident():
     assert v.pattern != UNDOCUMENTED
 
 
+def test_undocumented_is_refused_for_a_common_device_model():
+    """A moderate link is shared use of a common phone, not a shared origin.
+
+    Accepting it made `undocumented` the label on 90 of 300 unseen high-risk alerts replayed
+    through the live monitor, against a closed-case base rate of 9 in 5,565 - and R9 filed a
+    report on every one.
+    """
+    _, v = verdict_for(ring_signal=True, ring_n_cards=17, ring_n_customers=17,
+                       ring_strength="moderate", ring_profile_cards=27, new_region=True,
+                       device_state="New")
+    assert v.pattern != UNDOCUMENTED
+    rejected = next(c for c in v.candidates if c.pattern == UNDOCUMENTED)
+    assert "common device model" in rejected.rejected
+
+
 def test_a_qualified_ring_on_a_confident_case_is_undocumented_and_described():
     _, v = verdict_for(ring_signal=True, ring_n_cards=4, new_region=True,
                        device_state="New")

@@ -246,7 +246,7 @@
       "case_id": "HHG-017",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.18,
+      "latency_s": 0.17,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -263,8 +263,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.043,
-          "wall_seconds": 0.044
+          "tool_seconds": 0.041,
+          "wall_seconds": 0.042
         },
         "update_memory": {
           "llm_calls": 0,
@@ -316,7 +316,7 @@
     },
     "trace": [
       {
-        "t_ms": 133.09,
+        "t_ms": 121.61,
         "kind": "open",
         "stage": "init",
         "trigger": "risk_score",
@@ -325,79 +325,79 @@
         "prior": 0.3
       },
       {
-        "t_ms": 133.14,
+        "t_ms": 121.65,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.38,
+        "ms": 0.18,
         "ok": true
       },
       {
-        "t_ms": 133.55,
+        "t_ms": 121.84,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.86,
+        "ms": 1.91,
         "ok": true
       },
       {
-        "t_ms": 135.43,
+        "t_ms": 123.77,
         "kind": "query",
         "name": "graph.card_baseline",
+        "stage": "investigate",
+        "ms": 0.93,
+        "ok": true
+      },
+      {
+        "t_ms": 124.72,
+        "kind": "query",
+        "name": "graph.recurring_charge",
+        "stage": "investigate",
+        "ms": 2.27,
+        "ok": true
+      },
+      {
+        "t_ms": 127.01,
+        "kind": "query",
+        "name": "graph.card_testing_episode",
+        "stage": "investigate",
+        "ms": 0.47,
+        "ok": true
+      },
+      {
+        "t_ms": 127.5,
+        "kind": "query",
+        "name": "graph.ring_signals",
+        "stage": "investigate",
+        "ms": 24.67,
+        "ok": true
+      },
+      {
+        "t_ms": 152.19,
+        "kind": "query",
+        "name": "graph.prior_cases_for_customer",
+        "stage": "investigate",
+        "ms": 0.93,
+        "ok": true
+      },
+      {
+        "t_ms": 153.15,
+        "kind": "query",
+        "name": "graph.similar_closed_cases",
+        "stage": "investigate",
+        "ms": 8.81,
+        "ok": true
+      },
+      {
+        "t_ms": 162.03,
+        "kind": "query",
+        "name": "graph.device_for_transaction",
         "stage": "investigate",
         "ms": 1.02,
         "ok": true
       },
       {
-        "t_ms": 136.47,
-        "kind": "query",
-        "name": "graph.recurring_charge",
-        "stage": "investigate",
-        "ms": 2.9,
-        "ok": true
-      },
-      {
-        "t_ms": 139.41,
-        "kind": "query",
-        "name": "graph.card_testing_episode",
-        "stage": "investigate",
-        "ms": 0.51,
-        "ok": true
-      },
-      {
-        "t_ms": 139.95,
-        "kind": "query",
-        "name": "graph.ring_signals",
-        "stage": "investigate",
-        "ms": 24.15,
-        "ok": true
-      },
-      {
-        "t_ms": 164.13,
-        "kind": "query",
-        "name": "graph.prior_cases_for_customer",
-        "stage": "investigate",
-        "ms": 0.95,
-        "ok": true
-      },
-      {
-        "t_ms": 165.12,
-        "kind": "query",
-        "name": "graph.similar_closed_cases",
-        "stage": "investigate",
-        "ms": 10.39,
-        "ok": true
-      },
-      {
-        "t_ms": 175.53,
-        "kind": "query",
-        "name": "graph.device_for_transaction",
-        "stage": "investigate",
-        "ms": 0.83,
-        "ok": true
-      },
-      {
-        "t_ms": 176.4,
+        "t_ms": 163.11,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -405,7 +405,7 @@
         "claim": "The flagged transaction is a online authorisation of $100.09 on 2016-11-11 23:46 under product code R, scored 0.57 by the bank's model."
       },
       {
-        "t_ms": 176.41,
+        "t_ms": 163.12,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -413,7 +413,7 @@
         "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3450629 ($100.09, online) at 0.57. Review and decide."
       },
       {
-        "t_ms": 176.41,
+        "t_ms": 163.13,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -421,7 +421,7 @@
         "claim": "Against this card's own prior history of 52 transactions, $100.09 sits at the 21% percentile (mean $360.18, largest previously $2,892.12)."
       },
       {
-        "t_ms": 176.42,
+        "t_ms": 163.14,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -429,7 +429,7 @@
         "claim": "1 prior authorisation(s) on this card in the preceding hour and 2 in the preceding 24 hours."
       },
       {
-        "t_ms": 176.42,
+        "t_ms": 163.14,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -437,7 +437,7 @@
         "claim": "The transaction ran on device profile `Windows | Windows 10 | chrome 65.0 | 1920x1080`, reported as Found to this account, behind a IP_PROXY:HIDDEN proxy. That profile appears on 302 card(s) book-wide."
       },
       {
-        "t_ms": 176.43,
+        "t_ms": 163.15,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -445,7 +445,7 @@
         "claim": "5 prior charges of about $100.09 exist on this card but their spacing is irregular (intervals 15d, 86d, 15d, 0d), so this is a repeated amount rather than a recurring charge"
       },
       {
-        "t_ms": 176.7,
+        "t_ms": 163.55,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -453,7 +453,7 @@
         "claim": "This customer has 1 closed investigation(s) before this alert: 0 confirmed fraud, 1 cleared. Patterns previously found: none."
       },
       {
-        "t_ms": 176.84,
+        "t_ms": 163.76,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -461,7 +461,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5512, CC-5518, CC-5455. The nearest, CC-5512, was a $100.01 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 177.19,
+        "t_ms": 164.09,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -475,7 +475,7 @@
         "n_signals": 2
       },
       {
-        "t_ms": 177.2,
+        "t_ms": 164.1,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -484,7 +484,7 @@
         ]
       },
       {
-        "t_ms": 177.91,
+        "t_ms": 164.78,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -507,7 +507,7 @@
         ]
       },
       {
-        "t_ms": 177.94,
+        "t_ms": 164.8,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -517,15 +517,15 @@
         "stop_reason": "Probability 0.04 is outside the 0.15-0.85 band on 2 independent pieces of evidence."
       },
       {
-        "t_ms": 178.03,
+        "t_ms": 164.89,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.0,
+        "ms": 0.91,
         "ok": true
       },
       {
-        "t_ms": 179.06,
+        "t_ms": 165.81,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -533,7 +533,7 @@
         "ok": true
       },
       {
-        "t_ms": 179.06,
+        "t_ms": 165.82,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-017",
@@ -807,8 +807,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.07,
-          "wall_seconds": 0.071
+          "tool_seconds": 0.064,
+          "wall_seconds": 0.064
         },
         "update_memory": {
           "llm_calls": 0,
@@ -860,7 +860,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.6,
+        "t_ms": 0.52,
         "kind": "open",
         "stage": "init",
         "trigger": "risk_score",
@@ -869,79 +869,79 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.63,
+        "t_ms": 0.56,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.19,
+        "ms": 0.23,
         "ok": true
       },
       {
-        "t_ms": 0.84,
+        "t_ms": 0.81,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.52,
+        "ms": 1.68,
         "ok": true
       },
       {
-        "t_ms": 2.38,
+        "t_ms": 2.51,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 0.98,
+        "ms": 0.99,
         "ok": true
       },
       {
-        "t_ms": 3.38,
+        "t_ms": 3.51,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 1.17,
+        "ms": 1.66,
         "ok": true
       },
       {
-        "t_ms": 4.56,
+        "t_ms": 5.19,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.24,
+        "ms": 0.23,
         "ok": true
       },
       {
-        "t_ms": 4.81,
+        "t_ms": 5.44,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 55.55,
+        "ms": 49.97,
         "ok": true
       },
       {
-        "t_ms": 60.4,
+        "t_ms": 55.43,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 1.13,
+        "ms": 0.75,
         "ok": true
       },
       {
-        "t_ms": 61.57,
+        "t_ms": 56.21,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 8.07,
+        "ms": 6.72,
         "ok": true
       },
       {
-        "t_ms": 69.68,
+        "t_ms": 62.95,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 1.38,
+        "ms": 0.7,
         "ok": true
       },
       {
-        "t_ms": 71.11,
+        "t_ms": 63.68,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -949,7 +949,7 @@
         "claim": "The flagged transaction is a online authorisation of $599.94 on 2016-11-17 14:03 under product code R, scored 0.77 by the bank's model."
       },
       {
-        "t_ms": 71.12,
+        "t_ms": 63.68,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -957,7 +957,7 @@
         "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3464869 ($599.94, online) at 0.77. Review and decide."
       },
       {
-        "t_ms": 71.13,
+        "t_ms": 63.69,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -965,7 +965,7 @@
         "claim": "Against this card's own prior history of 68 transactions, $599.94 sits at the 100% percentile (mean $132.61, largest previously $550.03)."
       },
       {
-        "t_ms": 71.16,
+        "t_ms": 63.7,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -973,7 +973,7 @@
         "claim": "Billing region 327 has never appeared on this card before; it has previously used 123, 126, 143, 170, 177, 184, 204, 225, 231, 264, 272, 299, 315, 325, 330, 337, 387, 433, 472, 476, 485."
       },
       {
-        "t_ms": 71.17,
+        "t_ms": 63.7,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -981,7 +981,7 @@
         "claim": "0 prior authorisation(s) on this card in the preceding hour and 3 in the preceding 24 hours."
       },
       {
-        "t_ms": 71.17,
+        "t_ms": 63.7,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -989,7 +989,7 @@
         "claim": "The transaction ran on device profile `Trident/7.0 | Windows 8.1 | ie 11.0 for desktop | 1680x1050`, reported as New to this account. That profile appears on 8 card(s) book-wide."
       },
       {
-        "t_ms": 71.18,
+        "t_ms": 63.71,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -997,7 +997,7 @@
         "claim": "Only 0 prior charge(s) on this card fall within $12.00 of $599.94, which is too few to establish a recurring pattern"
       },
       {
-        "t_ms": 71.58,
+        "t_ms": 63.93,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -1005,7 +1005,7 @@
         "claim": "This customer has 3 closed investigation(s) before this alert: 2 confirmed fraud, 1 cleared. Patterns previously found: card_not_present_new_device."
       },
       {
-        "t_ms": 71.83,
+        "t_ms": 64.05,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -1013,7 +1013,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5541, CC-5419, CC-5084. The nearest, CC-5541, was a $583.76 online case closed as confirmed_fraud with pattern card_not_present_new_device."
       },
       {
-        "t_ms": 72.18,
+        "t_ms": 64.34,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -1027,7 +1027,7 @@
         "n_signals": 2
       },
       {
-        "t_ms": 72.19,
+        "t_ms": 64.35,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -1037,7 +1037,7 @@
         ]
       },
       {
-        "t_ms": 72.92,
+        "t_ms": 65.0,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -1060,7 +1060,7 @@
         ]
       },
       {
-        "t_ms": 72.95,
+        "t_ms": 65.05,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -1071,15 +1071,15 @@
         "stop_reason": "Probability 0.90 is outside the 0.15-0.85 band on 2 independent pieces of evidence."
       },
       {
-        "t_ms": 73.09,
+        "t_ms": 65.25,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.2,
+        "ms": 1.34,
         "ok": true
       },
       {
-        "t_ms": 74.31,
+        "t_ms": 66.61,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -1087,7 +1087,7 @@
         "ok": true
       },
       {
-        "t_ms": 74.31,
+        "t_ms": 66.61,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-015",
@@ -1332,8 +1332,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.016,
-          "wall_seconds": 0.017
+          "tool_seconds": 0.014,
+          "wall_seconds": 0.014
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1385,7 +1385,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.79,
+        "t_ms": 0.44,
         "kind": "open",
         "stage": "init",
         "trigger": "customer_report",
@@ -1394,79 +1394,79 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.85,
+        "t_ms": 0.47,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.28,
+        "ms": 0.15,
         "ok": true
       },
       {
-        "t_ms": 1.15,
+        "t_ms": 0.63,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.68,
+        "ms": 1.37,
         "ok": true
       },
       {
-        "t_ms": 2.86,
+        "t_ms": 2.02,
         "kind": "query",
         "name": "graph.card_baseline",
-        "stage": "investigate",
-        "ms": 0.95,
-        "ok": true
-      },
-      {
-        "t_ms": 3.82,
-        "kind": "query",
-        "name": "graph.recurring_charge",
-        "stage": "investigate",
-        "ms": 2.34,
-        "ok": true
-      },
-      {
-        "t_ms": 6.19,
-        "kind": "query",
-        "name": "graph.card_testing_episode",
-        "stage": "investigate",
-        "ms": 0.33,
-        "ok": true
-      },
-      {
-        "t_ms": 6.54,
-        "kind": "query",
-        "name": "graph.ring_signals",
-        "stage": "investigate",
-        "ms": 1.01,
-        "ok": true
-      },
-      {
-        "t_ms": 7.58,
-        "kind": "query",
-        "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
         "ms": 0.74,
         "ok": true
       },
       {
-        "t_ms": 8.34,
+        "t_ms": 2.78,
+        "kind": "query",
+        "name": "graph.recurring_charge",
+        "stage": "investigate",
+        "ms": 1.87,
+        "ok": true
+      },
+      {
+        "t_ms": 4.67,
+        "kind": "query",
+        "name": "graph.card_testing_episode",
+        "stage": "investigate",
+        "ms": 0.24,
+        "ok": true
+      },
+      {
+        "t_ms": 4.92,
+        "kind": "query",
+        "name": "graph.ring_signals",
+        "stage": "investigate",
+        "ms": 0.78,
+        "ok": true
+      },
+      {
+        "t_ms": 5.72,
+        "kind": "query",
+        "name": "graph.prior_cases_for_customer",
+        "stage": "investigate",
+        "ms": 0.65,
+        "ok": true
+      },
+      {
+        "t_ms": 6.39,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 8.48,
+        "ms": 6.57,
         "ok": true
       },
       {
-        "t_ms": 16.84,
+        "t_ms": 12.99,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 0.73,
+        "ms": 0.92,
         "ok": true
       },
       {
-        "t_ms": 17.61,
+        "t_ms": 13.95,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -1474,7 +1474,7 @@
         "claim": "The flagged transaction is a online authorisation of $482.12 on 2016-11-21 20:30 under product code C, scored 0.25 by the bank's model."
       },
       {
-        "t_ms": 17.61,
+        "t_ms": 13.95,
         "kind": "evidence",
         "stage": "investigate",
         "source": "customer",
@@ -1482,7 +1482,7 @@
         "claim": "The cardholder reported this transaction as unrecognised: Customer C07297 message: 'I never made this $482.12 purchase. Please check my card.' Refers to 3476682."
       },
       {
-        "t_ms": 17.62,
+        "t_ms": 13.96,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -1490,7 +1490,7 @@
         "claim": "Against this card's own prior history of 101 transactions, $482.12 sits at the 97% percentile (mean $115.15, largest previously $1,104.00)."
       },
       {
-        "t_ms": 17.62,
+        "t_ms": 13.96,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -1498,7 +1498,7 @@
         "claim": "3 prior authorisation(s) on this card in the preceding hour and 3 in the preceding 24 hours."
       },
       {
-        "t_ms": 17.62,
+        "t_ms": 13.96,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -1506,7 +1506,7 @@
         "claim": "The transaction ran on device profile `Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080`, reported as New to this account. That profile appears on 547 card(s) book-wide."
       },
       {
-        "t_ms": 17.63,
+        "t_ms": 13.97,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -1514,7 +1514,7 @@
         "claim": "2 prior charges of about $482.12 recur every 0.0 days, which matches no standard billing cadence"
       },
       {
-        "t_ms": 17.63,
+        "t_ms": 13.97,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -1522,7 +1522,7 @@
         "claim": "This customer has no closed investigations before this alert."
       },
       {
-        "t_ms": 17.77,
+        "t_ms": 14.14,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -1530,7 +1530,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5345, CC-5480, CC-5369. The nearest, CC-5345, was a $474.99 online case closed as confirmed_fraud with pattern card_not_present_new_device."
       },
       {
-        "t_ms": 17.97,
+        "t_ms": 14.41,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -1545,7 +1545,7 @@
         "n_signals": 3
       },
       {
-        "t_ms": 17.97,
+        "t_ms": 14.41,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -1555,7 +1555,7 @@
         ]
       },
       {
-        "t_ms": 18.36,
+        "t_ms": 14.85,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -1578,7 +1578,7 @@
         ]
       },
       {
-        "t_ms": 18.38,
+        "t_ms": 14.88,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -1589,15 +1589,15 @@
         "stop_reason": "Probability 0.90 is outside the 0.15-0.85 band on 3 independent pieces of evidence."
       },
       {
-        "t_ms": 18.5,
+        "t_ms": 14.99,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.08,
+        "ms": 0.87,
         "ok": true
       },
       {
-        "t_ms": 19.61,
+        "t_ms": 15.88,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -1605,7 +1605,7 @@
         "ok": true
       },
       {
-        "t_ms": 19.61,
+        "t_ms": 15.88,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-006",
@@ -1616,22 +1616,15 @@
   "HHG-014": {
     "case_id": "HHG-014",
     "assessment": {
-      "fraud_probability": 0.183,
+      "fraud_probability": 0.501,
       "prior": 0.3,
-      "n_independent_signals": 2,
+      "n_independent_signals": 1,
       "families": [
-        "shared_origin",
-        "customer_response"
+        "shared_origin"
       ],
       "clamped_to_band": false,
       "override": "",
       "drivers": [
-        {
-          "signal": "step_up_passed",
-          "family": "customer_response",
-          "log_odds": -1.5,
-          "note": "step-up authentication was requested and passed, so whoever holds the card also holds the second factor"
-        },
         {
           "signal": "shared_device_profile",
           "family": "shared_origin",
@@ -1667,27 +1660,14 @@
           "log_odds": -0.1,
           "note": "the bank's model scores this transaction 0.05, below its median of 0.12",
           "material": false
-        },
-        {
-          "signal": "step_up_passed",
-          "family": "customer_response",
-          "log_odds": -1.5,
-          "note": "step-up authentication was requested and passed, so whoever holds the card also holds the second factor",
-          "material": true
         }
       ]
     },
     "pattern": {
-      "pattern": "none",
+      "pattern": "card_not_present_new_device",
       "pattern_description": "",
-      "rationale": "The evidence does not support a fraud episode, so no pattern is claimed (probability 0.18)",
+      "rationale": "a card-not-present transaction on a device new to the account",
       "alternatives": [
-        {
-          "pattern": "card_not_present_new_device",
-          "score": 0.65,
-          "rationale": "a card-not-present transaction on a device new to the account",
-          "rejected": ""
-        },
         {
           "pattern": "card_not_present_fraud",
           "score": 0.4,
@@ -1715,8 +1695,8 @@
         {
           "pattern": "undocumented",
           "score": 0.0,
-          "rationale": "the assessment is not confident enough (0.18)",
-          "rejected": "R9 attaches a regulatory filing to this pattern and 9 of 5,565 closed cases used it: the assessment is not confident enough (0.18)"
+          "rationale": "the shared device profile sits on 52 cards book-wide - a common device model, which is shared use rather than a shared origin; the assessment is not confident enough (0.50)",
+          "rejected": "R9 attaches a regulatory filing to this pattern and 9 of 5,565 closed cases used it: the shared device profile sits on 52 cards book-wide - a common device model, which is shared use rather than a shared origin; the assessment is not confident enough (0.50)"
         }
       ]
     },
@@ -1730,26 +1710,24 @@
         "options": [
           {
             "request_type": "step_up_auth",
-            "expected_decision_change": 0.2177,
+            "expected_decision_change": 0.0824,
             "friction": 0.05,
-            "net_value": 0.1677,
-            "selected": true,
-            "rationale": "step_up_auth: expected decision change 0.22 against friction 0.05, so worth asking. if failed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.88, verdict fraud); if passed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.18, verdict legitimate)",
+            "net_value": 0.0324,
+            "selected": false,
+            "rationale": "step_up_auth: expected decision change 0.08 against friction 0.05, so not worth the friction of asking. if passed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.18, verdict legitimate)",
             "posture_now": "MONITOR_CONNECTED_CARDS",
             "branches": [
               {
                 "response": "failed",
                 "probability": 0.451,
-                "decision_change": 0.3,
+                "decision_change": 0.0,
                 "fraud_probability_after": 0.881,
                 "verdict_after": "fraud",
                 "posture_after": "MONITOR_CONNECTED_CARDS",
                 "actions_after": [
                   "VERIFY_WITH_CUSTOMER",
                   "MONITOR_CONNECTED_CARDS",
-                  "CREATE_CASE",
-                  "FILE_REPORT",
-                  "ESCALATE_TO_ANALYST"
+                  "CREATE_CASE"
                 ]
               },
               {
@@ -1873,133 +1851,12 @@
             ]
           }
         ]
-      },
-      {
-        "loop": 2,
-        "options": [
-          {
-            "request_type": "step_up_auth",
-            "expected_decision_change": 0,
-            "friction": 0.05,
-            "net_value": -0.05,
-            "selected": false,
-            "rationale": "step_up_auth: not available - already requested in this case",
-            "posture_now": "",
-            "branches": []
-          },
-          {
-            "request_type": "customer_validation",
-            "expected_decision_change": 0.0,
-            "friction": 0.12,
-            "net_value": -0.12,
-            "selected": false,
-            "rationale": "customer_validation: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information",
-            "posture_now": "MONITOR_CONNECTED_CARDS",
-            "branches": [
-              {
-                "response": "denied",
-                "probability": 0.36,
-                "decision_change": 0.0,
-                "fraud_probability_after": 0.332,
-                "verdict_after": "uncertain",
-                "posture_after": "MONITOR_CONNECTED_CARDS",
-                "actions_after": [
-                  "MONITOR_CONNECTED_CARDS",
-                  "CREATE_CASE",
-                  "ESCALATE_TO_ANALYST"
-                ]
-              },
-              {
-                "response": "confirmed",
-                "probability": 0.518,
-                "decision_change": 0.0,
-                "fraud_probability_after": 0.018,
-                "verdict_after": "legitimate",
-                "posture_after": "MONITOR_CONNECTED_CARDS",
-                "actions_after": [
-                  "MONITOR_CONNECTED_CARDS",
-                  "CREATE_CASE",
-                  "ESCALATE_TO_ANALYST",
-                  "CLOSE_NO_FRAUD"
-                ]
-              },
-              {
-                "response": "no_reply",
-                "probability": 0.123,
-                "decision_change": 0.0,
-                "fraud_probability_after": 0.206,
-                "verdict_after": "uncertain",
-                "posture_after": "MONITOR_CONNECTED_CARDS",
-                "actions_after": [
-                  "MONITOR_CONNECTED_CARDS",
-                  "CREATE_CASE",
-                  "ESCALATE_TO_ANALYST"
-                ]
-              }
-            ]
-          },
-          {
-            "request_type": "analyst_info",
-            "expected_decision_change": 0.0,
-            "friction": 0.2,
-            "net_value": -0.2,
-            "selected": false,
-            "rationale": "analyst_info: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information",
-            "posture_now": "MONITOR_CONNECTED_CARDS",
-            "branches": [
-              {
-                "response": "confirms_link",
-                "probability": 0.25,
-                "decision_change": 0.0,
-                "fraud_probability_after": 0.183,
-                "verdict_after": "legitimate",
-                "posture_after": "MONITOR_CONNECTED_CARDS",
-                "actions_after": [
-                  "MONITOR_CONNECTED_CARDS",
-                  "CREATE_CASE",
-                  "ESCALATE_TO_ANALYST",
-                  "CLOSE_NO_FRAUD"
-                ]
-              },
-              {
-                "response": "confirms_known_relationship",
-                "probability": 0.25,
-                "decision_change": 0.0,
-                "fraud_probability_after": 0.036,
-                "verdict_after": "legitimate",
-                "posture_after": "MONITOR_CONNECTED_CARDS",
-                "actions_after": [
-                  "MONITOR_CONNECTED_CARDS",
-                  "CREATE_CASE",
-                  "ESCALATE_TO_ANALYST",
-                  "CLOSE_NO_FRAUD"
-                ]
-              },
-              {
-                "response": "nothing_new",
-                "probability": 0.5,
-                "decision_change": 0.0,
-                "fraud_probability_after": 0.183,
-                "verdict_after": "legitimate",
-                "posture_after": "MONITOR_CONNECTED_CARDS",
-                "actions_after": [
-                  "MONITOR_CONNECTED_CARDS",
-                  "CREATE_CASE",
-                  "ESCALATE_TO_ANALYST",
-                  "CLOSE_NO_FRAUD"
-                ]
-              }
-            ]
-          }
-        ]
       }
     ],
     "decisions": [
       "Initial assessment: probability 0.50 on 1 independent signal(s) (shared_origin); pattern card_not_present_new_device; recommendation STEP_UP_AUTH, VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE.",
-      "Requested step_up_auth because it carried the highest expected change in the recommendation (0.22 against friction 0.05). step_up_auth: expected decision change 0.22 against friction 0.05, so worth asking. if failed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.88, verdict fraud); if passed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.18, verdict legitimate)",
-      "Reassessed after step_up_auth: probability 0.18 on 2 independent signal(s); pattern none.",
-      "No further evidence request would change the recommendation: step_up_auth: not available - already requested in this case; customer_validation: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information; analyst_info: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information",
-      "Final recommendation: MONITOR_CONNECTED_CARDS, CREATE_CASE, ESCALATE_TO_ANALYST, CLOSE_NO_FRAUD."
+      "No further evidence request would change the recommendation: step_up_auth: expected decision change 0.08 against friction 0.05, so not worth the friction of asking. if passed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.18, verdict legitimate); customer_validation: expected decision change 0.06 against friction 0.12, so not worth the friction of asking. if confirmed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.08, verdict legitimate); analyst_info: expected decision change 0.04 against friction 0.20, so not worth the friction of asking. if confirms_known_relationship, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.14, verdict legitimate)",
+      "Final recommendation: STEP_UP_AUTH, VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE."
     ],
     "trigger": {
       "type": "analyst_request",
@@ -2016,17 +1873,16 @@
       "case_id": "HHG-014",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.07,
+      "latency_s": 0.06,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
       "failed_tool_calls": 0,
       "evidence_by_source": {
         "graph": 8,
-        "external": 1,
-        "customer": 1
+        "external": 1
       },
-      "deterministic_evidence_share": 0.8,
+      "deterministic_evidence_share": 0.8889,
       "unpriced_models": [],
       "by_stage": {
         "investigate": {
@@ -2034,8 +1890,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.068,
-          "wall_seconds": 0.07
+          "tool_seconds": 0.054,
+          "wall_seconds": 0.055
         },
         "update_memory": {
           "llm_calls": 0,
@@ -2055,7 +1911,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.002
+          "wall_seconds": 0.001
         },
         "take_action": {
           "llm_calls": 0,
@@ -2087,7 +1943,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.52,
+        "t_ms": 0.54,
         "kind": "open",
         "stage": "init",
         "trigger": "analyst_request",
@@ -2096,43 +1952,43 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.55,
+        "t_ms": 0.57,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.16,
+        "ms": 0.19,
         "ok": true
       },
       {
-        "t_ms": 0.73,
+        "t_ms": 0.77,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.36,
+        "ms": 1.46,
         "ok": true
       },
       {
-        "t_ms": 2.1,
+        "t_ms": 2.25,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 0.73,
+        "ms": 0.74,
         "ok": true
       },
       {
-        "t_ms": 2.84,
+        "t_ms": 3.0,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 1.13,
+        "ms": 1.08,
         "ok": true
       },
       {
-        "t_ms": 3.98,
+        "t_ms": 4.1,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.32,
+        "ms": 0.21,
         "ok": true
       },
       {
@@ -2140,35 +1996,35 @@
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 53.42,
+        "ms": 42.31,
         "ok": true
       },
       {
-        "t_ms": 57.76,
+        "t_ms": 46.65,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 1.01,
+        "ms": 0.8,
         "ok": true
       },
       {
-        "t_ms": 58.81,
+        "t_ms": 47.47,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 9.57,
+        "ms": 6.87,
         "ok": true
       },
       {
-        "t_ms": 68.42,
+        "t_ms": 54.37,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 1.49,
+        "ms": 0.91,
         "ok": true
       },
       {
-        "t_ms": 69.96,
+        "t_ms": 55.33,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2176,7 +2032,7 @@
         "claim": "The flagged transaction is a online authorisation of $74.96 on 2016-11-22 16:11 under product code C, scored 0.05 by the bank's model."
       },
       {
-        "t_ms": 69.97,
+        "t_ms": 55.33,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -2184,7 +2040,7 @@
         "claim": "The investigation was triggered by analyst request: Analyst request: several cards this month show purchases from the same unusual device profile. Review transaction 3478561 on card C13487-K1 and look for related activity."
       },
       {
-        "t_ms": 69.98,
+        "t_ms": 55.34,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2192,7 +2048,7 @@
         "claim": "Against this card's own prior history of 71 transactions, $74.96 sits at the 79% percentile (mean $58.13, largest previously $225.94)."
       },
       {
-        "t_ms": 69.99,
+        "t_ms": 55.34,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2200,7 +2056,7 @@
         "claim": "0 prior authorisation(s) on this card in the preceding hour and 1 in the preceding 24 hours."
       },
       {
-        "t_ms": 70.0,
+        "t_ms": 55.35,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2208,7 +2064,7 @@
         "claim": "The transaction ran on device profile `SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080`, reported as New to this account, behind a IP_PROXY:ANONYMOUS proxy. That profile appears on 52 card(s) book-wide."
       },
       {
-        "t_ms": 70.0,
+        "t_ms": 55.35,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2216,7 +2072,7 @@
         "claim": "Only 0 prior charge(s) on this card fall within $1.50 of $74.96, which is too few to establish a recurring pattern"
       },
       {
-        "t_ms": 70.04,
+        "t_ms": 55.37,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2224,7 +2080,7 @@
         "claim": "device profile `SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080` links 20 cards across 20 customers within 8.0 days, and appears on only 52 cards book-wide."
       },
       {
-        "t_ms": 70.05,
+        "t_ms": 55.37,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2232,7 +2088,7 @@
         "claim": "This customer has no closed investigations before this alert."
       },
       {
-        "t_ms": 70.32,
+        "t_ms": 55.52,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2240,7 +2096,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5542, CC-5444, CC-5440. The nearest, CC-5542, was a $73.98 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 70.74,
+        "t_ms": 55.75,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -2253,7 +2109,7 @@
         "n_signals": 1
       },
       {
-        "t_ms": 70.74,
+        "t_ms": 55.76,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -2265,15 +2121,15 @@
         ]
       },
       {
-        "t_ms": 72.06,
+        "t_ms": 56.54,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
         "options": [
           {
             "request_type": "step_up_auth",
-            "net_value": 0.1677,
-            "selected": true
+            "net_value": 0.0324,
+            "selected": false
           },
           {
             "request_type": "customer_validation",
@@ -2288,80 +2144,28 @@
         ]
       },
       {
-        "t_ms": 72.1,
-        "kind": "request",
-        "stage": "gather_more_evidence",
-        "type": "step_up_auth",
-        "response": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.55 under the response model in src/agent/voi.py), given a fraud probability of 0.18 before the request. Had the answer been the step-up challenge is not completed (p=0.45), the recommendation would have moved to MONITOR_CONNECTED_CARDS with a fraud probability of 0.88."
-      },
-      {
-        "t_ms": 72.11,
-        "kind": "evidence",
-        "stage": "gather_more_evidence",
-        "source": "customer",
-        "ref": "evidence_request:step_up_auth",
-        "claim": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.55 under the response model in src/agent/voi.py), given a fraud probability of 0.18 before the request."
-      },
-      {
-        "t_ms": 72.2,
-        "kind": "assessment",
-        "stage": "gather_more_evidence",
-        "label": "after step_up_auth",
-        "p": 0.183,
-        "verdict": "legitimate",
-        "pattern": "none",
-        "families": [
-          "shared_origin",
-          "customer_response"
-        ],
-        "n_signals": 2
-      },
-      {
-        "t_ms": 72.88,
-        "kind": "evidence_value",
-        "stage": "gather_more_evidence",
-        "loop": 2,
-        "options": [
-          {
-            "request_type": "step_up_auth",
-            "net_value": -0.05,
-            "selected": false
-          },
-          {
-            "request_type": "customer_validation",
-            "net_value": -0.12,
-            "selected": false
-          },
-          {
-            "request_type": "analyst_info",
-            "net_value": -0.2,
-            "selected": false
-          }
-        ]
-      },
-      {
-        "t_ms": 72.91,
+        "t_ms": 56.61,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
         "actions": [
+          "STEP_UP_AUTH",
+          "VERIFY_WITH_CUSTOMER",
           "MONITOR_CONNECTED_CARDS",
-          "CREATE_CASE",
-          "ESCALATE_TO_ANALYST",
-          "CLOSE_NO_FRAUD"
+          "CREATE_CASE"
         ],
         "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking."
       },
       {
-        "t_ms": 72.99,
+        "t_ms": 56.77,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.33,
+        "ms": 1.4,
         "ok": true
       },
       {
-        "t_ms": 74.35,
+        "t_ms": 58.19,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -2369,7 +2173,7 @@
         "ok": true
       },
       {
-        "t_ms": 74.35,
+        "t_ms": 58.19,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-014",
@@ -2624,8 +2428,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.014,
-          "wall_seconds": 0.015
+          "tool_seconds": 0.013,
+          "wall_seconds": 0.014
         },
         "update_memory": {
           "llm_calls": 0,
@@ -2677,7 +2481,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.55,
+        "t_ms": 0.43,
         "kind": "open",
         "stage": "init",
         "trigger": "risk_score",
@@ -2686,71 +2490,71 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.59,
+        "t_ms": 0.45,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.18,
+        "ms": 0.16,
         "ok": true
       },
       {
-        "t_ms": 0.79,
+        "t_ms": 0.62,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.41,
+        "ms": 1.71,
         "ok": true
       },
       {
-        "t_ms": 2.21,
+        "t_ms": 2.35,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 0.76,
+        "ms": 0.92,
         "ok": true
       },
       {
-        "t_ms": 2.98,
+        "t_ms": 3.29,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 1.15,
+        "ms": 1.33,
         "ok": true
       },
       {
-        "t_ms": 4.14,
+        "t_ms": 4.63,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.33,
+        "ms": 0.24,
         "ok": true
       },
       {
-        "t_ms": 4.48,
+        "t_ms": 4.88,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 0.86,
+        "ms": 0.71,
         "ok": true
       },
       {
-        "t_ms": 5.36,
+        "t_ms": 5.61,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 1.42,
+        "ms": 0.74,
         "ok": true
       },
       {
-        "t_ms": 6.82,
+        "t_ms": 6.37,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 8.52,
+        "ms": 7.42,
         "ok": true
       },
       {
-        "t_ms": 15.37,
+        "t_ms": 13.81,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
@@ -2758,7 +2562,7 @@
         "ok": true
       },
       {
-        "t_ms": 15.42,
+        "t_ms": 13.86,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2766,7 +2570,7 @@
         "claim": "The flagged transaction is a online authorisation of $292.36 on 2016-11-22 17:27 under product code C, scored 0.79 by the bank's model."
       },
       {
-        "t_ms": 15.42,
+        "t_ms": 13.86,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -2774,7 +2578,7 @@
         "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3478782 ($292.36, online) at 0.79. Review and decide."
       },
       {
-        "t_ms": 15.43,
+        "t_ms": 13.87,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2782,7 +2586,7 @@
         "claim": "Against this card's own prior history of 35 transactions, $292.36 sits at the 100% percentile (mean $44.66, largest previously $121.32)."
       },
       {
-        "t_ms": 15.43,
+        "t_ms": 13.87,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2790,7 +2594,7 @@
         "claim": "No device or connection record exists for this transaction, which is expected for some online product codes and is not itself a signal."
       },
       {
-        "t_ms": 15.44,
+        "t_ms": 13.88,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2798,7 +2602,7 @@
         "claim": "Only 0 prior charge(s) on this card fall within $5.85 of $292.36, which is too few to establish a recurring pattern"
       },
       {
-        "t_ms": 15.74,
+        "t_ms": 14.14,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2806,7 +2610,7 @@
         "claim": "This customer has 1 closed investigation(s) before this alert: 1 confirmed fraud, 0 cleared. Patterns previously found: card_not_present_fraud."
       },
       {
-        "t_ms": 15.91,
+        "t_ms": 14.28,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -2814,7 +2618,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5484, CC-5557, CC-5446. The nearest, CC-5484, was a $292.94 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 16.12,
+        "t_ms": 14.48,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -2827,7 +2631,7 @@
         "n_signals": 1
       },
       {
-        "t_ms": 16.12,
+        "t_ms": 14.49,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -2837,7 +2641,7 @@
         ]
       },
       {
-        "t_ms": 16.66,
+        "t_ms": 15.05,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -2860,7 +2664,7 @@
         ]
       },
       {
-        "t_ms": 16.7,
+        "t_ms": 15.09,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -2871,15 +2675,15 @@
         "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking."
       },
       {
-        "t_ms": 16.79,
+        "t_ms": 15.2,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 0.87,
+        "ms": 1.23,
         "ok": true
       },
       {
-        "t_ms": 17.67,
+        "t_ms": 16.45,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -2887,7 +2691,7 @@
         "ok": true
       },
       {
-        "t_ms": 17.67,
+        "t_ms": 16.46,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-002",
@@ -3005,8 +2809,8 @@
         {
           "pattern": "undocumented",
           "score": 0.0,
-          "rationale": "the assessment is not confident enough (0.51)",
-          "rejected": "R9 attaches a regulatory filing to this pattern and 9 of 5,565 closed cases used it: the assessment is not confident enough (0.51)"
+          "rationale": "the shared device profile sits on 27 cards book-wide - a common device model, which is shared use rather than a shared origin; the assessment is not confident enough (0.51)",
+          "rejected": "R9 attaches a regulatory filing to this pattern and 9 of 5,565 closed cases used it: the shared device profile sits on 27 cards book-wide - a common device model, which is shared use rather than a shared origin; the assessment is not confident enough (0.51)"
         }
       ]
     },
@@ -3020,17 +2824,17 @@
         "options": [
           {
             "request_type": "step_up_auth",
-            "expected_decision_change": 0.0693,
+            "expected_decision_change": 0.0,
             "friction": 0.05,
-            "net_value": 0.0193,
+            "net_value": -0.05,
             "selected": false,
-            "rationale": "step_up_auth: expected decision change 0.07 against friction 0.05, so not worth the friction of asking. if failed, the recommendation moves from BLOCK_CARD to BLOCK_CARD (probability 0.89, verdict fraud)",
+            "rationale": "step_up_auth: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information",
             "posture_now": "BLOCK_CARD",
             "branches": [
               {
                 "response": "failed",
                 "probability": 0.462,
-                "decision_change": 0.15,
+                "decision_change": 0.0,
                 "fraud_probability_after": 0.887,
                 "verdict_after": "fraud",
                 "posture_after": "BLOCK_CARD",
@@ -3038,7 +2842,6 @@
                   "BLOCK_CARD",
                   "MONITOR_CONNECTED_CARDS",
                   "CREATE_CASE",
-                  "FILE_REPORT",
                   "ESCALATE_TO_ANALYST"
                 ]
               },
@@ -3112,7 +2915,7 @@
     ],
     "decisions": [
       "Initial assessment: probability 0.51 on 3 independent signal(s) (amount_behaviour, shared_origin, customer_response); pattern account_takeover; recommendation BLOCK_CARD, MONITOR_CONNECTED_CARDS, CREATE_CASE, ESCALATE_TO_ANALYST.",
-      "No further evidence request would change the recommendation: step_up_auth: expected decision change 0.07 against friction 0.05, so not worth the friction of asking. if failed, the recommendation moves from BLOCK_CARD to BLOCK_CARD (probability 0.89, verdict fraud); customer_validation: not available - the trigger is the cardholder's own report, so the dispute is already on record and R2 applies without asking again; analyst_info: expected decision change 0.07 against friction 0.20, so not worth the friction of asking. if confirms_known_relationship, the recommendation moves from BLOCK_CARD to MONITOR_CONNECTED_CARDS (probability 0.15, verdict legitimate)",
+      "No further evidence request would change the recommendation: step_up_auth: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information; customer_validation: not available - the trigger is the cardholder's own report, so the dispute is already on record and R2 applies without asking again; analyst_info: expected decision change 0.07 against friction 0.20, so not worth the friction of asking. if confirms_known_relationship, the recommendation moves from BLOCK_CARD to MONITOR_CONNECTED_CARDS (probability 0.15, verdict legitimate)",
       "Final recommendation: BLOCK_CARD, MONITOR_CONNECTED_CARDS, CREATE_CASE, ESCALATE_TO_ANALYST."
     ],
     "trigger": {
@@ -3147,8 +2950,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.071,
-          "wall_seconds": 0.072
+          "tool_seconds": 0.064,
+          "wall_seconds": 0.065
         },
         "update_memory": {
           "llm_calls": 0,
@@ -3199,7 +3002,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.71,
+        "t_ms": 0.5,
         "kind": "open",
         "stage": "init",
         "trigger": "customer_report",
@@ -3208,71 +3011,71 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.75,
+        "t_ms": 0.53,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.24,
+        "ms": 0.15,
         "ok": true
       },
       {
-        "t_ms": 1.01,
+        "t_ms": 0.69,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 2.95,
+        "ms": 2.2,
         "ok": true
       },
       {
-        "t_ms": 3.98,
+        "t_ms": 2.91,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 1.93,
+        "ms": 1.74,
         "ok": true
       },
       {
-        "t_ms": 5.94,
+        "t_ms": 4.66,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 3.29,
+        "ms": 2.91,
         "ok": true
       },
       {
-        "t_ms": 9.25,
+        "t_ms": 7.59,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.28,
+        "ms": 0.26,
         "ok": true
       },
       {
-        "t_ms": 9.54,
+        "t_ms": 7.86,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 53.07,
+        "ms": 49.34,
         "ok": true
       },
       {
-        "t_ms": 62.65,
+        "t_ms": 57.22,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 1.6,
+        "ms": 0.89,
         "ok": true
       },
       {
-        "t_ms": 64.29,
+        "t_ms": 58.14,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 7.51,
+        "ms": 6.74,
         "ok": true
       },
       {
-        "t_ms": 71.84,
+        "t_ms": 64.91,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3280,7 +3083,7 @@
         "claim": "The flagged transaction is a in-person authorisation of $39.08 on 2016-11-27 13:41 under product code W, scored 0.48 by the bank's model."
       },
       {
-        "t_ms": 71.84,
+        "t_ms": 64.91,
         "kind": "evidence",
         "stage": "investigate",
         "source": "customer",
@@ -3288,7 +3091,7 @@
         "claim": "The cardholder reported this transaction as unrecognised: Customer C02354 message: 'I never made this $39.08 purchase. Please check my card.' Refers to 3491361."
       },
       {
-        "t_ms": 71.85,
+        "t_ms": 64.92,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3296,7 +3099,7 @@
         "claim": "Against this card's own prior history of 5,860 transactions, $39.08 sits at the 18% percentile (mean $141.17, largest previously $4,438.01)."
       },
       {
-        "t_ms": 71.85,
+        "t_ms": 64.92,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3304,7 +3107,7 @@
         "claim": "0 prior authorisation(s) on this card in the preceding hour and 41 in the preceding 24 hours."
       },
       {
-        "t_ms": 71.86,
+        "t_ms": 64.92,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3312,7 +3115,7 @@
         "claim": "The transaction is card present, so no device or connection record exists - true of every in-person transaction in the book, and not a signal."
       },
       {
-        "t_ms": 71.86,
+        "t_ms": 64.93,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3320,7 +3123,7 @@
         "claim": "144 prior charges of about $39.08 exist on this card but their spacing is irregular (intervals 1d, 0d, 1d, 0d, 4d, 1d, 0d, 1d, 5d, 2d, 1d, 0d, 2d, 0d, 1d, 0d, 1d, 4d, 1d, 0d, 3d, 1d, 1d, 1d, 2d, 0d, 1d, 0d, 1d, 3d, 0d, 2d, 0d, 1d, 1d, 1d, 1d, 1d, 1d, 0d, 0d, 1d, 0d, 0d, 1d, 1d, 2d, 0d, 0d, 2d, 1d, 0d, 0d, 1d, 0d, 0d, 0d, 1d, 1d, 0d, 1d, 2d, 0d, 3d, 1d, 0d, 0d, 2d, 0d, 0d, 1d, 0d, 3d, 3d, 1d, 3d, 0d, 0d, 1d, 1d, 0d, 1d, 2d, 2d, 4d, 1d, 0d, 2d, 1d, 1d, 2d, 0d, 2d, 1d, 1d, 0d, 3d, 0d, 2d, 2d, 2d, 0d, 1d, 0d, 3d, 1d, 0d, 2d, 1d, 1d, 1d, 0d, 2d, 0d, 1d, 0d, 2d, 0d, 0d, 0d, 1d, 3d, 1d, 1d, 1d, 0d, 1d, 1d, 0d, 0d, 0d, 0d, 0d, 2d, 1d, 0d, 2d, 0d, 0d, 0d, 1d, 1d, 3d), so this is a repeated amount rather than a recurring charge"
       },
       {
-        "t_ms": 71.88,
+        "t_ms": 64.94,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3328,7 +3131,7 @@
         "claim": "device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900` links 14 cards across 14 customers within 11.9 days, and appears on only 27 cards book-wide."
       },
       {
-        "t_ms": 72.17,
+        "t_ms": 65.19,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3336,7 +3139,7 @@
         "claim": "This customer has 20 closed investigation(s) before this alert: 19 confirmed fraud, 1 cleared. Patterns previously found: account_takeover, card_not_present_fraud, out_of_region_use."
       },
       {
-        "t_ms": 72.31,
+        "t_ms": 65.33,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3344,7 +3147,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5494, CC-4742, CC-4626. The nearest, CC-5494, was a $38.95 in_person case closed as confirmed_fraud with pattern account_takeover."
       },
       {
-        "t_ms": 72.55,
+        "t_ms": 65.53,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -3359,7 +3162,7 @@
         "n_signals": 3
       },
       {
-        "t_ms": 72.56,
+        "t_ms": 65.53,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -3371,14 +3174,14 @@
         ]
       },
       {
-        "t_ms": 72.99,
+        "t_ms": 65.92,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
         "options": [
           {
             "request_type": "step_up_auth",
-            "net_value": 0.0193,
+            "net_value": -0.05,
             "selected": false
           },
           {
@@ -3394,7 +3197,7 @@
         ]
       },
       {
-        "t_ms": 73.03,
+        "t_ms": 65.96,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -3407,15 +3210,15 @@
         "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking."
       },
       {
-        "t_ms": 73.15,
+        "t_ms": 66.07,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 0.92,
+        "ms": 1.08,
         "ok": true
       },
       {
-        "t_ms": 74.09,
+        "t_ms": 67.17,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -3423,7 +3226,7 @@
         "ok": true
       },
       {
-        "t_ms": 74.09,
+        "t_ms": 67.18,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-018",
@@ -3688,7 +3491,7 @@
       "case_id": "HHG-019",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.07,
+      "latency_s": 0.06,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -3705,8 +3508,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.068,
-          "wall_seconds": 0.069
+          "tool_seconds": 0.058,
+          "wall_seconds": 0.058
         },
         "update_memory": {
           "llm_calls": 0,
@@ -3758,7 +3561,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.55,
+        "t_ms": 0.59,
         "kind": "open",
         "stage": "init",
         "trigger": "risk_score",
@@ -3767,7 +3570,7 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.6,
+        "t_ms": 0.63,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
@@ -3775,71 +3578,71 @@
         "ok": true
       },
       {
-        "t_ms": 0.81,
+        "t_ms": 0.84,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.74,
+        "ms": 1.35,
         "ok": true
       },
       {
-        "t_ms": 2.58,
+        "t_ms": 2.21,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 1.02,
+        "ms": 0.81,
         "ok": true
       },
       {
-        "t_ms": 3.62,
+        "t_ms": 3.03,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 1.83,
+        "ms": 1.58,
         "ok": true
       },
       {
-        "t_ms": 5.46,
+        "t_ms": 4.62,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.25,
+        "ms": 0.28,
         "ok": true
       },
       {
-        "t_ms": 5.73,
+        "t_ms": 4.92,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 52.95,
+        "ms": 45.24,
         "ok": true
       },
       {
-        "t_ms": 58.7,
+        "t_ms": 50.18,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 0.78,
+        "ms": 0.79,
         "ok": true
       },
       {
-        "t_ms": 59.51,
+        "t_ms": 50.99,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 8.17,
+        "ms": 6.83,
         "ok": true
       },
       {
-        "t_ms": 67.71,
+        "t_ms": 57.84,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 0.83,
+        "ms": 0.73,
         "ok": true
       },
       {
-        "t_ms": 68.57,
+        "t_ms": 58.6,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3847,7 +3650,7 @@
         "claim": "The flagged transaction is a online authorisation of $99.92 on 2016-12-01 17:28 under product code R, scored 0.90 by the bank's model."
       },
       {
-        "t_ms": 68.58,
+        "t_ms": 58.6,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -3855,7 +3658,7 @@
         "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3503878 ($99.92, online) at 0.90. Review and decide."
       },
       {
-        "t_ms": 68.58,
+        "t_ms": 58.61,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3863,7 +3666,7 @@
         "claim": "Against this card's own prior history of 219 transactions, $99.92 sits at the 40% percentile (mean $194.01, largest previously $1,586.94)."
       },
       {
-        "t_ms": 68.59,
+        "t_ms": 58.61,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3871,7 +3674,7 @@
         "claim": "The transaction ran on device profile `Windows | other | chrome 61.0 | 1280x720`, reported as New to this account. That profile appears on 5 card(s) book-wide."
       },
       {
-        "t_ms": 68.59,
+        "t_ms": 58.62,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3879,7 +3682,7 @@
         "claim": "4 prior charges of about $99.92 exist on this card but their spacing is irregular (intervals 8d, 73d, 25d), so this is a repeated amount rather than a recurring charge"
       },
       {
-        "t_ms": 68.6,
+        "t_ms": 58.63,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3887,7 +3690,7 @@
         "claim": "device profile `Windows | other | chrome 61.0 | 1280x720` links 3 cards across 3 customers within 2.0 days, and appears on only 5 cards book-wide."
       },
       {
-        "t_ms": 68.96,
+        "t_ms": 58.85,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3895,7 +3698,7 @@
         "claim": "This customer has 4 closed investigation(s) before this alert: 3 confirmed fraud, 1 cleared. Patterns previously found: card_not_present_fraud, out_of_region_use."
       },
       {
-        "t_ms": 69.11,
+        "t_ms": 58.97,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -3903,7 +3706,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5512, CC-5518, CC-5455. The nearest, CC-5512, was a $100.01 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 69.39,
+        "t_ms": 59.17,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -3916,7 +3719,7 @@
         "n_signals": 1
       },
       {
-        "t_ms": 69.4,
+        "t_ms": 59.18,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -3929,7 +3732,7 @@
         ]
       },
       {
-        "t_ms": 70.11,
+        "t_ms": 59.77,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -3952,7 +3755,7 @@
         ]
       },
       {
-        "t_ms": 70.16,
+        "t_ms": 59.81,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -3966,15 +3769,15 @@
         "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking."
       },
       {
-        "t_ms": 70.33,
+        "t_ms": 59.94,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.1,
+        "ms": 1.04,
         "ok": true
       },
       {
-        "t_ms": 71.46,
+        "t_ms": 61.0,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -3982,7 +3785,7 @@
         "ok": true
       },
       {
-        "t_ms": 71.46,
+        "t_ms": 61.0,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-019",
@@ -4048,16 +3851,10 @@
       ]
     },
     "pattern": {
-      "pattern": "undocumented",
-      "pattern_description": "Coordinated use of a single rare device profile across 17 cards belonging to different customers within a two-week window, with no shared billing region or product pattern. It fits none of the five documented typologies: the cards are not being tested, the activity is not confined to one cardholder's account, and the anomaly is the link between accounts rather than any single transaction.",
-      "rationale": "a rare device profile links 17 cards belonging to 17 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused",
+      "pattern": "card_not_present_new_device",
+      "pattern_description": "",
+      "rationale": "a card-not-present transaction on a device new to the account",
       "alternatives": [
-        {
-          "pattern": "card_not_present_new_device",
-          "score": 0.65,
-          "rationale": "a card-not-present transaction on a device new to the account",
-          "rejected": ""
-        },
         {
           "pattern": "card_not_present_fraud",
           "score": 0.4,
@@ -4081,6 +3878,12 @@
           "score": 0.0,
           "rationale": "the billing region is one the card already uses",
           "rejected": "the billing region is one the card already uses"
+        },
+        {
+          "pattern": "undocumented",
+          "score": 0.0,
+          "rationale": "the shared device profile sits on 27 cards book-wide - a common device model, which is shared use rather than a shared origin",
+          "rejected": "R9 attaches a regulatory filing to this pattern and 9 of 5,565 closed cases used it: the shared device profile sits on 27 cards book-wide - a common device model, which is shared use rather than a shared origin"
         }
       ]
     },
@@ -4094,11 +3897,11 @@
         "options": [
           {
             "request_type": "step_up_auth",
-            "expected_decision_change": 0.0361,
+            "expected_decision_change": 0.0723,
             "friction": 0.05,
-            "net_value": -0.0139,
+            "net_value": 0.0223,
             "selected": false,
-            "rationale": "step_up_auth: expected decision change 0.04 against friction 0.05, so not worth the friction of asking. if passed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.63, verdict uncertain)",
+            "rationale": "step_up_auth: expected decision change 0.07 against friction 0.05, so not worth the friction of asking. if passed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.63, verdict uncertain)",
             "posture_now": "MONITOR_CONNECTED_CARDS",
             "branches": [
               {
@@ -4112,14 +3915,13 @@
                   "VERIFY_WITH_CUSTOMER",
                   "MONITOR_CONNECTED_CARDS",
                   "CREATE_CASE",
-                  "FILE_REPORT",
-                  "ESCALATE_TO_ANALYST"
+                  "FILE_REPORT"
                 ]
               },
               {
                 "response": "passed",
                 "probability": 0.241,
-                "decision_change": 0.15,
+                "decision_change": 0.3,
                 "fraud_probability_after": 0.635,
                 "verdict_after": "uncertain",
                 "posture_after": "MONITOR_CONNECTED_CARDS",
@@ -4133,11 +3935,11 @@
           },
           {
             "request_type": "customer_validation",
-            "expected_decision_change": 0.0301,
+            "expected_decision_change": 0.0603,
             "friction": 0.12,
-            "net_value": -0.0898,
+            "net_value": -0.0597,
             "selected": false,
-            "rationale": "customer_validation: expected decision change 0.03 against friction 0.12, so not worth the friction of asking. if confirmed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.39, verdict uncertain)",
+            "rationale": "customer_validation: expected decision change 0.06 against friction 0.12, so not worth the friction of asking. if confirmed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.39, verdict uncertain)",
             "posture_now": "MONITOR_CONNECTED_CARDS",
             "branches": [
               {
@@ -4151,14 +3953,13 @@
                   "VERIFY_WITH_CUSTOMER",
                   "MONITOR_CONNECTED_CARDS",
                   "CREATE_CASE",
-                  "FILE_REPORT",
-                  "ESCALATE_TO_ANALYST"
+                  "FILE_REPORT"
                 ]
               },
               {
                 "response": "confirmed",
                 "probability": 0.201,
-                "decision_change": 0.15,
+                "decision_change": 0.3,
                 "fraud_probability_after": 0.39,
                 "verdict_after": "uncertain",
                 "posture_after": "MONITOR_CONNECTED_CARDS",
@@ -4179,25 +3980,24 @@
                   "VERIFY_WITH_CUSTOMER",
                   "MONITOR_CONNECTED_CARDS",
                   "CREATE_CASE",
-                  "FILE_REPORT",
-                  "ESCALATE_TO_ANALYST"
+                  "FILE_REPORT"
                 ]
               }
             ]
           },
           {
             "request_type": "analyst_info",
-            "expected_decision_change": 0.0375,
+            "expected_decision_change": 0.075,
             "friction": 0.2,
-            "net_value": -0.1625,
+            "net_value": -0.125,
             "selected": false,
-            "rationale": "analyst_info: expected decision change 0.04 against friction 0.20, so not worth the friction of asking. if confirms_known_relationship, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.56, verdict uncertain)",
+            "rationale": "analyst_info: expected decision change 0.07 against friction 0.20, so not worth the friction of asking. if confirms_known_relationship, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.56, verdict uncertain)",
             "posture_now": "MONITOR_CONNECTED_CARDS",
             "branches": [
               {
                 "response": "confirms_known_relationship",
                 "probability": 0.25,
-                "decision_change": 0.15,
+                "decision_change": 0.3,
                 "fraud_probability_after": 0.563,
                 "verdict_after": "uncertain",
                 "posture_after": "MONITOR_CONNECTED_CARDS",
@@ -4218,8 +4018,7 @@
                   "VERIFY_WITH_CUSTOMER",
                   "MONITOR_CONNECTED_CARDS",
                   "CREATE_CASE",
-                  "FILE_REPORT",
-                  "ESCALATE_TO_ANALYST"
+                  "FILE_REPORT"
                 ]
               }
             ]
@@ -4228,8 +4027,8 @@
       }
     ],
     "decisions": [
-      "Initial assessment: probability 0.89 on 2 independent signal(s) (amount_behaviour, shared_origin); pattern undocumented; recommendation VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST.",
-      "Final recommendation: VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST."
+      "Initial assessment: probability 0.89 on 2 independent signal(s) (amount_behaviour, shared_origin); pattern card_not_present_new_device; recommendation VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE, FILE_REPORT.",
+      "Final recommendation: VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE, FILE_REPORT."
     ],
     "trigger": {
       "type": "risk_score",
@@ -4246,7 +4045,7 @@
       "case_id": "HHG-010",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.07,
+      "latency_s": 0.06,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -4263,8 +4062,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.069,
-          "wall_seconds": 0.07
+          "tool_seconds": 0.06,
+          "wall_seconds": 0.06
         },
         "update_memory": {
           "llm_calls": 0,
@@ -4316,7 +4115,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.47,
+        "t_ms": 0.49,
         "kind": "open",
         "stage": "init",
         "trigger": "risk_score",
@@ -4325,11 +4124,11 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.5,
+        "t_ms": 0.52,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.18,
+        "ms": 0.16,
         "ok": true
       },
       {
@@ -4337,67 +4136,67 @@
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.6,
+        "ms": 1.58,
         "ok": true
       },
       {
-        "t_ms": 2.32,
+        "t_ms": 2.3,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 0.89,
+        "ms": 0.8,
         "ok": true
       },
       {
-        "t_ms": 3.23,
+        "t_ms": 3.12,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 1.44,
+        "ms": 1.24,
         "ok": true
       },
       {
-        "t_ms": 4.7,
+        "t_ms": 4.37,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.28,
+        "ms": 0.32,
         "ok": true
       },
       {
-        "t_ms": 5.0,
+        "t_ms": 4.71,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 55.03,
+        "ms": 47.52,
         "ok": true
       },
       {
-        "t_ms": 60.06,
+        "t_ms": 52.25,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 1.04,
+        "ms": 0.7,
         "ok": true
       },
       {
-        "t_ms": 61.12,
+        "t_ms": 52.97,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 7.59,
+        "ms": 6.05,
         "ok": true
       },
       {
-        "t_ms": 68.74,
+        "t_ms": 59.05,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 1.27,
+        "ms": 0.69,
         "ok": true
       },
       {
-        "t_ms": 70.06,
+        "t_ms": 59.76,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -4405,7 +4204,7 @@
         "claim": "The flagged transaction is a online authorisation of $1,000.03 on 2016-12-02 15:18 under product code R, scored 0.90 by the bank's model."
       },
       {
-        "t_ms": 70.07,
+        "t_ms": 59.77,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -4413,7 +4212,7 @@
         "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3506725 ($1,000.03, online) at 0.90. Review and decide."
       },
       {
-        "t_ms": 70.08,
+        "t_ms": 59.77,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -4421,7 +4220,7 @@
         "claim": "Against this card's own prior history of 33 transactions, $1,000.03 sits at the 100% percentile (mean $131.25, largest previously $670.04)."
       },
       {
-        "t_ms": 70.08,
+        "t_ms": 59.78,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -4429,7 +4228,7 @@
         "claim": "The transaction ran on device profile `Windows | Windows 10 | edge 16.0 | 1366x768`, reported as New to this account. That profile appears on 209 card(s) book-wide."
       },
       {
-        "t_ms": 70.09,
+        "t_ms": 59.78,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -4437,7 +4236,7 @@
         "claim": "Only 0 prior charge(s) on this card fall within $20.00 of $1,000.03, which is too few to establish a recurring pattern"
       },
       {
-        "t_ms": 70.11,
+        "t_ms": 59.79,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -4445,7 +4244,7 @@
         "claim": "device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900` links 17 cards across 17 customers within 12.6 days, and appears on only 27 cards book-wide."
       },
       {
-        "t_ms": 70.55,
+        "t_ms": 60.03,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -4453,7 +4252,7 @@
         "claim": "This customer has 1 closed investigation(s) before this alert: 0 confirmed fraud, 1 cleared. Patterns previously found: none."
       },
       {
-        "t_ms": 70.83,
+        "t_ms": 60.28,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -4461,13 +4260,13 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5147, CC-5311, CC-5048. The nearest, CC-5147, was a $999.91 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 71.08,
+        "t_ms": 60.51,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
         "p": 0.886,
         "verdict": "fraud",
-        "pattern": "undocumented",
+        "pattern": "card_not_present_new_device",
         "families": [
           "amount_behaviour",
           "shared_origin"
@@ -4475,7 +4274,7 @@
         "n_signals": 2
       },
       {
-        "t_ms": 71.09,
+        "t_ms": 60.51,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -4483,35 +4282,34 @@
           "VERIFY_WITH_CUSTOMER",
           "MONITOR_CONNECTED_CARDS",
           "CREATE_CASE",
-          "FILE_REPORT",
-          "ESCALATE_TO_ANALYST"
+          "FILE_REPORT"
         ]
       },
       {
-        "t_ms": 72.23,
+        "t_ms": 61.23,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
         "options": [
           {
             "request_type": "step_up_auth",
-            "net_value": -0.0139,
+            "net_value": 0.0223,
             "selected": false
           },
           {
             "request_type": "customer_validation",
-            "net_value": -0.0898,
+            "net_value": -0.0597,
             "selected": false
           },
           {
             "request_type": "analyst_info",
-            "net_value": -0.1625,
+            "net_value": -0.125,
             "selected": false
           }
         ]
       },
       {
-        "t_ms": 72.26,
+        "t_ms": 61.27,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -4519,21 +4317,20 @@
           "VERIFY_WITH_CUSTOMER",
           "MONITOR_CONNECTED_CARDS",
           "CREATE_CASE",
-          "FILE_REPORT",
-          "ESCALATE_TO_ANALYST"
+          "FILE_REPORT"
         ],
         "stop_reason": "Probability 0.89 is outside the 0.15-0.85 band on 2 independent pieces of evidence."
       },
       {
-        "t_ms": 72.47,
+        "t_ms": 61.46,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.26,
+        "ms": 0.97,
         "ok": true
       },
       {
-        "t_ms": 73.8,
+        "t_ms": 62.44,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -4541,7 +4338,7 @@
         "ok": true
       },
       {
-        "t_ms": 73.81,
+        "t_ms": 62.44,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-010",
@@ -4936,8 +4733,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.018,
-          "wall_seconds": 0.019
+          "tool_seconds": 0.013,
+          "wall_seconds": 0.013
         },
         "update_memory": {
           "llm_calls": 0,
@@ -4989,7 +4786,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.57,
+        "t_ms": 0.54,
         "kind": "open",
         "stage": "init",
         "trigger": "risk_score",
@@ -4998,79 +4795,79 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.6,
+        "t_ms": 0.58,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.17,
+        "ms": 0.18,
         "ok": true
       },
       {
-        "t_ms": 0.79,
+        "t_ms": 0.77,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.86,
+        "ms": 1.35,
         "ok": true
       },
       {
-        "t_ms": 2.67,
+        "t_ms": 2.14,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 1.23,
+        "ms": 0.71,
         "ok": true
       },
       {
-        "t_ms": 3.92,
+        "t_ms": 2.86,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 1.73,
+        "ms": 1.19,
         "ok": true
       },
       {
-        "t_ms": 5.68,
+        "t_ms": 4.06,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.35,
+        "ms": 0.25,
         "ok": true
       },
       {
-        "t_ms": 6.05,
+        "t_ms": 4.32,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 0.92,
+        "ms": 0.81,
         "ok": true
       },
       {
-        "t_ms": 6.99,
+        "t_ms": 5.15,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 0.77,
+        "ms": 0.69,
         "ok": true
       },
       {
-        "t_ms": 7.8,
+        "t_ms": 5.86,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 9.89,
+        "ms": 6.65,
         "ok": true
       },
       {
-        "t_ms": 17.73,
+        "t_ms": 12.54,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 1.27,
+        "ms": 0.82,
         "ok": true
       },
       {
-        "t_ms": 19.04,
+        "t_ms": 13.38,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5078,7 +4875,7 @@
         "claim": "The flagged transaction is a online authorisation of $125.08 on 2016-12-03 06:04 under product code R, scored 0.52 by the bank's model."
       },
       {
-        "t_ms": 19.05,
+        "t_ms": 13.39,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -5086,7 +4883,7 @@
         "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3509359 ($125.08, online) at 0.52. Review and decide."
       },
       {
-        "t_ms": 19.06,
+        "t_ms": 13.4,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5094,7 +4891,7 @@
         "claim": "Against this card's own prior history of 82 transactions, $125.08 sits at the 59% percentile (mean $218.79, largest previously $1,960.95)."
       },
       {
-        "t_ms": 19.06,
+        "t_ms": 13.4,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5102,7 +4899,7 @@
         "claim": "The transaction ran on device profile `Trident/7.0 | Windows 10 | ie 11.0 for desktop | 1920x1080`, reported as New to this account. That profile appears on 254 card(s) book-wide."
       },
       {
-        "t_ms": 19.07,
+        "t_ms": 13.4,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5110,7 +4907,7 @@
         "claim": "Only 0 prior charge(s) on this card fall within $2.50 of $125.08, which is too few to establish a recurring pattern"
       },
       {
-        "t_ms": 19.41,
+        "t_ms": 13.62,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5118,7 +4915,7 @@
         "claim": "This customer has 2 closed investigation(s) before this alert: 2 confirmed fraud, 0 cleared. Patterns previously found: account_takeover."
       },
       {
-        "t_ms": 19.6,
+        "t_ms": 13.75,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5126,7 +4923,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5551, CC-5526, CC-5499. The nearest, CC-5551, was a $127.16 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 19.96,
+        "t_ms": 13.95,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -5139,7 +4936,7 @@
         "n_signals": 1
       },
       {
-        "t_ms": 19.97,
+        "t_ms": 13.96,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -5150,7 +4947,7 @@
         ]
       },
       {
-        "t_ms": 20.77,
+        "t_ms": 14.49,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -5173,14 +4970,14 @@
         ]
       },
       {
-        "t_ms": 20.8,
+        "t_ms": 14.51,
         "kind": "request",
         "stage": "gather_more_evidence",
         "type": "step_up_auth",
         "response": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.57 under the response model in src/agent/voi.py), given a fraud probability of 0.17 before the request. Had the answer been the step-up challenge is not completed (p=0.43), the recommendation would have moved to VERIFY_WITH_CUSTOMER with a fraud probability of 0.87."
       },
       {
-        "t_ms": 20.81,
+        "t_ms": 14.52,
         "kind": "evidence",
         "stage": "gather_more_evidence",
         "source": "customer",
@@ -5188,7 +4985,7 @@
         "claim": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.57 under the response model in src/agent/voi.py), given a fraud probability of 0.17 before the request."
       },
       {
-        "t_ms": 20.87,
+        "t_ms": 14.57,
         "kind": "assessment",
         "stage": "gather_more_evidence",
         "label": "after step_up_auth",
@@ -5202,7 +4999,7 @@
         "n_signals": 2
       },
       {
-        "t_ms": 21.37,
+        "t_ms": 14.91,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 2,
@@ -5225,7 +5022,7 @@
         ]
       },
       {
-        "t_ms": 21.41,
+        "t_ms": 14.94,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -5237,15 +5034,15 @@
         "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking."
       },
       {
-        "t_ms": 21.5,
+        "t_ms": 15.01,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.11,
+        "ms": 1.02,
         "ok": true
       },
       {
-        "t_ms": 22.63,
+        "t_ms": 16.04,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -5253,7 +5050,7 @@
         "ok": true
       },
       {
-        "t_ms": 22.63,
+        "t_ms": 16.05,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-020",
@@ -5634,8 +5431,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.015,
-          "wall_seconds": 0.017
+          "tool_seconds": 0.014,
+          "wall_seconds": 0.014
         },
         "update_memory": {
           "llm_calls": 0,
@@ -5686,7 +5483,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.87,
+        "t_ms": 0.63,
         "kind": "open",
         "stage": "init",
         "trigger": "risk_score",
@@ -5695,71 +5492,71 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.92,
+        "t_ms": 0.67,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.34,
+        "ms": 0.19,
         "ok": true
       },
       {
-        "t_ms": 1.29,
+        "t_ms": 0.87,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 2.19,
+        "ms": 1.56,
         "ok": true
       },
       {
-        "t_ms": 3.5,
+        "t_ms": 2.45,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 1.06,
+        "ms": 0.82,
         "ok": true
       },
       {
-        "t_ms": 4.59,
+        "t_ms": 3.28,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 2.32,
+        "ms": 1.73,
         "ok": true
       },
       {
-        "t_ms": 6.95,
+        "t_ms": 5.03,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.43,
+        "ms": 0.32,
         "ok": true
       },
       {
-        "t_ms": 7.41,
+        "t_ms": 5.36,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 1.25,
+        "ms": 0.92,
         "ok": true
       },
       {
-        "t_ms": 8.68,
+        "t_ms": 6.3,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 0.87,
+        "ms": 1.14,
         "ok": true
       },
       {
-        "t_ms": 9.58,
+        "t_ms": 7.48,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 7.71,
+        "ms": 6.63,
         "ok": true
       },
       {
-        "t_ms": 17.32,
+        "t_ms": 14.15,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5767,7 +5564,7 @@
         "claim": "The flagged transaction is a in-person authorisation of $77.07 on 2016-12-04 19:55 under product code W, scored 0.61 by the bank's model."
       },
       {
-        "t_ms": 17.33,
+        "t_ms": 14.16,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -5775,7 +5572,7 @@
         "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3514030 ($77.07, in billing region 444.0) at 0.61. Review and decide."
       },
       {
-        "t_ms": 17.33,
+        "t_ms": 14.16,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5783,7 +5580,7 @@
         "claim": "Against this card's own prior history of 358 transactions, $77.07 sits at the 46% percentile (mean $117.02, largest previously $845.01)."
       },
       {
-        "t_ms": 17.34,
+        "t_ms": 14.17,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5791,7 +5588,7 @@
         "claim": "0 prior authorisation(s) on this card in the preceding hour and 3 in the preceding 24 hours."
       },
       {
-        "t_ms": 17.34,
+        "t_ms": 14.17,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5799,7 +5596,7 @@
         "claim": "The transaction is card present, so no device or connection record exists - true of every in-person transaction in the book, and not a signal."
       },
       {
-        "t_ms": 17.34,
+        "t_ms": 14.17,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5807,7 +5604,7 @@
         "claim": "10 prior charges of about $77.07 exist on this card but their spacing is irregular (intervals 4d, 20d, 13d, 10d, 24d, 16d, 1d, 2d, 4d), so this is a repeated amount rather than a recurring charge"
       },
       {
-        "t_ms": 17.61,
+        "t_ms": 14.48,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5815,7 +5612,7 @@
         "claim": "This customer has 4 closed investigation(s) before this alert: 4 confirmed fraud, 0 cleared. Patterns previously found: card_not_present_new_device, out_of_region_use."
       },
       {
-        "t_ms": 17.75,
+        "t_ms": 14.63,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -5823,7 +5620,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5483, CC-5220, CC-5279. The nearest, CC-5483, was a $76.97 in_person case closed as confirmed_fraud with pattern out_of_region_use."
       },
       {
-        "t_ms": 17.94,
+        "t_ms": 14.85,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -5836,7 +5633,7 @@
         "n_signals": 1
       },
       {
-        "t_ms": 17.94,
+        "t_ms": 14.85,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -5846,7 +5643,7 @@
         ]
       },
       {
-        "t_ms": 18.51,
+        "t_ms": 15.39,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -5869,14 +5666,14 @@
         ]
       },
       {
-        "t_ms": 18.52,
+        "t_ms": 15.41,
         "kind": "request",
         "stage": "gather_more_evidence",
         "type": "step_up_auth",
         "response": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.81 under the response model in src/agent/voi.py), given a fraud probability of 0.05 before the request. Had the answer been the step-up challenge is not completed (p=0.19), the recommendation would have moved to VERIFY_WITH_CUSTOMER with a fraud probability of 0.79."
       },
       {
-        "t_ms": 18.53,
+        "t_ms": 15.42,
         "kind": "evidence",
         "stage": "gather_more_evidence",
         "source": "customer",
@@ -5884,7 +5681,7 @@
         "claim": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.81 under the response model in src/agent/voi.py), given a fraud probability of 0.05 before the request."
       },
       {
-        "t_ms": 18.58,
+        "t_ms": 15.47,
         "kind": "assessment",
         "stage": "gather_more_evidence",
         "label": "after step_up_auth",
@@ -5898,7 +5695,7 @@
         "n_signals": 2
       },
       {
-        "t_ms": 18.94,
+        "t_ms": 15.91,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 2,
@@ -5921,7 +5718,7 @@
         ]
       },
       {
-        "t_ms": 18.96,
+        "t_ms": 15.93,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -5932,15 +5729,15 @@
         "stop_reason": "Probability 0.05 is outside the 0.15-0.85 band on 2 independent pieces of evidence."
       },
       {
-        "t_ms": 19.03,
+        "t_ms": 16.0,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.21,
+        "ms": 1.0,
         "ok": true
       },
       {
-        "t_ms": 20.26,
+        "t_ms": 17.03,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -5948,7 +5745,7 @@
         "ok": true
       },
       {
-        "t_ms": 20.27,
+        "t_ms": 17.03,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-001",
@@ -6212,8 +6009,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 2,
-          "tool_seconds": 0.002,
-          "wall_seconds": 0.002
+          "tool_seconds": 0.001,
+          "wall_seconds": 0.001
         },
         "assess": {
           "llm_calls": 0,
@@ -6256,7 +6053,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.58,
+        "t_ms": 0.4,
         "kind": "open",
         "stage": "init",
         "trigger": "risk_score",
@@ -6265,71 +6062,71 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.61,
+        "t_ms": 0.42,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.18,
+        "ms": 0.15,
         "ok": true
       },
       {
-        "t_ms": 0.8,
+        "t_ms": 0.58,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.81,
+        "ms": 2.23,
         "ok": true
       },
       {
-        "t_ms": 2.63,
+        "t_ms": 2.83,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 1.33,
+        "ms": 1.31,
         "ok": true
       },
       {
-        "t_ms": 3.99,
+        "t_ms": 4.15,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 2.75,
+        "ms": 1.93,
         "ok": true
       },
       {
-        "t_ms": 6.77,
+        "t_ms": 6.09,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.48,
+        "ms": 0.23,
         "ok": true
       },
       {
-        "t_ms": 7.27,
+        "t_ms": 6.34,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 1.13,
+        "ms": 0.81,
         "ok": true
       },
       {
-        "t_ms": 8.42,
+        "t_ms": 7.16,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 0.85,
+        "ms": 0.68,
         "ok": true
       },
       {
-        "t_ms": 9.3,
+        "t_ms": 7.86,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 6.71,
+        "ms": 7.8,
         "ok": true
       },
       {
-        "t_ms": 16.04,
+        "t_ms": 15.71,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6337,7 +6134,7 @@
         "claim": "The flagged transaction is a in-person authorisation of $111.92 on 2016-12-05 00:46 under product code W, scored 0.87 by the bank's model."
       },
       {
-        "t_ms": 16.05,
+        "t_ms": 15.72,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -6345,7 +6142,7 @@
         "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3514948 ($111.92, in billing region 264.0) at 0.87. Review and decide."
       },
       {
-        "t_ms": 16.06,
+        "t_ms": 15.72,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6353,7 +6150,7 @@
         "claim": "Against this card's own prior history of 2,431 transactions, $111.92 sits at the 71% percentile (mean $124.74, largest previously $2,529.78)."
       },
       {
-        "t_ms": 16.06,
+        "t_ms": 15.72,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6361,7 +6158,7 @@
         "claim": "0 prior authorisation(s) on this card in the preceding hour and 16 in the preceding 24 hours."
       },
       {
-        "t_ms": 16.06,
+        "t_ms": 15.73,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6369,7 +6166,7 @@
         "claim": "The transaction is card present, so no device or connection record exists - true of every in-person transaction in the book, and not a signal."
       },
       {
-        "t_ms": 16.06,
+        "t_ms": 15.73,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6377,7 +6174,7 @@
         "claim": "6 prior charges of about $111.92 exist on this card but their spacing is irregular (intervals 53d, 16d, 42d, 9d, 32d), so this is a repeated amount rather than a recurring charge"
       },
       {
-        "t_ms": 16.32,
+        "t_ms": 16.05,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6385,7 +6182,7 @@
         "claim": "This customer has 19 closed investigation(s) before this alert: 18 confirmed fraud, 1 cleared. Patterns previously found: account_takeover, out_of_region_use."
       },
       {
-        "t_ms": 16.46,
+        "t_ms": 16.26,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6393,7 +6190,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5360, CC-5507, CC-5522. The nearest, CC-5360, was a $113.92 in_person case closed as confirmed_fraud with pattern out_of_region_use."
       },
       {
-        "t_ms": 16.68,
+        "t_ms": 16.48,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -6404,7 +6201,7 @@
         "n_signals": 0
       },
       {
-        "t_ms": 16.68,
+        "t_ms": 16.49,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -6415,7 +6212,7 @@
         ]
       },
       {
-        "t_ms": 17.34,
+        "t_ms": 17.09,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -6438,7 +6235,7 @@
         ]
       },
       {
-        "t_ms": 17.38,
+        "t_ms": 17.15,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -6450,15 +6247,15 @@
         "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking."
       },
       {
-        "t_ms": 17.51,
+        "t_ms": 17.27,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.59,
+        "ms": 0.94,
         "ok": true
       },
       {
-        "t_ms": 19.13,
+        "t_ms": 18.23,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -6466,7 +6263,7 @@
         "ok": true
       },
       {
-        "t_ms": 19.13,
+        "t_ms": 18.24,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-007",
@@ -6745,8 +6542,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.016,
-          "wall_seconds": 0.018
+          "tool_seconds": 0.014,
+          "wall_seconds": 0.015
         },
         "update_memory": {
           "llm_calls": 0,
@@ -6766,7 +6563,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.001
+          "wall_seconds": 0.0
         },
         "take_action": {
           "llm_calls": 0,
@@ -6798,7 +6595,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.62,
+        "t_ms": 0.41,
         "kind": "open",
         "stage": "init",
         "trigger": "risk_score",
@@ -6807,79 +6604,79 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.7,
+        "t_ms": 0.43,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.39,
+        "ms": 0.14,
         "ok": true
       },
       {
-        "t_ms": 1.11,
+        "t_ms": 0.59,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.64,
+        "ms": 1.32,
         "ok": true
       },
       {
-        "t_ms": 2.78,
+        "t_ms": 1.92,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 0.86,
+        "ms": 0.88,
         "ok": true
       },
       {
-        "t_ms": 3.69,
+        "t_ms": 2.82,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 2.4,
+        "ms": 1.67,
         "ok": true
       },
       {
-        "t_ms": 6.12,
+        "t_ms": 4.51,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.38,
+        "ms": 0.21,
         "ok": true
       },
       {
-        "t_ms": 6.52,
+        "t_ms": 4.74,
         "kind": "query",
         "name": "graph.ring_signals",
-        "stage": "investigate",
-        "ms": 1.3,
-        "ok": true
-      },
-      {
-        "t_ms": 7.84,
-        "kind": "query",
-        "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
         "ms": 0.91,
         "ok": true
       },
       {
-        "t_ms": 8.78,
+        "t_ms": 5.66,
+        "kind": "query",
+        "name": "graph.prior_cases_for_customer",
+        "stage": "investigate",
+        "ms": 0.83,
+        "ok": true
+      },
+      {
+        "t_ms": 6.52,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 7.79,
+        "ms": 7.41,
         "ok": true
       },
       {
-        "t_ms": 16.61,
+        "t_ms": 13.95,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 1.13,
+        "ms": 0.75,
         "ok": true
       },
       {
-        "t_ms": 17.77,
+        "t_ms": 14.72,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6887,7 +6684,7 @@
         "claim": "The flagged transaction is a online authorisation of $100.07 on 2016-12-07 21:38 under product code R, scored 0.54 by the bank's model."
       },
       {
-        "t_ms": 17.77,
+        "t_ms": 14.73,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -6895,7 +6692,7 @@
         "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3523199 ($100.07, online) at 0.54. Review and decide."
       },
       {
-        "t_ms": 17.78,
+        "t_ms": 14.73,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6903,7 +6700,7 @@
         "claim": "Against this card's own prior history of 90 transactions, $100.07 sits at the 23% percentile (mean $177.52, largest previously $1,104.08)."
       },
       {
-        "t_ms": 17.78,
+        "t_ms": 14.74,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6911,7 +6708,7 @@
         "claim": "The transaction ran on device profile `iOS Device | iOS 9.3.5 | mobile safari 9.0 | 1024x768`, reported as New to this account. That profile appears on 112 card(s) book-wide."
       },
       {
-        "t_ms": 17.79,
+        "t_ms": 14.74,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6919,7 +6716,7 @@
         "claim": "Only 1 prior charge(s) on this card fall within $2.00 of $100.07, which is too few to establish a recurring pattern"
       },
       {
-        "t_ms": 18.15,
+        "t_ms": 14.96,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6927,7 +6724,7 @@
         "claim": "This customer has 3 closed investigation(s) before this alert: 3 confirmed fraud, 0 cleared. Patterns previously found: account_takeover."
       },
       {
-        "t_ms": 18.33,
+        "t_ms": 15.1,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -6935,7 +6732,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5512, CC-5518, CC-5455. The nearest, CC-5512, was a $100.01 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 18.56,
+        "t_ms": 15.28,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -6949,7 +6746,7 @@
         "n_signals": 2
       },
       {
-        "t_ms": 18.57,
+        "t_ms": 15.28,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -6958,7 +6755,7 @@
         ]
       },
       {
-        "t_ms": 19.24,
+        "t_ms": 15.79,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -6981,7 +6778,7 @@
         ]
       },
       {
-        "t_ms": 19.27,
+        "t_ms": 15.81,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -6991,15 +6788,15 @@
         "stop_reason": "Probability 0.07 is outside the 0.15-0.85 band on 2 independent pieces of evidence."
       },
       {
-        "t_ms": 19.37,
+        "t_ms": 15.94,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.2,
+        "ms": 1.12,
         "ok": true
       },
       {
-        "t_ms": 20.6,
+        "t_ms": 17.08,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -7007,7 +6804,7 @@
         "ok": true
       },
       {
-        "t_ms": 20.6,
+        "t_ms": 17.09,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-005",
@@ -7377,7 +7174,7 @@
       "case_id": "HHG-013",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.07,
+      "latency_s": 0.06,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -7395,8 +7192,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.064,
-          "wall_seconds": 0.065
+          "tool_seconds": 0.059,
+          "wall_seconds": 0.059
         },
         "update_memory": {
           "llm_calls": 0,
@@ -7448,7 +7245,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.48,
+        "t_ms": 0.53,
         "kind": "open",
         "stage": "init",
         "trigger": "risk_score",
@@ -7457,7 +7254,7 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.51,
+        "t_ms": 0.56,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
@@ -7465,71 +7262,71 @@
         "ok": true
       },
       {
-        "t_ms": 0.68,
+        "t_ms": 0.72,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.92,
+        "ms": 1.65,
         "ok": true
       },
       {
-        "t_ms": 2.62,
+        "t_ms": 2.38,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 1.51,
+        "ms": 0.99,
         "ok": true
       },
       {
-        "t_ms": 4.16,
+        "t_ms": 3.39,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 1.68,
+        "ms": 1.73,
         "ok": true
       },
       {
-        "t_ms": 5.86,
+        "t_ms": 5.15,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.22,
+        "ms": 0.37,
         "ok": true
       },
       {
-        "t_ms": 6.1,
+        "t_ms": 5.54,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 48.29,
+        "ms": 44.58,
         "ok": true
       },
       {
-        "t_ms": 54.42,
+        "t_ms": 50.16,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 1.12,
+        "ms": 1.06,
         "ok": true
       },
       {
-        "t_ms": 55.62,
+        "t_ms": 51.26,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 8.22,
+        "ms": 6.78,
         "ok": true
       },
       {
-        "t_ms": 63.86,
+        "t_ms": 58.06,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 0.9,
+        "ms": 0.68,
         "ok": true
       },
       {
-        "t_ms": 64.8,
+        "t_ms": 58.78,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -7537,7 +7334,7 @@
         "claim": "The flagged transaction is a online authorisation of $35.66 on 2016-12-09 02:39 under product code C, scored 0.76 by the bank's model."
       },
       {
-        "t_ms": 64.81,
+        "t_ms": 58.78,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -7545,7 +7342,7 @@
         "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3526826 ($35.66, online) at 0.76. Review and decide."
       },
       {
-        "t_ms": 64.82,
+        "t_ms": 58.79,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -7553,7 +7350,7 @@
         "claim": "Against this card's own prior history of 1,431 transactions, $35.66 sits at the 15% percentile (mean $114.31, largest previously $3,891.01)."
       },
       {
-        "t_ms": 64.82,
+        "t_ms": 58.79,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -7561,7 +7358,7 @@
         "claim": "1 prior authorisation(s) on this card in the preceding hour and 17 in the preceding 24 hours."
       },
       {
-        "t_ms": 64.83,
+        "t_ms": 58.79,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -7569,7 +7366,7 @@
         "claim": "The transaction ran on device profile `Windows | ? | chrome 66.0 | ?`, reported as New to this account. That profile appears on 266 card(s) book-wide."
       },
       {
-        "t_ms": 64.83,
+        "t_ms": 58.8,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -7577,7 +7374,7 @@
         "claim": "Only 1 prior charge(s) on this card fall within $0.71 of $35.66, which is too few to establish a recurring pattern"
       },
       {
-        "t_ms": 65.15,
+        "t_ms": 59.01,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -7585,7 +7382,7 @@
         "claim": "This customer has 4 closed investigation(s) before this alert: 3 confirmed fraud, 1 cleared. Patterns previously found: account_takeover, card_not_present_new_device."
       },
       {
-        "t_ms": 65.34,
+        "t_ms": 59.13,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -7593,7 +7390,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5451, CC-5378, CC-5106. The nearest, CC-5451, was a $34.70 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 65.62,
+        "t_ms": 59.3,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -7606,7 +7403,7 @@
         "n_signals": 1
       },
       {
-        "t_ms": 65.62,
+        "t_ms": 59.3,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -7616,7 +7413,7 @@
         ]
       },
       {
-        "t_ms": 66.27,
+        "t_ms": 59.91,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -7639,14 +7436,14 @@
         ]
       },
       {
-        "t_ms": 66.29,
+        "t_ms": 59.96,
         "kind": "request",
         "stage": "gather_more_evidence",
         "type": "step_up_auth",
         "response": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.79 under the response model in src/agent/voi.py), given a fraud probability of 0.05 before the request. Had the answer been the step-up challenge is not completed (p=0.21), the recommendation would have moved to ESCALATE_TO_ANALYST with a fraud probability of 0.64."
       },
       {
-        "t_ms": 66.29,
+        "t_ms": 59.97,
         "kind": "evidence",
         "stage": "gather_more_evidence",
         "source": "customer",
@@ -7654,7 +7451,7 @@
         "claim": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.79 under the response model in src/agent/voi.py), given a fraud probability of 0.05 before the request."
       },
       {
-        "t_ms": 66.35,
+        "t_ms": 60.04,
         "kind": "assessment",
         "stage": "gather_more_evidence",
         "label": "after step_up_auth",
@@ -7668,7 +7465,7 @@
         "n_signals": 2
       },
       {
-        "t_ms": 66.89,
+        "t_ms": 60.47,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 2,
@@ -7691,7 +7488,7 @@
         ]
       },
       {
-        "t_ms": 66.93,
+        "t_ms": 60.5,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -7702,15 +7499,15 @@
         "stop_reason": "Probability 0.05 is outside the 0.15-0.85 band on 2 independent pieces of evidence."
       },
       {
-        "t_ms": 67.05,
+        "t_ms": 60.58,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.1,
+        "ms": 0.97,
         "ok": true
       },
       {
-        "t_ms": 68.17,
+        "t_ms": 61.57,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -7718,7 +7515,7 @@
         "ok": true
       },
       {
-        "t_ms": 68.17,
+        "t_ms": 61.58,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-013",
@@ -7941,7 +7738,7 @@
       "case_id": "HHG-003",
       "tool_calls": 10,
       "tokens": 0,
-      "latency_s": 0.08,
+      "latency_s": 0.06,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -7958,8 +7755,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.072,
-          "wall_seconds": 0.074
+          "tool_seconds": 0.057,
+          "wall_seconds": 0.059
         },
         "update_memory": {
           "llm_calls": 0,
@@ -7979,7 +7776,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.001
+          "wall_seconds": 0.0
         },
         "take_action": {
           "llm_calls": 0,
@@ -8010,7 +7807,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.53,
+        "t_ms": 0.65,
         "kind": "open",
         "stage": "init",
         "trigger": "customer_report",
@@ -8019,71 +7816,71 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.56,
+        "t_ms": 0.68,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.22,
+        "ms": 0.18,
         "ok": true
       },
       {
-        "t_ms": 0.8,
+        "t_ms": 0.87,
         "kind": "query",
         "name": "graph.get_customer",
-        "stage": "investigate",
-        "ms": 2.57,
-        "ok": true
-      },
-      {
-        "t_ms": 3.4,
-        "kind": "query",
-        "name": "graph.card_baseline",
         "stage": "investigate",
         "ms": 1.48,
         "ok": true
       },
       {
-        "t_ms": 4.9,
+        "t_ms": 2.37,
+        "kind": "query",
+        "name": "graph.card_baseline",
+        "stage": "investigate",
+        "ms": 1.5,
+        "ok": true
+      },
+      {
+        "t_ms": 3.88,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 3.06,
+        "ms": 2.71,
         "ok": true
       },
       {
-        "t_ms": 7.97,
+        "t_ms": 6.61,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.3,
+        "ms": 0.28,
         "ok": true
       },
       {
-        "t_ms": 8.29,
+        "t_ms": 6.91,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 54.98,
+        "ms": 44.09,
         "ok": true
       },
       {
-        "t_ms": 63.31,
+        "t_ms": 51.02,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 1.32,
+        "ms": 0.78,
         "ok": true
       },
       {
-        "t_ms": 64.67,
+        "t_ms": 51.83,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 8.53,
+        "ms": 7.49,
         "ok": true
       },
       {
-        "t_ms": 73.25,
+        "t_ms": 59.42,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8091,7 +7888,7 @@
         "claim": "The flagged transaction is a in-person authorisation of $49.00 on 2016-12-10 13:01 under product code W, scored 0.40 by the bank's model."
       },
       {
-        "t_ms": 73.26,
+        "t_ms": 59.43,
         "kind": "evidence",
         "stage": "investigate",
         "source": "customer",
@@ -8099,7 +7896,7 @@
         "claim": "The cardholder reported this transaction as unrecognised: Customer C08623 message: 'I never made this $49.00 purchase. Please check my card.' Refers to 3530164."
       },
       {
-        "t_ms": 73.27,
+        "t_ms": 59.45,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8107,7 +7904,7 @@
         "claim": "Against this card's own prior history of 980 transactions, $49.00 sits at the 28% percentile (mean $128.84, largest previously $2,680.95)."
       },
       {
-        "t_ms": 73.27,
+        "t_ms": 59.45,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8115,7 +7912,7 @@
         "claim": "1 prior authorisation(s) on this card in the preceding hour and 7 in the preceding 24 hours."
       },
       {
-        "t_ms": 73.28,
+        "t_ms": 59.46,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8123,7 +7920,7 @@
         "claim": "The transaction is card present, so no device or connection record exists - true of every in-person transaction in the book, and not a signal."
       },
       {
-        "t_ms": 73.28,
+        "t_ms": 59.47,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8131,7 +7928,7 @@
         "claim": "60 prior charges of about $49.00 exist on this card but their spacing is irregular (intervals 3d, 2d, 0d, 3d, 0d, 4d, 1d, 4d, 2d, 2d, 4d, 2d, 0d, 0d, 0d, 11d, 1d, 1d, 0d, 0d, 1d, 3d, 2d, 0d, 11d, 1d, 2d, 2d, 4d, 8d, 0d, 4d, 2d, 3d, 0d, 6d, 2d, 1d, 5d, 2d, 0d, 1d, 2d, 5d, 3d, 1d, 2d, 1d, 2d, 1d, 11d, 3d, 1d, 9d, 4d, 0d, 0d, 3d, 1d), so this is a repeated amount rather than a recurring charge"
       },
       {
-        "t_ms": 73.74,
+        "t_ms": 59.78,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8139,7 +7936,7 @@
         "claim": "This customer has 6 closed investigation(s) before this alert: 5 confirmed fraud, 1 cleared. Patterns previously found: account_takeover, out_of_region_use."
       },
       {
-        "t_ms": 74.0,
+        "t_ms": 60.01,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8147,7 +7944,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5488, CC-5427, CC-5260. The nearest, CC-5488, was a $48.94 in_person case closed as confirmed_fraud with pattern out_of_region_use."
       },
       {
-        "t_ms": 74.32,
+        "t_ms": 60.23,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -8161,7 +7958,7 @@
         "n_signals": 2
       },
       {
-        "t_ms": 74.33,
+        "t_ms": 60.23,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -8172,7 +7969,7 @@
         ]
       },
       {
-        "t_ms": 75.0,
+        "t_ms": 60.72,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -8195,7 +7992,7 @@
         ]
       },
       {
-        "t_ms": 75.06,
+        "t_ms": 60.77,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -8207,15 +8004,15 @@
         "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking."
       },
       {
-        "t_ms": 75.25,
+        "t_ms": 60.92,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.27,
+        "ms": 1.17,
         "ok": true
       },
       {
-        "t_ms": 76.54,
+        "t_ms": 62.11,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -8223,7 +8020,7 @@
         "ok": true
       },
       {
-        "t_ms": 76.54,
+        "t_ms": 62.11,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-003",
@@ -8452,8 +8249,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.016,
-          "wall_seconds": 0.016
+          "tool_seconds": 0.013,
+          "wall_seconds": 0.014
         },
         "update_memory": {
           "llm_calls": 0,
@@ -8505,7 +8302,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.64,
+        "t_ms": 0.47,
         "kind": "open",
         "stage": "init",
         "trigger": "customer_report",
@@ -8514,79 +8311,79 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.68,
+        "t_ms": 0.5,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.23,
+        "ms": 0.16,
         "ok": true
       },
       {
-        "t_ms": 0.93,
+        "t_ms": 0.67,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.68,
+        "ms": 1.5,
         "ok": true
       },
       {
-        "t_ms": 2.63,
+        "t_ms": 2.18,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 0.92,
+        "ms": 0.89,
         "ok": true
       },
       {
-        "t_ms": 3.57,
+        "t_ms": 3.09,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 1.64,
+        "ms": 1.95,
         "ok": true
       },
       {
-        "t_ms": 5.23,
+        "t_ms": 5.06,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.24,
+        "ms": 0.25,
         "ok": true
       },
       {
-        "t_ms": 5.48,
+        "t_ms": 5.33,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 0.7,
+        "ms": 0.72,
         "ok": true
       },
       {
-        "t_ms": 6.19,
+        "t_ms": 6.06,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 0.87,
+        "ms": 0.67,
         "ok": true
       },
       {
-        "t_ms": 7.08,
+        "t_ms": 6.76,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 7.62,
+        "ms": 6.36,
         "ok": true
       },
       {
-        "t_ms": 14.73,
+        "t_ms": 13.14,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 0.97,
+        "ms": 0.74,
         "ok": true
       },
       {
-        "t_ms": 15.73,
+        "t_ms": 13.92,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8594,7 +8391,7 @@
         "claim": "The flagged transaction is a online authorisation of $59.67 on 2016-12-11 22:39 under product code C, scored 0.37 by the bank's model."
       },
       {
-        "t_ms": 15.73,
+        "t_ms": 13.92,
         "kind": "evidence",
         "stage": "investigate",
         "source": "customer",
@@ -8602,7 +8399,7 @@
         "claim": "The cardholder reported this transaction as unrecognised: Customer C09988 message: 'I never made this $59.67 purchase. Please check my card.' Refers to 3534820."
       },
       {
-        "t_ms": 15.74,
+        "t_ms": 13.93,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8610,7 +8407,7 @@
         "claim": "Against this card's own prior history of 48 transactions, $59.67 sits at the 75% percentile (mean $39.80, largest previously $94.70)."
       },
       {
-        "t_ms": 15.74,
+        "t_ms": 13.93,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8618,7 +8415,7 @@
         "claim": "The transaction ran on device profile `Windows | ? | edge 16.0 | ?`, reported as New to this account. That profile appears on 163 card(s) book-wide."
       },
       {
-        "t_ms": 15.75,
+        "t_ms": 13.93,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8626,7 +8423,7 @@
         "claim": "2 prior charges of about $59.67 recur every 0.0 days, which matches no standard billing cadence"
       },
       {
-        "t_ms": 15.75,
+        "t_ms": 13.94,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8634,7 +8431,7 @@
         "claim": "This customer has no closed investigations before this alert."
       },
       {
-        "t_ms": 16.16,
+        "t_ms": 14.07,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -8642,7 +8439,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5528, CC-5513, CC-5277. The nearest, CC-5528, was a $60.08 online case closed as confirmed_fraud with pattern card_not_present_new_device."
       },
       {
-        "t_ms": 16.61,
+        "t_ms": 14.26,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -8655,7 +8452,7 @@
         "n_signals": 1
       },
       {
-        "t_ms": 16.62,
+        "t_ms": 14.26,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -8667,7 +8464,7 @@
         ]
       },
       {
-        "t_ms": 17.04,
+        "t_ms": 14.63,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -8690,7 +8487,7 @@
         ]
       },
       {
-        "t_ms": 17.08,
+        "t_ms": 14.67,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -8703,15 +8500,15 @@
         "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking."
       },
       {
-        "t_ms": 17.22,
+        "t_ms": 14.77,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 0.87,
+        "ms": 0.84,
         "ok": true
       },
       {
-        "t_ms": 18.1,
+        "t_ms": 15.62,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -8719,7 +8516,7 @@
         "ok": true
       },
       {
-        "t_ms": 18.11,
+        "t_ms": 15.62,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-016",
@@ -8816,8 +8613,8 @@
         {
           "pattern": "undocumented",
           "score": 0.0,
-          "rationale": "the assessment is not confident enough (0.26)",
-          "rejected": "R9 attaches a regulatory filing to this pattern and 9 of 5,565 closed cases used it: the assessment is not confident enough (0.26)"
+          "rationale": "the shared device profile sits on 49 cards book-wide - a common device model, which is shared use rather than a shared origin; the assessment is not confident enough (0.26)",
+          "rejected": "R9 attaches a regulatory filing to this pattern and 9 of 5,565 closed cases used it: the shared device profile sits on 49 cards book-wide - a common device model, which is shared use rather than a shared origin; the assessment is not confident enough (0.26)"
         }
       ]
     },
@@ -8831,17 +8628,17 @@
         "options": [
           {
             "request_type": "step_up_auth",
-            "expected_decision_change": 0.0387,
+            "expected_decision_change": 0.0,
             "friction": 0.05,
-            "net_value": -0.0113,
+            "net_value": -0.05,
             "selected": false,
-            "rationale": "step_up_auth: expected decision change 0.04 against friction 0.05, so not worth the friction of asking. if failed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.72, verdict fraud)",
+            "rationale": "step_up_auth: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information",
             "posture_now": "MONITOR_CONNECTED_CARDS",
             "branches": [
               {
                 "response": "failed",
                 "probability": 0.258,
-                "decision_change": 0.15,
+                "decision_change": 0.0,
                 "fraud_probability_after": 0.721,
                 "verdict_after": "fraud",
                 "posture_after": "MONITOR_CONNECTED_CARDS",
@@ -8849,7 +8646,6 @@
                   "VERIFY_WITH_CUSTOMER",
                   "MONITOR_CONNECTED_CARDS",
                   "CREATE_CASE",
-                  "FILE_REPORT",
                   "ESCALATE_TO_ANALYST"
                 ]
               },
@@ -8963,7 +8759,7 @@
     ],
     "decisions": [
       "Initial assessment: probability 0.26 on 2 independent signal(s) (amount_behaviour, shared_origin); pattern account_takeover; recommendation MONITOR_CONNECTED_CARDS, CREATE_CASE, ESCALATE_TO_ANALYST.",
-      "No further evidence request would change the recommendation: step_up_auth: expected decision change 0.04 against friction 0.05, so not worth the friction of asking. if failed, the recommendation moves from MONITOR_CONNECTED_CARDS to MONITOR_CONNECTED_CARDS (probability 0.72, verdict fraud); customer_validation: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information; analyst_info: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information",
+      "No further evidence request would change the recommendation: step_up_auth: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information; customer_validation: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information; analyst_info: every possible answer leaves the recommendation unchanged, so asking would add delay without adding information",
       "Final recommendation: MONITOR_CONNECTED_CARDS, CREATE_CASE, ESCALATE_TO_ANALYST."
     ],
     "trigger": {
@@ -8981,7 +8777,7 @@
       "case_id": "HHG-012",
       "tool_calls": 10,
       "tokens": 0,
-      "latency_s": 0.07,
+      "latency_s": 0.06,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -8998,8 +8794,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.066,
-          "wall_seconds": 0.068
+          "tool_seconds": 0.054,
+          "wall_seconds": 0.054
         },
         "update_memory": {
           "llm_calls": 0,
@@ -9050,7 +8846,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.54,
+        "t_ms": 0.52,
         "kind": "open",
         "stage": "init",
         "trigger": "risk_score",
@@ -9063,67 +8859,67 @@
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.15,
+        "ms": 0.17,
         "ok": true
       },
       {
-        "t_ms": 0.72,
+        "t_ms": 0.74,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 2.03,
+        "ms": 1.55,
         "ok": true
       },
       {
-        "t_ms": 2.78,
+        "t_ms": 2.31,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 1.29,
+        "ms": 0.91,
         "ok": true
       },
       {
-        "t_ms": 4.09,
+        "t_ms": 3.24,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 2.04,
+        "ms": 1.73,
         "ok": true
       },
       {
-        "t_ms": 6.16,
+        "t_ms": 4.98,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.25,
+        "ms": 0.23,
         "ok": true
       },
       {
-        "t_ms": 6.42,
+        "t_ms": 5.22,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 50.99,
+        "ms": 41.56,
         "ok": true
       },
       {
-        "t_ms": 57.44,
+        "t_ms": 46.8,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 1.65,
+        "ms": 0.77,
         "ok": true
       },
       {
-        "t_ms": 59.14,
+        "t_ms": 47.61,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 8.36,
+        "ms": 6.09,
         "ok": true
       },
       {
-        "t_ms": 67.54,
+        "t_ms": 53.73,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9131,7 +8927,7 @@
         "claim": "The flagged transaction is a in-person authorisation of $30.91 on 2016-12-18 04:00 under product code W, scored 0.55 by the bank's model."
       },
       {
-        "t_ms": 67.55,
+        "t_ms": 53.73,
         "kind": "evidence",
         "stage": "investigate",
         "source": "external",
@@ -9139,7 +8935,7 @@
         "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3553342 ($30.91, in billing region 494.0) at 0.55. Review and decide."
       },
       {
-        "t_ms": 67.55,
+        "t_ms": 53.74,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9147,7 +8943,7 @@
         "claim": "Against this card's own prior history of 910 transactions, $30.91 sits at the 25% percentile (mean $82.40, largest previously $2,681.01)."
       },
       {
-        "t_ms": 67.56,
+        "t_ms": 53.74,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9155,7 +8951,7 @@
         "claim": "1 prior authorisation(s) on this card in the preceding hour and 5 in the preceding 24 hours."
       },
       {
-        "t_ms": 67.56,
+        "t_ms": 53.75,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9163,7 +8959,7 @@
         "claim": "The transaction is card present, so no device or connection record exists - true of every in-person transaction in the book, and not a signal."
       },
       {
-        "t_ms": 67.56,
+        "t_ms": 53.75,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9171,7 +8967,7 @@
         "claim": "17 prior charges of about $30.91 exist on this card but their spacing is irregular (intervals 7d, 16d, 10d, 13d, 1d, 6d, 4d, 0d, 19d, 20d, 0d, 13d, 3d, 1d, 19d, 2d), so this is a repeated amount rather than a recurring charge"
       },
       {
-        "t_ms": 67.58,
+        "t_ms": 53.76,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9179,7 +8975,7 @@
         "claim": "device profile `Windows | Windows 7 | chrome 66.0 | 1366x768` links 28 cards across 27 customers within 11.1 days, and appears on only 49 cards book-wide."
       },
       {
-        "t_ms": 67.87,
+        "t_ms": 54.0,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9187,7 +8983,7 @@
         "claim": "This customer has 2 closed investigation(s) before this alert: 1 confirmed fraud, 1 cleared. Patterns previously found: card_not_present_fraud."
       },
       {
-        "t_ms": 68.03,
+        "t_ms": 54.15,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9195,7 +8991,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5319, CC-5425, CC-5554. The nearest, CC-5319, was a $30.97 in_person case closed as confirmed_fraud with pattern account_takeover."
       },
       {
-        "t_ms": 68.23,
+        "t_ms": 54.33,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -9209,7 +9005,7 @@
         "n_signals": 2
       },
       {
-        "t_ms": 68.24,
+        "t_ms": 54.33,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -9220,14 +9016,14 @@
         ]
       },
       {
-        "t_ms": 68.88,
+        "t_ms": 55.04,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
         "options": [
           {
             "request_type": "step_up_auth",
-            "net_value": -0.0113,
+            "net_value": -0.05,
             "selected": false
           },
           {
@@ -9243,7 +9039,7 @@
         ]
       },
       {
-        "t_ms": 68.92,
+        "t_ms": 55.07,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -9255,15 +9051,15 @@
         "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking."
       },
       {
-        "t_ms": 69.03,
+        "t_ms": 55.22,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 0.94,
+        "ms": 1.05,
         "ok": true
       },
       {
-        "t_ms": 69.98,
+        "t_ms": 56.29,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -9271,7 +9067,7 @@
         "ok": true
       },
       {
-        "t_ms": 69.99,
+        "t_ms": 56.3,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-012",
@@ -9507,8 +9303,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.017,
-          "wall_seconds": 0.018
+          "tool_seconds": 0.015,
+          "wall_seconds": 0.016
         },
         "update_memory": {
           "llm_calls": 0,
@@ -9560,7 +9356,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.62,
+        "t_ms": 0.47,
         "kind": "open",
         "stage": "init",
         "trigger": "customer_report",
@@ -9569,79 +9365,79 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.66,
+        "t_ms": 0.5,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.23,
+        "ms": 0.16,
         "ok": true
       },
       {
-        "t_ms": 0.93,
+        "t_ms": 0.67,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 2.21,
+        "ms": 1.5,
         "ok": true
       },
       {
-        "t_ms": 3.16,
+        "t_ms": 2.19,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 1.07,
+        "ms": 1.58,
         "ok": true
       },
       {
-        "t_ms": 4.24,
+        "t_ms": 3.79,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 2.65,
+        "ms": 2.23,
         "ok": true
       },
       {
-        "t_ms": 6.92,
+        "t_ms": 6.04,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.32,
+        "ms": 0.25,
         "ok": true
       },
       {
-        "t_ms": 7.26,
+        "t_ms": 6.31,
         "kind": "query",
         "name": "graph.ring_signals",
-        "stage": "investigate",
-        "ms": 1.14,
-        "ok": true
-      },
-      {
-        "t_ms": 8.43,
-        "kind": "query",
-        "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
         "ms": 0.87,
         "ok": true
       },
       {
-        "t_ms": 9.33,
+        "t_ms": 7.2,
+        "kind": "query",
+        "name": "graph.prior_cases_for_customer",
+        "stage": "investigate",
+        "ms": 0.72,
+        "ok": true
+      },
+      {
+        "t_ms": 7.94,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 7.97,
+        "ms": 6.81,
         "ok": true
       },
       {
-        "t_ms": 17.33,
+        "t_ms": 14.77,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 0.83,
+        "ms": 0.79,
         "ok": true
       },
       {
-        "t_ms": 18.18,
+        "t_ms": 15.6,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9649,7 +9445,7 @@
         "claim": "The flagged transaction is a online authorisation of $55.68 on 2016-12-19 22:08 under product code C, scored 0.38 by the bank's model."
       },
       {
-        "t_ms": 18.19,
+        "t_ms": 15.6,
         "kind": "evidence",
         "stage": "investigate",
         "source": "customer",
@@ -9657,7 +9453,7 @@
         "claim": "The cardholder reported this transaction as unrecognised: Customer C13171 message: 'I never made this $55.68 purchase. Please check my card.' Refers to 3558054."
       },
       {
-        "t_ms": 18.2,
+        "t_ms": 15.61,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9665,7 +9461,7 @@
         "claim": "Against this card's own prior history of 899 transactions, $55.68 sits at the 68% percentile (mean $54.02, largest previously $407.32)."
       },
       {
-        "t_ms": 18.2,
+        "t_ms": 15.61,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9673,7 +9469,7 @@
         "claim": "2 prior authorisation(s) on this card in the preceding hour and 6 in the preceding 24 hours."
       },
       {
-        "t_ms": 18.2,
+        "t_ms": 15.61,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9681,7 +9477,7 @@
         "claim": "The transaction ran on device profile `? | ? | chrome 66.0 | ?`, reported as Found to this account. That profile appears on 175 card(s) book-wide."
       },
       {
-        "t_ms": 18.21,
+        "t_ms": 15.62,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9689,7 +9485,7 @@
         "claim": "8 prior charges of about $55.68 exist on this card but their spacing is irregular (intervals 1d, 11d, 23d, 16d, 90d, 10d, 0d), so this is a repeated amount rather than a recurring charge"
       },
       {
-        "t_ms": 18.46,
+        "t_ms": 15.84,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9697,7 +9493,7 @@
         "claim": "This customer has 19 closed investigation(s) before this alert: 18 confirmed fraud, 1 cleared. Patterns previously found: card_not_present_fraud, card_not_present_new_device."
       },
       {
-        "t_ms": 18.78,
+        "t_ms": 15.98,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -9705,7 +9501,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5513, CC-5457, CC-5380. The nearest, CC-5513, was a $56.07 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 19.17,
+        "t_ms": 16.19,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -9718,7 +9514,7 @@
         "n_signals": 1
       },
       {
-        "t_ms": 19.17,
+        "t_ms": 16.2,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -9730,7 +9526,7 @@
         ]
       },
       {
-        "t_ms": 19.64,
+        "t_ms": 16.6,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -9753,7 +9549,7 @@
         ]
       },
       {
-        "t_ms": 19.7,
+        "t_ms": 16.64,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -9766,15 +9562,15 @@
         "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking."
       },
       {
-        "t_ms": 19.84,
+        "t_ms": 16.75,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.05,
+        "ms": 1.12,
         "ok": true
       },
       {
-        "t_ms": 20.91,
+        "t_ms": 17.89,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -9782,7 +9578,7 @@
         "ok": true
       },
       {
-        "t_ms": 20.91,
+        "t_ms": 17.89,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-008",
@@ -10036,8 +9832,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.015,
-          "wall_seconds": 0.015
+          "tool_seconds": 0.014,
+          "wall_seconds": 0.014
         },
         "update_memory": {
           "llm_calls": 0,
@@ -10089,7 +9885,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.48,
+        "t_ms": 0.6,
         "kind": "open",
         "stage": "init",
         "trigger": "customer_report",
@@ -10098,79 +9894,79 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.51,
+        "t_ms": 0.63,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.17,
+        "ms": 0.18,
         "ok": true
       },
       {
-        "t_ms": 0.69,
+        "t_ms": 0.83,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.41,
+        "ms": 1.44,
         "ok": true
       },
       {
-        "t_ms": 2.13,
+        "t_ms": 2.29,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 0.94,
+        "ms": 0.75,
         "ok": true
       },
       {
-        "t_ms": 3.1,
+        "t_ms": 3.05,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 1.94,
+        "ms": 1.56,
         "ok": true
       },
       {
-        "t_ms": 5.06,
+        "t_ms": 4.63,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.37,
+        "ms": 0.33,
         "ok": true
       },
       {
-        "t_ms": 5.45,
+        "t_ms": 4.97,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 0.91,
+        "ms": 0.9,
         "ok": true
       },
       {
-        "t_ms": 6.37,
+        "t_ms": 5.89,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 0.74,
+        "ms": 0.85,
         "ok": true
       },
       {
-        "t_ms": 7.14,
+        "t_ms": 6.77,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 7.69,
+        "ms": 6.71,
         "ok": true
       },
       {
-        "t_ms": 14.85,
+        "t_ms": 13.5,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 0.71,
+        "ms": 1.11,
         "ok": true
       },
       {
-        "t_ms": 15.59,
+        "t_ms": 14.67,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10178,7 +9974,7 @@
         "claim": "The flagged transaction is a online authorisation of $30.02 on 2016-12-28 12:10 under product code S, scored 0.28 by the bank's model."
       },
       {
-        "t_ms": 15.6,
+        "t_ms": 14.67,
         "kind": "evidence",
         "stage": "investigate",
         "source": "customer",
@@ -10186,7 +9982,7 @@
         "claim": "The cardholder reported this transaction as unrecognised: Customer C08299 message: 'I never made this $30.02 purchase. Please check my card.' Refers to 3581141."
       },
       {
-        "t_ms": 15.61,
+        "t_ms": 14.68,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10194,7 +9990,7 @@
         "claim": "Against this card's own prior history of 46 transactions, $30.02 sits at the 30% percentile (mean $65.98, largest previously $343.94)."
       },
       {
-        "t_ms": 15.61,
+        "t_ms": 14.69,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10202,7 +9998,7 @@
         "claim": "The transaction ran on device profile `? | ? | ? | ?`, reported as Found to this account. That profile appears on 1023 card(s) book-wide."
       },
       {
-        "t_ms": 15.61,
+        "t_ms": 14.7,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10210,7 +10006,7 @@
         "claim": "4 prior charges of about $30.02 exist on this card but their spacing is irregular (intervals 88d, 13d, 56d), so this is a repeated amount rather than a recurring charge"
       },
       {
-        "t_ms": 15.62,
+        "t_ms": 14.71,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10218,7 +10014,7 @@
         "claim": "This customer has no closed investigations before this alert."
       },
       {
-        "t_ms": 15.76,
+        "t_ms": 14.89,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10226,7 +10022,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5012, CC-4910, CC-4807. The nearest, CC-5012, was a $30.94 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 15.94,
+        "t_ms": 15.13,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -10241,7 +10037,7 @@
         "n_signals": 3
       },
       {
-        "t_ms": 15.95,
+        "t_ms": 15.13,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -10252,7 +10048,7 @@
         ]
       },
       {
-        "t_ms": 16.34,
+        "t_ms": 15.5,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -10275,7 +10071,7 @@
         ]
       },
       {
-        "t_ms": 16.36,
+        "t_ms": 15.52,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -10287,15 +10083,15 @@
         "stop_reason": "Probability 0.14 is outside the 0.15-0.85 band on 3 independent pieces of evidence."
       },
       {
-        "t_ms": 16.52,
+        "t_ms": 15.63,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.06,
+        "ms": 0.9,
         "ok": true
       },
       {
-        "t_ms": 17.6,
+        "t_ms": 16.56,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -10303,7 +10099,7 @@
         "ok": true
       },
       {
-        "t_ms": 17.6,
+        "t_ms": 16.56,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-009",
@@ -10555,7 +10351,7 @@
       "case_id": "HHG-011",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.08,
+      "latency_s": 0.07,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -10572,8 +10368,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.074,
-          "wall_seconds": 0.074
+          "tool_seconds": 0.067,
+          "wall_seconds": 0.068
         },
         "update_memory": {
           "llm_calls": 0,
@@ -10625,7 +10421,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.78,
+        "t_ms": 0.58,
         "kind": "open",
         "stage": "init",
         "trigger": "customer_report",
@@ -10634,79 +10430,79 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.82,
+        "t_ms": 0.61,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.25,
+        "ms": 0.22,
         "ok": true
       },
       {
-        "t_ms": 1.1,
+        "t_ms": 0.85,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 4.74,
+        "ms": 3.09,
         "ok": true
       },
       {
-        "t_ms": 5.88,
+        "t_ms": 3.98,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 3.29,
+        "ms": 2.65,
         "ok": true
       },
       {
-        "t_ms": 9.2,
+        "t_ms": 6.65,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 3.6,
+        "ms": 4.07,
         "ok": true
       },
       {
-        "t_ms": 12.83,
+        "t_ms": 10.74,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.88,
+        "ms": 1.05,
         "ok": true
       },
       {
-        "t_ms": 13.73,
+        "t_ms": 11.82,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
-        "ms": 49.53,
+        "ms": 46.07,
         "ok": true
       },
       {
-        "t_ms": 63.34,
+        "t_ms": 57.91,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 0.86,
+        "ms": 1.04,
         "ok": true
       },
       {
-        "t_ms": 64.22,
+        "t_ms": 58.99,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 8.98,
+        "ms": 8.2,
         "ok": true
       },
       {
-        "t_ms": 73.23,
+        "t_ms": 67.21,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 0.83,
+        "ms": 0.73,
         "ok": true
       },
       {
-        "t_ms": 74.15,
+        "t_ms": 67.97,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10714,7 +10510,7 @@
         "claim": "The flagged transaction is a online authorisation of $131.30 on 2016-12-29 03:27 under product code C, scored 0.39 by the bank's model."
       },
       {
-        "t_ms": 74.17,
+        "t_ms": 67.97,
         "kind": "evidence",
         "stage": "investigate",
         "source": "customer",
@@ -10722,7 +10518,7 @@
         "claim": "The cardholder reported this transaction as unrecognised: Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368."
       },
       {
-        "t_ms": 74.18,
+        "t_ms": 67.98,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10730,7 +10526,7 @@
         "claim": "Against this card's own prior history of 10,306 transactions, $131.30 sits at the 97% percentile (mean $39.42, largest previously $486.52)."
       },
       {
-        "t_ms": 74.2,
+        "t_ms": 67.98,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10738,7 +10534,7 @@
         "claim": "1 prior authorisation(s) on this card in the preceding hour and 26 in the preceding 24 hours."
       },
       {
-        "t_ms": 74.2,
+        "t_ms": 67.99,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10746,7 +10542,7 @@
         "claim": "The transaction ran on device profile `SM-G610F Build/NRD90M | ? | chrome 66.0 for android | ?`, reported as New to this account. That profile appears on 4 card(s) book-wide."
       },
       {
-        "t_ms": 74.22,
+        "t_ms": 67.99,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10754,7 +10550,7 @@
         "claim": "17 prior charges of about $131.30 exist on this card but their spacing is irregular (intervals 16d, 1d, 22d, 6d, 2d, 8d, 49d, 2d, 4d, 0d, 0d, 1d, 2d, 0d, 0d, 45d), so this is a repeated amount rather than a recurring charge"
       },
       {
-        "t_ms": 74.26,
+        "t_ms": 68.0,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10762,7 +10558,7 @@
         "claim": "device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081` links 4 cards across 4 customers within 4.0 days, and appears on only 6 cards book-wide."
       },
       {
-        "t_ms": 74.57,
+        "t_ms": 68.26,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10770,7 +10566,7 @@
         "claim": "This customer has 11 closed investigation(s) before this alert: 10 confirmed fraud, 1 cleared. Patterns previously found: card_not_present_new_device, card_testing."
       },
       {
-        "t_ms": 74.76,
+        "t_ms": 68.39,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -10778,7 +10574,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5551, CC-5526, CC-5515. The nearest, CC-5551, was a $127.16 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 75.06,
+        "t_ms": 68.62,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -10793,7 +10589,7 @@
         "n_signals": 3
       },
       {
-        "t_ms": 75.07,
+        "t_ms": 68.63,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -10806,7 +10602,7 @@
         ]
       },
       {
-        "t_ms": 75.54,
+        "t_ms": 69.05,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -10829,7 +10625,7 @@
         ]
       },
       {
-        "t_ms": 75.58,
+        "t_ms": 69.1,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -10843,15 +10639,15 @@
         "stop_reason": "Probability 0.98 is outside the 0.15-0.85 band on 3 independent pieces of evidence."
       },
       {
-        "t_ms": 75.76,
+        "t_ms": 69.23,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.0,
+        "ms": 1.05,
         "ok": true
       },
       {
-        "t_ms": 76.78,
+        "t_ms": 70.31,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -10859,7 +10655,7 @@
         "ok": true
       },
       {
-        "t_ms": 76.78,
+        "t_ms": 70.31,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-011",
@@ -11097,7 +10893,7 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.015,
+          "tool_seconds": 0.013,
           "wall_seconds": 0.015
         },
         "update_memory": {
@@ -11118,7 +10914,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.0
+          "wall_seconds": 0.001
         },
         "take_action": {
           "llm_calls": 0,
@@ -11150,7 +10946,7 @@
     },
     "trace": [
       {
-        "t_ms": 0.48,
+        "t_ms": 0.46,
         "kind": "open",
         "stage": "init",
         "trigger": "customer_report",
@@ -11159,47 +10955,47 @@
         "prior": 0.3
       },
       {
-        "t_ms": 0.51,
+        "t_ms": 0.49,
         "kind": "query",
         "name": "graph.get_transaction",
         "stage": "investigate",
-        "ms": 0.18,
+        "ms": 0.14,
         "ok": true
       },
       {
-        "t_ms": 0.7,
+        "t_ms": 0.64,
         "kind": "query",
         "name": "graph.get_customer",
         "stage": "investigate",
-        "ms": 1.4,
+        "ms": 1.42,
         "ok": true
       },
       {
-        "t_ms": 2.12,
+        "t_ms": 2.08,
         "kind": "query",
         "name": "graph.card_baseline",
         "stage": "investigate",
-        "ms": 1.06,
+        "ms": 0.75,
         "ok": true
       },
       {
-        "t_ms": 3.19,
+        "t_ms": 2.84,
         "kind": "query",
         "name": "graph.recurring_charge",
         "stage": "investigate",
-        "ms": 1.51,
+        "ms": 1.18,
         "ok": true
       },
       {
-        "t_ms": 4.72,
+        "t_ms": 4.03,
         "kind": "query",
         "name": "graph.card_testing_episode",
         "stage": "investigate",
-        "ms": 0.26,
+        "ms": 0.3,
         "ok": true
       },
       {
-        "t_ms": 5.0,
+        "t_ms": 4.35,
         "kind": "query",
         "name": "graph.ring_signals",
         "stage": "investigate",
@@ -11207,31 +11003,31 @@
         "ok": true
       },
       {
-        "t_ms": 5.93,
+        "t_ms": 5.28,
         "kind": "query",
         "name": "graph.prior_cases_for_customer",
         "stage": "investigate",
-        "ms": 0.71,
+        "ms": 1.02,
         "ok": true
       },
       {
-        "t_ms": 6.67,
+        "t_ms": 6.34,
         "kind": "query",
         "name": "graph.similar_closed_cases",
         "stage": "investigate",
-        "ms": 7.54,
+        "ms": 7.22,
         "ok": true
       },
       {
-        "t_ms": 14.23,
+        "t_ms": 13.58,
         "kind": "query",
         "name": "graph.device_for_transaction",
         "stage": "investigate",
-        "ms": 0.76,
+        "ms": 0.89,
         "ok": true
       },
       {
-        "t_ms": 15.02,
+        "t_ms": 14.51,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -11239,7 +11035,7 @@
         "claim": "The flagged transaction is a online authorisation of $128.33 on 2016-12-29 01:53 under product code C, scored 0.34 by the bank's model."
       },
       {
-        "t_ms": 15.03,
+        "t_ms": 14.51,
         "kind": "evidence",
         "stage": "investigate",
         "source": "customer",
@@ -11247,7 +11043,7 @@
         "claim": "The cardholder reported this transaction as unrecognised: Customer C08106 message: 'I never made this $128.33 purchase. Please check my card.' Refers to 3583227."
       },
       {
-        "t_ms": 15.04,
+        "t_ms": 14.52,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -11255,7 +11051,7 @@
         "claim": "Against this card's own prior history of 209 transactions, $128.33 sits at the 99% percentile (mean $35.31, largest previously $138.89)."
       },
       {
-        "t_ms": 15.04,
+        "t_ms": 14.52,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -11263,7 +11059,7 @@
         "claim": "0 prior authorisation(s) on this card in the preceding hour and 1 in the preceding 24 hours."
       },
       {
-        "t_ms": 15.04,
+        "t_ms": 14.52,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -11271,7 +11067,7 @@
         "claim": "The transaction ran on device profile `? | ? | firefox 47.0 | ?`, reported as New to this account. That profile appears on 6 card(s) book-wide."
       },
       {
-        "t_ms": 15.05,
+        "t_ms": 14.53,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -11279,7 +11075,7 @@
         "claim": "Only 0 prior charge(s) on this card fall within $2.57 of $128.33, which is too few to establish a recurring pattern"
       },
       {
-        "t_ms": 15.29,
+        "t_ms": 14.77,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -11287,7 +11083,7 @@
         "claim": "This customer has 4 closed investigation(s) before this alert: 3 confirmed fraud, 1 cleared. Patterns previously found: card_not_present_fraud."
       },
       {
-        "t_ms": 15.43,
+        "t_ms": 14.91,
         "kind": "evidence",
         "stage": "investigate",
         "source": "graph",
@@ -11295,7 +11091,7 @@
         "claim": "The closest prior investigations by channel, exposure and recency are CC-5551, CC-5526, CC-5511. The nearest, CC-5551, was a $127.16 online case closed as confirmed_fraud with pattern card_not_present_fraud."
       },
       {
-        "t_ms": 15.63,
+        "t_ms": 15.14,
         "kind": "assessment",
         "stage": "assess",
         "label": "initial",
@@ -11309,7 +11105,7 @@
         "n_signals": 2
       },
       {
-        "t_ms": 15.64,
+        "t_ms": 15.15,
         "kind": "recommendation",
         "stage": "assess",
         "label": "initial",
@@ -11319,7 +11115,7 @@
         ]
       },
       {
-        "t_ms": 16.02,
+        "t_ms": 15.69,
         "kind": "evidence_value",
         "stage": "gather_more_evidence",
         "loop": 1,
@@ -11342,7 +11138,7 @@
         ]
       },
       {
-        "t_ms": 16.04,
+        "t_ms": 15.73,
         "kind": "recommendation",
         "stage": "take_action",
         "label": "final",
@@ -11353,15 +11149,15 @@
         "stop_reason": "Probability 0.87 is outside the 0.15-0.85 band on 2 independent pieces of evidence."
       },
       {
-        "t_ms": 16.22,
+        "t_ms": 15.85,
         "kind": "query",
         "name": "graph.write_case",
         "stage": "update_memory",
-        "ms": 1.06,
+        "ms": 0.85,
         "ok": true
       },
       {
-        "t_ms": 17.29,
+        "t_ms": 16.71,
         "kind": "query",
         "name": "graph.read_case",
         "stage": "update_memory",
@@ -11369,7 +11165,7 @@
         "ok": true
       },
       {
-        "t_ms": 17.3,
+        "t_ms": 16.72,
         "kind": "memory",
         "stage": "update_memory",
         "graph_case_id": "CASE-HHG-004",

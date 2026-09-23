@@ -145,5 +145,5 @@
   "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
   "tool_calls": 10,
   "tokens": 0,
-  "latency_s": 0.08
+  "latency_s": 0.06
 }

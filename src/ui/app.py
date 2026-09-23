@@ -1,7 +1,8 @@
-"""The analyst console: serve the case files, the diagnostics and the cost ledger.
+"""Tidewatch - the analyst console. Serves the case files, re-runs investigations live, streams the
+copilot, and runs the autonomous monitor.
 
-    python -m src.ui.app --cases cases_fixture          # then open http://127.0.0.1:8000
-    python -m src.ui.app --cases cases                  # the real run
+    python -m src.ui.app                                # the real run, http://127.0.0.1:8000
+    python -m src.ui.app --cases cases_fixture --data data_fixture
 
 WHAT THE UI IS FOR. Two audiences, and they want different things. A judge wants to see that the
 investigation is real - that the evidence came from somewhere nameable, that the recommendation
@@ -9,15 +10,22 @@ changed when new evidence arrived, that the uncertainty is quantified rather tha
 analyst wants to work the queue: what needs attention, what does policy allow me to do, and what
 will happen if I approve it. The page serves the first by making the second honest.
 
-DELIBERATELY THIN. Three endpoints and a static file. Everything the page shows already exists on
-disk because the investigation wrote it - the answer files, the diagnostics sidecar, the run
-manifest. The server does no analysis of its own, so there is no second implementation of the
-investigation that could disagree with the first, and nothing here can make the case files look
-better than they are.
+THREE MODES, DEGRADING CLEANLY. The same page runs wherever it is put:
 
-The approval endpoint is a stub that records a decision to a local file. Blocking a real card is
-not in scope; the brief says these actions may be simulated. What is NOT simulated is which
-actions were allowed to be executed without a human - that comes from the policy engine's route
+  - with the parquet built (`data/`): everything, including a live re-run of any case on a warm
+    engine and the autonomous monitor over the whole book;
+  - with only the answer files (a public deploy - the dataset is not ours to redistribute): the
+    recorded investigations, replayed from their traces;
+  - with ANTHROPIC_API_KEY set, in either of the above: the copilot.
+
+`/api/health` says which, and the page labels every live element with where its numbers came from.
+
+The server does no analysis of its own. A live re-run calls the same `agent.run.investigate` the
+graded run used, so there is no second implementation that could disagree with the first.
+
+The approval endpoint records a decision to a local file and does nothing else. Blocking a real
+card is not in scope; the brief says these actions may be simulated. What is NOT simulated is
+which actions were allowed to run without a human - that comes from the policy engine's route
 table, and the page shows the route on every action.
 """
 from __future__ import annotations
@@ -25,16 +33,23 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import threading
+import time
 from datetime import datetime, timezone
+from types import SimpleNamespace
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 HERE = os.path.dirname(os.path.abspath(__file__))
 CONSOLE = os.path.join(HERE, "console.html")
 
 
+def _abs(path: str) -> str:
+    return path if os.path.isabs(path) else os.path.join(ROOT, path)
+
+
 def read_cases(cases_dir: str) -> dict:
     """Everything the page needs, assembled from what the investigation left on disk."""
-    path = cases_dir if os.path.isabs(cases_dir) else os.path.join(ROOT, cases_dir)
+    path = _abs(cases_dir)
     payload: dict = {"cases": {}, "diagnostics": {}, "manifest": None, "banner": ""}
     if not os.path.isdir(path):
         payload["banner"] = (f"{cases_dir}/ does not exist yet - run the investigation first: "
@@ -63,19 +78,120 @@ def read_cases(cases_dir: str) -> dict:
     return payload
 
 
-def build_app(cases_dir: str):
-    from fastapi import FastAPI, HTTPException
-    from fastapi.responses import FileResponse, JSONResponse
+# --------------------------------------------------------------------------------------------
+# The warm engine: loaded once, then every investigation is tens of milliseconds
+# --------------------------------------------------------------------------------------------
 
-    app = FastAPI(title="Fraud Case Register", docs_url=None, redoc_url=None)
+class Engine:
+    """The parquet backend and the transaction ledger, held in memory for the server's life.
+
+    Loading takes a couple of seconds; after that a full investigation is ~40ms, which is what
+    makes "re-run this case now" and a monitor that keeps up with a stream both possible. One
+    lock serialises investigations: pandas is not promised to be thread-safe, and at 40ms a case
+    the queue never builds.
+    """
+
+    def __init__(self, data_dir: str):
+        import pandas as pd
+
+        from ..graph.local import LocalBackend
+        from ..io.ledger import load_ledger
+
+        t0 = time.perf_counter()
+        self.data_dir = data_dir
+        self.be = LocalBackend(data_dir)
+        # Console re-runs write case memory to their own file, so trying things in the UI never
+        # touches the record the graded run left behind.
+        self.be._cases_path = os.path.join(data_dir, "cases_written_console.jsonl")
+        self.amounts, self.timestamps = load_ledger(data_dir)
+        self.pack = pd.read_parquet(os.path.join(data_dir, "case_pack.parquet"))
+        self.load_s = round(time.perf_counter() - t0, 2)
+        self.lock = threading.Lock()
+        self._alerts = None
+
+    def investigate(self, row) -> tuple[dict, dict]:
+        from ..agent.run import investigate
+        with self.lock:
+            answer, _meter, _state, diag = investigate(self.be, row, self.amounts,
+                                                       self.timestamps)
+        return answer.to_json(), json.loads(json.dumps(diag, default=str))
+
+    def case_row(self, case_id: str):
+        hit = self.pack[self.pack.case_id == case_id]
+        return None if hit.empty else next(hit.itertuples())
+
+    def alerts(self):
+        """The monitor's feed: high-scoring authorisations across the book, in time order.
+
+        Excludes the 20 graded transactions, so the monitor is visibly doing new work rather
+        than re-running the exam. The threshold is the bank model's top ~2%: the alerts a real
+        queue would actually receive, not every transaction.
+        """
+        if self._alerts is None:
+            t = self.be.txns
+            graded = set(self.pack.flagged_txn_id.astype(str))
+            hot = t[(t.risk_score >= 0.85) & ~t.TransactionID.isin(graded)]
+            self._alerts = hot.sort_values("ts")[
+                ["TransactionID", "ts", "TransactionAmt", "customer_id", "card_id", "risk_score",
+                 "addr1", "channel"]].reset_index(drop=True)
+        return self._alerts
+
+
+def monitor_row(a) -> SimpleNamespace:
+    """Turn a raw high-score authorisation into the same trigger shape the case pack uses."""
+    import pandas as pd
+    region = f", in billing region {a.addr1}" if pd.notna(a.addr1) else ""
+    return SimpleNamespace(
+        case_id=f"MON-{a.TransactionID}",
+        opened_at=pd.Timestamp(a.ts) + pd.Timedelta(minutes=2),
+        trigger_type="risk_score",
+        trigger_text=(f"Real-time model scored transaction {a.TransactionID} "
+                      f"(${float(a.TransactionAmt):,.2f}{region}) at {float(a.risk_score):.2f}. "
+                      "Review and decide."),
+        flagged_txn_id=a.TransactionID, card_id=a.card_id, customer_id=a.customer_id,
+        risk_score=float(a.risk_score))
+
+
+def _sse(event: dict) -> str:
+    return f"data: {json.dumps(event, default=str)}\n\n"
+
+
+def build_app(cases_dir: str, data_dir: str):
+    from fastapi import Body, FastAPI, HTTPException
+    from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+
+    from ..agent import copilot
+
+    app = FastAPI(title="Tidewatch", docs_url=None, redoc_url=None)
+    engine_box: dict = {}
+    has_data = os.path.exists(os.path.join(_abs(data_dir), "case_pack.parquet"))
+
+    def engine() -> Engine:
+        if not has_data:
+            raise HTTPException(503, "no parquet on this server - live runs need `data/` "
+                                     "(python -m src.features.build); showing recorded runs")
+        if "e" not in engine_box:
+            engine_box["e"] = Engine(_abs(data_dir))
+        return engine_box["e"]
 
     @app.get("/")
     def console():
         return FileResponse(CONSOLE, media_type="text/html")
 
+    @app.get("/api/health")
+    def health():
+        e = engine_box.get("e")
+        return {"live": has_data, "engine_loaded": e is not None,
+                "engine_load_s": e.load_s if e else None,
+                "copilot": copilot.available(), "copilot_model": copilot.MODEL,
+                "cases_dir": cases_dir}
+
     @app.get("/api/cases")
     def api_cases():
-        return JSONResponse(read_cases(cases_dir))
+        payload = read_cases(cases_dir)
+        payload["capabilities"] = {"live": has_data, "copilot": copilot.available(),
+                                   "copilot_model": copilot.MODEL}
+        return JSONResponse(payload)
 
     @app.get("/api/cases/{case_id}")
     def api_case(case_id: str):
@@ -84,6 +200,89 @@ def build_app(cases_dir: str):
             raise HTTPException(404, f"no answer file for {case_id}")
         return JSONResponse({"case": data["cases"][case_id],
                              "diagnostics": (data["diagnostics"] or {}).get(case_id)})
+
+    @app.post("/api/investigate/{case_id}")
+    def api_investigate(case_id: str):
+        """Re-run one case now, on the warm engine, and return the fresh answer and trace."""
+        e = engine()
+        row = e.case_row(case_id)
+        if row is None:
+            raise HTTPException(404, f"{case_id} is not in the case pack")
+        t0 = time.perf_counter()
+        answer, diag = e.investigate(row)
+        return JSONResponse({"case": answer, "diagnostics": diag,
+                             "server_ms": round((time.perf_counter() - t0) * 1000, 1),
+                             "engine_load_s": e.load_s})
+
+    @app.post("/api/ask")
+    def api_ask(body: dict = Body(...)):
+        """Stream the copilot's answer as server-sent events."""
+        if not copilot.available():
+            raise HTTPException(503, "ANTHROPIC_API_KEY is not set on this server")
+        case_id = str(body.get("case_id", ""))
+        question = str(body.get("question", "")).strip()[:2000]
+        if not question:
+            raise HTTPException(400, "empty question")
+        data = read_cases(cases_dir)
+        answer = body.get("case") or data["cases"].get(case_id)
+        if not answer:
+            raise HTTPException(404, f"no answer file for {case_id}")
+        diag = body.get("diagnostics") or (data["diagnostics"] or {}).get(case_id)
+
+        def stream():
+            try:
+                for event in copilot.ask(answer, diag, question, body.get("history") or []):
+                    yield _sse(event)
+            except Exception as exc:                        # noqa: BLE001 - shown in the page
+                yield _sse({"type": "error", "message": f"{type(exc).__name__}: {exc}"})
+
+        return StreamingResponse(stream(), media_type="text/event-stream",
+                                 headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+    @app.get("/api/monitor")
+    def api_monitor(start: int = 0, limit: int = 40, pace_ms: int = 450):
+        """The autonomous track: watch the alert feed, investigate each, act within policy.
+
+        Actions routed `auto` are executed (simulated, as the brief permits); anything routed
+        L1 or L2 is queued for a human and never executed here. `pace_ms` only spaces the events
+        out for a watching human - the investigation time reported is the real one.
+        """
+        e = engine()
+        feed = e.alerts()
+        start = max(0, min(start, len(feed) - 1))
+        limit = max(1, min(limit, 200))
+
+        def stream():
+            yield _sse({"type": "hello", "alerts_in_book": len(feed), "start": start,
+                        "engine_load_s": e.load_s})
+            for a in feed.iloc[start:start + limit].itertuples():
+                t0 = time.perf_counter()
+                try:
+                    answer, diag = e.investigate(monitor_row(a))
+                except Exception as exc:                    # noqa: BLE001 - reported, keep going
+                    yield _sse({"type": "error", "txn": str(a.TransactionID),
+                                "message": f"{type(exc).__name__}: {exc}"})
+                    continue
+                ms = round((time.perf_counter() - t0) * 1000, 1)
+                c = answer["case"]
+                final = answer["next_best_actions"]["final"]
+                yield _sse({
+                    "type": "case", "case_id": answer["case_id"], "txn": str(a.TransactionID),
+                    "at": str(a.ts), "amount": round(float(a.TransactionAmt), 2),
+                    "risk_score": round(float(a.risk_score), 2), "channel": a.channel,
+                    "verdict": c["verdict"], "p": c["fraud_probability"],
+                    "pattern": c["pattern"], "exposure": c["exposure_usd"],
+                    "auto": [x["action"] for x in final if x["route"] == "auto"],
+                    "human": [{"action": x["action"], "route": x["route"]}
+                              for x in final if x["route"] != "auto"],
+                    "report": answer["sar"]["file"], "queries": answer["tool_calls"],
+                    "ms": ms, "summary": c["summary"],
+                })
+                time.sleep(max(0, pace_ms) / 1000)
+            yield _sse({"type": "end"})
+
+        return StreamingResponse(stream(), media_type="text/event-stream",
+                                 headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
     @app.post("/api/approve/{case_id}")
     def api_approve(case_id: str, action: str = "", decision: str = "approved",
@@ -103,25 +302,38 @@ def build_app(cases_dir: str):
             fh.write(json.dumps(record) + "\n")
         return JSONResponse({"recorded": record, "log": os.path.relpath(path, ROOT)})
 
+    # Warm the engine in the background so the first "run live" click is fast, not a 2s load.
+    if has_data:
+        threading.Thread(target=lambda: engine_box.setdefault("e", Engine(_abs(data_dir))),
+                         daemon=True).start()
     return app
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--cases", default="cases_fixture",
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--cases", default="cases",
                     help="directory of answer files to serve (cases or cases_fixture)")
-    ap.add_argument("--host", default="127.0.0.1")
-    ap.add_argument("--port", type=int, default=8000)
+    ap.add_argument("--data", default="data", help="parquet for live runs, if present")
+    ap.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))
+    ap.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8000")))
     a = ap.parse_args()
 
+    from ..config import load_env
+    load_env()
+    from ..agent import copilot
+
     data = read_cases(a.cases)
-    print(f"serving {len(data['cases'])} case(s) from {a.cases}/")
+    print(f"Tidewatch - serving {len(data['cases'])} case(s) from {a.cases}/")
+    print(f"  live runs + monitor : "
+          f"{'yes' if os.path.exists(os.path.join(_abs(a.data), 'case_pack.parquet')) else 'no (no parquet) - recorded runs only'}")
+    print(f"  copilot             : {'yes, ' + copilot.MODEL if copilot.available() else 'no (ANTHROPIC_API_KEY not set)'}")
     if data["banner"]:
         print(f"  note: {data['banner']}")
     print(f"  http://{a.host}:{a.port}")
 
     import uvicorn
-    uvicorn.run(build_app(a.cases), host=a.host, port=a.port, log_level="warning")
+    uvicorn.run(build_app(a.cases, a.data), host=a.host, port=a.port, log_level="warning")
     return 0
 
 

@@ -1,13 +1,15 @@
 {
   "case_id": "HHG-014",
   "case": {
-    "status": "escalated",
-    "verdict": "legitimate",
-    "fraud_probability": 0.183,
-    "pattern": "none",
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.501,
+    "pattern": "card_not_present_new_device",
     "pattern_description": "",
-    "affected_txn_ids": [],
-    "first_suspicious_txn_id": "",
+    "affected_txn_ids": [
+      "3478561"
+    ],
+    "first_suspicious_txn_id": "3478561",
     "connected_card_ids": [
       "C01996-K2",
       "C02910-K1",
@@ -29,13 +31,13 @@
     "connected_device_profiles": [
       "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080"
     ],
-    "exposure_usd": 0,
+    "exposure_usd": 74.96,
     "similar_prior_cases": [
       "CC-5542",
       "CC-5444",
       "CC-5440"
     ],
-    "summary": "The evidence does not support fraud on this analyst request alert for card C13487-K1, at a fraud probability of 0.18 resting on 2 independent signal(s): step-up authentication was requested and passed, so whoever holds the card also holds the second factor; a fully specified device profile links 20 cards across 20 different customers inside a 14-day window; the profile appears on 52 cards book-wide, so it is a real link rather than a rare one. Additional evidence was requested (step_up_auth) because it was the cheapest question whose answer could change the recommendation. The evidence points both ways, so the recommendation to close is routed to an analyst for confirmation rather than acted on directly (R8). Recommended actions: MONITOR_CONNECTED_CARDS, CREATE_CASE, ESCALATE_TO_ANALYST, CLOSE_NO_FRAUD.",
+    "summary": "The evidence is not sufficient to decide on this analyst request alert for card C13487-K1, at a fraud probability of 0.50 resting on 1 independent signal(s): a fully specified device profile links 20 cards across 20 different customers inside a 14-day window; the profile appears on 52 cards book-wide, so it is a real link rather than a rare one. The activity fits card not present new device: a card-not-present transaction on a device new to the account. The closest alternative was card_not_present_fraud (0.40 against 0.65): a card-not-present transaction; the new device makes the new-device variant the better fit. Recommended actions: STEP_UP_AUTH, VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE, with exposure of $74.96.",
     "written_to_graph": true,
     "graph_case_id": "CASE-HHG-014",
     "evidence": [
@@ -131,24 +133,10 @@
           "CC-5444",
           "CC-5440"
         ]
-      },
-      {
-        "claim": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.55 under the response model in src/agent/voi.py), given a fraud probability of 0.18 before the request.",
-        "source": "customer",
-        "ref": "evidence_request:step_up_auth",
-        "entity_ids": [
-          "3478561"
-        ]
       }
     ]
   },
-  "evidence_requests": [
-    {
-      "type": "step_up_auth",
-      "asked_after_step": 3,
-      "assumed_response": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.55 under the response model in src/agent/voi.py), given a fraud probability of 0.18 before the request. Had the answer been the step-up challenge is not completed (p=0.45), the recommendation would have moved to MONITOR_CONNECTED_CARDS with a fraud probability of 0.88."
-    }
-  ],
+  "evidence_requests": [],
   "next_best_actions": {
     "initial": [
       {
@@ -174,6 +162,16 @@
     ],
     "final": [
       {
+        "action": "STEP_UP_AUTH",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.50 (<0.7); verify before any block"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.50 (<0.7); verify before any block"
+      },
+      {
         "action": "MONITOR_CONNECTED_CARDS",
         "route": "auto",
         "reason": "R6: device profile `SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud; monitoring every card that shares it"
@@ -182,19 +180,9 @@
         "action": "CREATE_CASE",
         "route": "auto",
         "reason": "R6: device profile `SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud"
-      },
-      {
-        "action": "ESCALATE_TO_ANALYST",
-        "route": "auto",
-        "reason": "R8: evidence conflicts"
-      },
-      {
-        "action": "CLOSE_NO_FRAUD",
-        "route": "auto",
-        "reason": "Verdict legitimate; no fraud found"
       }
     ],
-    "what_changed": "After the step_up_auth response, the recommendation added CLOSE_NO_FRAUD, ESCALATE_TO_ANALYST and withdrew STEP_UP_AUTH, VERIFY_WITH_CUSTOMER."
+    "what_changed": "nothing"
   },
   "sar": {
     "file": false,
@@ -207,5 +195,5 @@
   "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
   "tool_calls": 11,
   "tokens": 0,
-  "latency_s": 0.07
+  "latency_s": 0.06
 }

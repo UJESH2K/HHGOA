@@ -3,248 +3,300 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Fraud Case Register</title>
+<title>Tidewatch · fraud investigation</title>
+<meta name="description" content="Agentic fraud investigation on TigerGraph Savanna. Built at Hacker House Goa.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231F5FBF'/%3E%3Cpath d='M5 19c3-4 6-4 9 0s6 4 9 0 4-3 4-3' stroke='%23fff' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='23' cy='10' r='3' fill='%23F2A33A'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
 <style>
 /* ===========================================================================
    Tokens.
 
-   Light is the base palette; dark is SELECTED, not inverted - its own steps
-   against a dark surface. Both were run through the dataviz palette validator
-   rather than eyeballed.
+   Warm sand by day, Arabian-sea night by dark: the Goa in the design lives in
+   the surfaces and the type, never in the status colours, which carry meaning
+   and stay exactly as validated.
 
-   Light  #A8231C / #B07A04 / #12805A / #2C5BD6  -> all six checks pass.
-   Dark   #C2393A / #C9A02A / #28A87F / #6C8BEC  -> passes chroma, normal-vision
-          separation, CVD separation and contrast. The amber sits at OKLCH L
-          0.724 against a 0.67 band ceiling: a deliberate trade, because pulling
-          it into the band collapsed red-vs-amber to deltaE 3.8 under
-          deuteranopia. Accessibility beats the aesthetic ceiling, and no status
-          colour is ever the only carrier of meaning here - every chip is
-          labelled with its word.
+   Status  light #A8231C / #B07A04 / #12805A / #2C5BD6 on #FFFDF8 -> all checks
+           pass (scripts/validate_palette.js, dataviz skill).
+   Status  dark  #C2393A / #C9A02A / #28A87F / #6C8BEC on #101B26 -> passes CVD,
+           normal-vision and contrast; the amber sits above the lightness band
+           on purpose - pulling it in collapsed red-vs-amber under deuteranopia.
+           Every status is always labelled with its word, never colour alone.
 
-   Neutrals carry a faint cool-green bias toward the accent rather than a pure
-   grey, so they read as chosen.
+   The TigerGraph orange appears only in the sponsor mark, so it can never be
+   mistaken for the amber that means "uncertain".
    =========================================================================== */
 :root {
-  --ground:      #F1F3F2;
-  --surface:     #FFFFFF;
-  --surface-2:   #F8FAF9;
-  --surface-3:   #EDF0EF;
-  --ink:         #14191B;
-  --ink-2:       #4A5658;
-  --ink-3:       #778385;
-  --line:        #DCE1E0;
-  --line-strong: #C3CBC9;
-
-  --accent:      #2C5BD6;
-  --accent-soft: #E8EDFB;
-  --on-accent:   #FFFFFF;
-
-  --fraud:       #A8231C;
-  --fraud-soft:  #FAEBE9;
-  --uncertain:   #B07A04;
-  --uncertain-soft: #FBF2DE;
-  --legit:       #12805A;
-  --legit-soft:  #E4F3EC;
-
-  --band:        #D5DDDB;   /* the 0.15-0.85 uncertainty band on the instrument */
-
-  --radius:  6px;
-  --radius-s: 4px;
-  --ui:   "Instrument Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+  --ground: #F5F0E6; --surface: #FFFDF8; --surface-2: #FAF6EE; --surface-3: #EFE8DA;
+  --ink: #1A1F24; --ink-2: #4D5560; --ink-3: #737B85;
+  --line: #E6DECE; --line-strong: #CFC5B1;
+  --accent: #1F5FBF; --accent-soft: #E7EEF9; --on-accent: #FFFFFF;
+  --fraud: #A8231C; --fraud-soft: #F9EAE7;
+  --uncertain: #B07A04; --uncertain-soft: #FBF1DB;
+  --legit: #12805A; --legit-soft: #E3F2EA;
+  --band: #E4DCCB;
+  --tiger: #E8731A;
+  --shadow: 0 1px 0 rgba(26,31,36,.04), 0 8px 24px -12px rgba(26,31,36,.18);
+  --radius: 10px; --radius-s: 6px;
+  --ui: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --prose:"Source Serif 4", Iowan Old Style, Georgia, serif;
+  --prose: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --display: "Fraunces", "Source Serif 4", Georgia, serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --ground:      #101415;
-    --surface:     #171C1D;
-    --surface-2:   #1C2223;
-    --surface-3:   #232A2B;
-    --ink:         #E9EEED;
-    --ink-2:       #9BA8A9;
-    --ink-3:       #6E7A7B;
-    --line:        #2A3132;
-    --line-strong: #3A4344;
-    --accent:      #6C8BEC;
-    --accent-soft: #1E2740;
-    --on-accent:   #0E1112;
-    --fraud:       #C2393A;
-    --fraud-soft:  #2E1A1B;
-    --uncertain:   #C9A02A;
-    --uncertain-soft: #2C2413;
-    --legit:       #28A87F;
-    --legit-soft:  #10241E;
-    --band:        #2E3739;
+    --ground: #0B1219; --surface: #101B26; --surface-2: #142230; --surface-3: #1A2A3A;
+    --ink: #E8EDF2; --ink-2: #A3B0BD; --ink-3: #74838F;
+    --line: #1F3040; --line-strong: #2C4155;
+    --accent: #6C9BEC; --accent-soft: #172A45; --on-accent: #0B1219;
+    --fraud: #C2393A; --fraud-soft: #2C1719;
+    --uncertain: #C9A02A; --uncertain-soft: #2A2213;
+    --legit: #28A87F; --legit-soft: #0F2620;
+    --band: #22364A;
+    --shadow: 0 1px 0 rgba(0,0,0,.2), 0 10px 28px -14px rgba(0,0,0,.6);
   }
 }
 :root[data-theme="dark"] {
-  --ground: #101415; --surface: #171C1D; --surface-2: #1C2223; --surface-3: #232A2B;
-  --ink: #E9EEED; --ink-2: #9BA8A9; --ink-3: #6E7A7B;
-  --line: #2A3132; --line-strong: #3A4344;
-  --accent: #6C8BEC; --accent-soft: #1E2740; --on-accent: #0E1112;
-  --fraud: #C2393A; --fraud-soft: #2E1A1B;
-  --uncertain: #C9A02A; --uncertain-soft: #2C2413;
-  --legit: #28A87F; --legit-soft: #10241E;
-  --band: #2E3739;
+  --ground: #0B1219; --surface: #101B26; --surface-2: #142230; --surface-3: #1A2A3A;
+  --ink: #E8EDF2; --ink-2: #A3B0BD; --ink-3: #74838F;
+  --line: #1F3040; --line-strong: #2C4155;
+  --accent: #6C9BEC; --accent-soft: #172A45; --on-accent: #0B1219;
+  --fraud: #C2393A; --fraud-soft: #2C1719;
+  --uncertain: #C9A02A; --uncertain-soft: #2A2213;
+  --legit: #28A87F; --legit-soft: #0F2620;
+  --band: #22364A;
+  --shadow: 0 1px 0 rgba(0,0,0,.2), 0 10px 28px -14px rgba(0,0,0,.6);
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
-body {
-  background: var(--ground);
-  color: var(--ink);
-  font: 400 14px/1.5 var(--ui);
-  -webkit-font-smoothing: antialiased;
-}
+body { background: var(--ground); color: var(--ink); font: 400 14px/1.5 var(--ui);
+  -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+button { font: inherit; color: inherit; }
+a { color: var(--accent); }
+code { font-family: var(--mono); font-size: .92em; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-s); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
-/* --- page frame ---------------------------------------------------------- */
-.masthead {
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
-  padding-block: 14px;
-  padding-inline: 20px;
-  display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: baseline;
-}
-.masthead h1 {
-  margin: 0; font: 600 16px/1.2 var(--ui); letter-spacing: -0.01em;
-}
-.masthead .sub { color: var(--ink-3); font-size: 12px; }
-.runstrip { display: flex; flex-wrap: wrap; gap: 4px 22px; margin-left: auto; }
-.runstrip div { display: flex; flex-direction: column; gap: 1px; }
-.runstrip dt { font: 500 10px/1 var(--ui); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-3); }
-.runstrip dd { margin: 0; font: 500 14px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
+/* --- top bar ---------------------------------------------------------------- */
+.top { position: sticky; top: 0; z-index: 20; background: color-mix(in oklab, var(--surface) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--line); }
+.top-in { display: flex; align-items: center; gap: 10px 22px; flex-wrap: wrap;
+  padding: 10px 20px; max-width: 1440px; margin: 0 auto; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.brand svg { flex: none; }
+.brand b { font: 600 19px/1 var(--display); letter-spacing: -.01em; }
+.brand small { display: block; font: 500 10.5px/1.2 var(--ui); color: var(--ink-3); letter-spacing: .02em; margin-top: 2px; }
+.nav { display: flex; gap: 2px; background: var(--surface-3); padding: 3px; border-radius: 999px; }
+.nav a { text-decoration: none; color: var(--ink-2); font: 500 12.5px/1 var(--ui);
+  padding: 8px 13px; border-radius: 999px; white-space: nowrap; }
+.nav a[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.top-right { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font: 500 11px/1 var(--ui);
+  padding: 6px 9px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--ink-2);
+  background: var(--surface); white-space: nowrap; }
+.pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); display: inline-block; }
+.pill.on i { background: var(--legit); box-shadow: 0 0 0 3px var(--legit-soft); }
+.pill.tg i { background: var(--tiger); box-shadow: 0 0 0 3px color-mix(in oklab, var(--tiger) 22%, transparent); }
+.iconbtn { border: 1px solid var(--line-strong); background: var(--surface); border-radius: 999px;
+  width: 30px; height: 30px; display: grid; place-items: center; cursor: pointer; color: var(--ink-2); }
+@media (max-width: 760px) { .top-right .pill.hide-s { display: none; } .nav { order: 3; width: 100%; overflow-x: auto; } }
 
-.console {
-  display: grid;
-  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
-  gap: 0;
-  align-items: start;
-}
-@media (max-width: 900px) { .console { grid-template-columns: 1fr; } }
+.banner { background: var(--uncertain-soft); color: var(--uncertain); border-bottom: 1px solid var(--line);
+  font: 500 12px/1.4 var(--ui); padding: 8px 20px; text-align: center; }
 
-/* --- the register (left) ------------------------------------------------- */
-.register {
-  border-right: 1px solid var(--line);
-  background: var(--surface);
-  min-height: 100vh;
-}
-@media (max-width: 900px) { .register { border-right: 0; border-bottom: 1px solid var(--line); min-height: 0; } }
-.filters {
-  display: flex; flex-wrap: wrap; gap: 6px;
-  padding: 12px 16px; border-bottom: 1px solid var(--line);
-  position: sticky; top: env(safe-area-inset-top, 0px); background: var(--surface); z-index: 2;
-}
-.filters button {
-  font: 500 11px/1 var(--ui); letter-spacing: 0.02em;
-  padding: 6px 9px; border-radius: 999px; cursor: pointer;
-  border: 1px solid var(--line-strong); background: transparent; color: var(--ink-2);
-}
-.filters button[aria-pressed="true"] {
-  background: var(--accent); border-color: var(--accent); color: var(--on-accent);
-}
+main { max-width: 1440px; margin: 0 auto; padding: 0 20px 60px; }
+@media (max-width: 560px) { main { padding: 0 16px 48px; } .top-in { padding: 10px 16px; } }
+.view[hidden] { display: none !important; }
 
-.caserow {
-  display: grid; grid-template-columns: 3px 1fr auto; gap: 0 12px;
-  width: 100%; text-align: left; cursor: pointer;
-  border: 0; border-bottom: 1px solid var(--line);
-  background: transparent; color: inherit;
-  padding: 0; font: inherit;
-}
-.caserow:hover { background: var(--surface-2); }
-.caserow[aria-current="true"] { background: var(--accent-soft); }
-.caserow .stripe { background: var(--line-strong); }
-.caserow.v-fraud .stripe { background: var(--fraud); }
-.caserow.v-uncertain .stripe { background: var(--uncertain); }
-.caserow.v-legitimate .stripe { background: var(--legit); }
-.caserow .body { padding: 11px 0 11px 4px; min-width: 0; }
-.caserow .tail { padding: 11px 14px 11px 0; text-align: right; }
-.caserow .id { font: 500 13px/1.3 var(--mono); }
-.caserow .meta { color: var(--ink-3); font-size: 11.5px; margin-top: 2px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.caserow .p { font: 500 14px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
-.caserow .exp { color: var(--ink-3); font: 400 11px/1.4 var(--mono); font-variant-numeric: tabular-nums; }
-
-/* --- the record (right) -------------------------------------------------- */
-.record { padding-block: 22px; padding-inline: 24px; max-width: 900px; }
-@media (max-width: 560px) { .record { padding-inline: 16px; } }
-.record > section { margin-bottom: 26px; }
-.record h2 {
-  font: 500 10.5px/1 var(--ui); letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--ink-3); margin: 0 0 10px;
-}
-.record h3 { font: 600 14px/1.3 var(--ui); margin: 0 0 4px; }
-
-.casehead { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: baseline; }
-.casehead .cid { font: 600 24px/1.1 var(--mono); letter-spacing: -0.02em; }
-.casehead .who { color: var(--ink-2); font-size: 13px; }
-.casehead .who code { font-family: var(--mono); font-size: 12.5px; color: var(--ink); }
-
-/* Verdict stamp: form as well as colour, so state reads without relying on hue. */
-.stamp {
-  display: inline-flex; align-items: center; gap: 7px;
-  font: 600 11px/1 var(--ui); letter-spacing: 0.08em; text-transform: uppercase;
-  padding: 7px 11px; border-radius: var(--radius-s); border: 1.5px solid currentColor;
-}
-.stamp .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-.v-fraud .stamp, .stamp.v-fraud { color: var(--fraud); background: var(--fraud-soft); }
-.v-uncertain .stamp, .stamp.v-uncertain { color: var(--uncertain); background: var(--uncertain-soft); }
-.v-legitimate .stamp, .stamp.v-legitimate { color: var(--legit); background: var(--legit-soft); }
-
-.chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  font: 500 11px/1 var(--ui); padding: 5px 8px; border-radius: 999px;
-  border: 1px solid var(--line-strong); color: var(--ink-2); background: var(--surface-2);
-  white-space: nowrap;
-}
+/* --- shared blocks ---------------------------------------------------------- */
+.eyebrow { font: 600 10.5px/1 var(--ui); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+h2.sec { font: 600 10.5px/1 var(--ui); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-3); margin: 0 0 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.pad { padding: 16px 18px; }
+.grid { display: grid; gap: 14px; }
+.muted { color: var(--ink-3); }
+.small { font-size: 12px; }
+.note { color: var(--ink-3); font-size: 11.5px; margin: 8px 0 0; }
+.empty { color: var(--ink-3); font-size: 13px; margin: 0; }
+.prose { font: 400 15.5px/1.62 var(--prose); color: var(--ink); max-width: 70ch; margin: 0; }
+.prose.s { font-size: 14.5px; }
+.btn { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; border-radius: 999px;
+  font: 600 12.5px/1 var(--ui); padding: 9px 14px; border: 1px solid var(--line-strong);
+  background: var(--surface); color: var(--ink); text-decoration: none; white-space: nowrap; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn.xs { padding: 6px 10px; font-size: 11.5px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font: 500 11px/1 var(--ui);
+  padding: 5px 8px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--ink-2);
+  background: var(--surface-2); white-space: nowrap; }
 .chip.route-auto { border-color: var(--legit); color: var(--legit); background: var(--legit-soft); }
 .chip.route-L1 { border-color: var(--uncertain); color: var(--uncertain); background: var(--uncertain-soft); }
 .chip.route-L2 { border-color: var(--fraud); color: var(--fraud); background: var(--fraud-soft); }
 .chip.src-graph { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.stamp { display: inline-flex; align-items: center; gap: 7px; font: 600 11px/1 var(--ui);
+  letter-spacing: .08em; text-transform: uppercase; padding: 7px 11px; border-radius: var(--radius-s);
+  border: 1.5px solid currentColor; }
+.stamp .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.stamp.v-fraud { color: var(--fraud); background: var(--fraud-soft); }
+.stamp.v-uncertain { color: var(--uncertain); background: var(--uncertain-soft); }
+.stamp.v-legitimate { color: var(--legit); background: var(--legit-soft); }
+.vtext-fraud { color: var(--fraud); } .vtext-uncertain { color: var(--uncertain); } .vtext-legitimate { color: var(--legit); }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+th { text-align: left; font: 600 10px/1 var(--ui); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-3); padding: 0 10px 8px 0; white-space: nowrap; }
+td { padding: 8px 10px 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; padding-right: 14px; white-space: nowrap; }
+th:has(+ th), td { padding-right: 14px; }
+td.ref { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); }
+tr.flash td { animation: flash 1.6s ease-out; }
+@keyframes flash { 0% { background: var(--accent-soft); } 100% { background: transparent; } }
+.tip { position: fixed; z-index: 60; max-width: 340px; pointer-events: none; background: var(--ink);
+  color: var(--ground); padding: 8px 10px; border-radius: var(--radius-s); font-size: 12px; line-height: 1.45;
+  box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+.wave { display: block; width: 100%; height: 14px; color: var(--line-strong); }
+details > summary { cursor: pointer; list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
 
-.panel {
-  background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 16px;
-}
-.panel + .panel { margin-top: 10px; }
-.prose { font: 400 15.5px/1.6 var(--prose); color: var(--ink); max-width: 66ch; }
-.prose.small { font-size: 14.5px; }
+/* --- overview --------------------------------------------------------------- */
+.hero { padding: 34px 0 18px; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px; align-items: end; }
+@media (max-width: 980px) { .hero { grid-template-columns: 1fr; } }
+.hero h1 { font: 500 clamp(30px, 4.6vw, 50px)/1.04 var(--display); letter-spacing: -.02em; margin: 10px 0 12px; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p.lede { font: 400 16.5px/1.55 var(--prose); color: var(--ink-2); margin: 0; max-width: 58ch; }
+.hero .ctas { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 560px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi { padding: 14px 14px 12px; }
+.kpi .v { font: 500 26px/1 var(--mono); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.kpi .v small { font-size: 13px; color: var(--ink-3); letter-spacing: 0; margin-left: 2px; }
+.kpi .k { font: 500 11.5px/1.3 var(--ui); color: var(--ink-2); margin-top: 8px; }
+.kpi .s { font: 400 10.5px/1.35 var(--ui); color: var(--ink-3); margin-top: 3px; }
+.ov-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 14px; margin-top: 14px; }
+@media (max-width: 1080px) { .ov-grid { grid-template-columns: 1fr; } }
+.dumb svg { display: block; width: 100%; height: auto; }
+.dumb text { font: 400 10.5px var(--mono); fill: var(--ink-3); }
+.dumb text.lab { font: 500 11px var(--mono); fill: var(--ink-2); cursor: pointer; }
+.dumb .row:hover text.lab { fill: var(--accent); }
+.dumb .hit { fill: transparent; cursor: pointer; }
+.dumb .row:hover .hit { fill: var(--surface-2); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; color: var(--ink-3); font-size: 11.5px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i.sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.legend i.hollow { width: 10px; height: 10px; border-radius: 50%; display: inline-block; border: 2px solid var(--ink-3); }
+.queue li { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.queue li:first-child { border-top: 0; padding-top: 0; }
+.queue { list-style: none; margin: 0; padding: 0; }
+.queue .an { font: 500 12px/1.3 var(--mono); }
+.queue .why { grid-column: 1 / -1; color: var(--ink-3); font-size: 11.5px; }
+.bars { display: flex; flex-direction: column; gap: 8px; }
+.bar { display: grid; grid-template-columns: 110px minmax(0, 1fr) 56px; gap: 10px; align-items: center; font-size: 12px; }
+.bar .tr { height: 10px; background: var(--surface-3); border-radius: 3px; overflow: hidden; }
+.bar .fl { display: block; height: 100%; border-radius: 0 4px 4px 0; background: var(--accent); }
+.bar .n { font: 500 12px var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
 
-/* --- instrument: probability on a scale with the uncertainty band -------- */
-.instrument { display: block; width: 100%; height: auto; }
+/* --- cases workspace ------------------------------------------------------- */
+.ws { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-width: 0; gap: 18px; padding-top: 18px; align-items: start; }
+@media (max-width: 980px) { .ws { grid-template-columns: minmax(0, 1fr); } }
+.register { min-width: 0; position: sticky; top: 70px; max-height: calc(100vh - 88px); overflow: auto; }
+@media (max-width: 980px) { .register { position: static; max-height: 340px; } }
+.reg-head { padding: 12px 12px 8px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface); z-index: 1; border-radius: var(--radius) var(--radius) 0 0; }
+.reg-head input { width: 100%; font: 400 13px var(--ui); padding: 8px 10px; border-radius: var(--radius-s);
+  border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--ink); }
+.filters { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.filters button { font: 500 11px/1 var(--ui); padding: 6px 8px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line-strong); background: transparent; color: var(--ink-2); }
+.filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.caserow { display: grid; grid-template-columns: 3px 1fr auto; gap: 0 10px; width: 100%; text-align: left;
+  cursor: pointer; border: 0; border-bottom: 1px solid var(--line); background: transparent; padding: 0; }
+.caserow:hover { background: var(--surface-2); }
+.caserow[aria-current="true"] { background: var(--accent-soft); }
+.caserow .stripe { background: var(--line-strong); }
+.caserow.v-fraud .stripe { background: var(--fraud); } .caserow.v-uncertain .stripe { background: var(--uncertain); }
+.caserow.v-legitimate .stripe { background: var(--legit); }
+.caserow .body { padding: 10px 0 10px 2px; min-width: 0; }
+.caserow .tail { padding: 10px 12px 10px 0; text-align: right; }
+.caserow .id { font: 500 13px/1.3 var(--mono); display: block; }
+.caserow .meta { color: var(--ink-3); font-size: 11.5px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.caserow .p { font: 500 14px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
+.caserow .exp { color: var(--ink-3); font: 400 11px/1.4 var(--mono); }
+
+.casehead { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+.casehead .cid { font: 600 30px/1 var(--display); letter-spacing: -.02em; }
+.casehead .spacer { flex: 1; }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; color: var(--ink-2); font-size: 12.5px; }
+.facts code { color: var(--ink); }
+.trigger { margin-top: 14px; border-left: 3px solid var(--accent); padding: 10px 14px; background: var(--surface-2);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0; }
+.trigger .prose { font-size: 15px; }
+.ws-main { min-width: 0; }
+.ws-main > section { margin-top: 22px; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+@media (max-width: 1180px) { .two { grid-template-columns: 1fr; } }
+
+/* replay */
+.replay-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.replay-head .clock { margin-left: auto; font: 500 12px var(--mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.steps { list-style: none; margin: 12px 0 0; padding: 0; max-height: 380px; overflow: auto; position: relative; }
+.step { display: grid; grid-template-columns: 62px 18px minmax(0, 1fr); gap: 8px; padding: 5px 0; align-items: start;
+  opacity: .28; transition: opacity .25s ease; }
+.step.shown { opacity: 1; }
+.step .t { font: 400 11px/1.5 var(--mono); color: var(--ink-3); text-align: right; font-variant-numeric: tabular-nums; }
+.step .ic { width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center; font: 700 9px var(--mono);
+  background: var(--surface-3); color: var(--ink-2); margin-top: 1px; }
+.step.query .ic { background: var(--accent-soft); color: var(--accent); }
+.step.assessment .ic, .step.recommendation .ic { background: var(--ink); color: var(--surface); }
+.step.request .ic { background: var(--uncertain-soft); color: var(--uncertain); }
+.step.memory .ic { background: var(--legit-soft); color: var(--legit); }
+.step .tx { font-size: 12.5px; line-height: 1.45; min-width: 0; overflow-wrap: anywhere; }
+.step .tx code { font-size: 11.5px; }
+.step .tx .ms { font: 400 11px var(--mono); color: var(--ink-3); }
+.gauge svg { display: block; width: 100%; max-width: 560px; height: auto; }
+.gauge text { font: 400 10px var(--mono); fill: var(--ink-3); }
+.gauge text.val { font: 600 12px var(--mono); }
+.gauge .needle { transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+
+/* graph */
+.graph svg { display: block; width: 100%; height: auto; }
+.graph text { font: 400 10px var(--mono); fill: var(--ink-2); }
+.graph text.et { font: 500 8.5px var(--ui); fill: var(--ink-3); letter-spacing: .06em; }
+.graph .edge { stroke: var(--line-strong); stroke-width: 1.2; fill: none; }
+.graph .edge.hot { stroke: var(--accent); stroke-width: 1.8; }
+.graph .node { fill: var(--surface); stroke: var(--ink-2); stroke-width: 1.6; }
+.graph .node.flag { stroke: var(--accent); stroke-width: 2.4; fill: var(--accent-soft); }
+.graph .node.ring { stroke: var(--ink-3); }
+.graph g.n { cursor: default; }
+.graph g.n:hover .node { stroke: var(--accent); }
+
+/* assessment */
+.instrument svg { display: block; width: 100%; max-width: 820px; height: auto; margin: 0 auto; }
 .instrument text { font: 400 10px var(--mono); fill: var(--ink-3); }
-.instrument text.val { font: 500 11px var(--mono); }
-
-/* --- driver contributions: diverging bars from a centre zero ------------- */
+.instrument text.val { font: 600 11.5px var(--mono); }
 .drivers { display: flex; flex-direction: column; gap: 7px; }
 .driver { display: grid; grid-template-columns: minmax(150px, 230px) minmax(0, 1fr) 52px; gap: 10px; align-items: center; }
-@media (max-width: 620px) { .driver { grid-template-columns: 1fr; gap: 2px; } }
+@media (max-width: 620px) { .driver { grid-template-columns: 1fr 52px; } .driver .track { grid-column: 1 / -1; order: 3; } }
 .driver .name { font: 400 12px/1.3 var(--mono); color: var(--ink-2); min-width: 0; }
-.driver .name b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-weight: 400; }
-.driver .name em { font: 400 10px/1.2 var(--ui); font-style: normal; color: var(--ink-3);
-  letter-spacing: 0.02em; }
-.driver .track { position: relative; height: 16px; background: var(--surface-3); border-radius: 2px; }
+.driver .name b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; }
+.driver .name em { font: 400 10px/1.2 var(--ui); font-style: normal; color: var(--ink-3); }
+.driver .track { position: relative; height: 16px; background: var(--surface-3); border-radius: 3px; }
 .driver .zero { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--line-strong); }
 .driver .fill { position: absolute; top: 3px; height: 10px; }
-.driver .fill.pos { background: var(--fraud); border-radius: 0 var(--radius-s) var(--radius-s) 0; }
-.driver .fill.neg { background: var(--legit); border-radius: var(--radius-s) 0 0 var(--radius-s); }
-.driver.weak .fill { opacity: 0.4; }
-.driver .amt { font: 500 12px/1 var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
-.driver .amt.pos { color: var(--fraud); }
-.driver .amt.neg { color: var(--legit); }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; color: var(--ink-3); font-size: 11.5px; }
-.legend span { display: inline-flex; align-items: center; gap: 6px; }
-.legend i { width: 12px; height: 4px; border-radius: 2px; display: inline-block; }
+.driver .fill.pos { background: var(--fraud); border-radius: 0 4px 4px 0; }
+.driver .fill.neg { background: var(--legit); border-radius: 4px 0 0 4px; }
+.driver.weak .fill { opacity: .38; }
+.driver .amt { font: 500 12px/1 var(--mono); text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
 
-/* --- action diff --------------------------------------------------------- */
-.diff { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-@media (max-width: 680px) { .diff { grid-template-columns: 1fr; } }
-.actions { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+/* actions */
+.diff { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 700px) { .diff { grid-template-columns: 1fr; } }
+.actions { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
 .actions li { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
 .actions .an { font: 500 12px/1.3 var(--mono); }
 .actions .why { flex-basis: 100%; color: var(--ink-3); font-size: 11.5px; }
@@ -252,430 +304,1086 @@ body {
 .actions li.added::before { content: "+"; font: 600 12px var(--mono); color: var(--accent); }
 .actions li.gone .an { color: var(--ink-3); text-decoration: line-through; }
 .actions li.gone::before { content: "\2212"; font: 600 12px var(--mono); color: var(--ink-3); }
+.approve { display: inline-flex; gap: 4px; margin-left: auto; }
+.approved { font: 600 11px var(--ui); color: var(--legit); }
+.rejected { font: 600 11px var(--ui); color: var(--fraud); }
+.quote { border-left: 3px solid var(--uncertain); background: var(--uncertain-soft); padding: 10px 14px;
+  border-radius: 0 var(--radius-s) var(--radius-s) 0; margin-top: 10px; }
+.quote .tag { font: 600 10px/1 var(--ui); letter-spacing: .09em; text-transform: uppercase; color: var(--uncertain); display: block; margin-bottom: 6px; }
 
-/* --- tables -------------------------------------------------------------- */
-.scroll { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
-th { text-align: left; font: 500 10px/1 var(--ui); letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--ink-3); padding: 0 10px 7px 0; white-space: nowrap; }
-td { padding: 8px 10px 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
-td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; padding-right: 0; }
-td.ref { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); white-space: nowrap; }
+/* copilot */
+.copilot { position: fixed; right: 16px; bottom: 16px; width: min(440px, calc(100vw - 32px));
+  max-height: min(680px, calc(100vh - 100px)); display: flex; flex-direction: column; z-index: 40;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 14px;
+  box-shadow: 0 24px 60px -20px rgba(0,0,0,.45); }
+.copilot[hidden] { display: none; }
+.cp-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.cp-head b { font: 600 14px var(--ui); }
+.cp-head .muted { font-size: 11px; }
+.cp-body { overflow: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 12px; flex: 1; min-height: 120px; }
+.msg.q { align-self: flex-end; background: var(--accent); color: var(--on-accent); padding: 8px 12px;
+  border-radius: 12px 12px 3px 12px; max-width: 85%; font-size: 13px; }
+.msg.a { font: 400 14px/1.55 var(--prose); }
+.msg.a p { margin: 0 0 8px; } .msg.a ul { margin: 0 0 8px; padding-left: 18px; } .msg.a li { margin-bottom: 4px; }
+.msg.a .meta { font: 400 10.5px/1.4 var(--mono); color: var(--ink-3); margin-top: 6px; }
+.msg.err { color: var(--fraud); font-size: 12.5px; }
+.eref { font: 600 10.5px var(--mono); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--accent);
+  color: var(--accent); background: var(--accent-soft); cursor: pointer; }
+.cp-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; }
+.cp-chips button { font: 500 11.5px var(--ui); padding: 6px 9px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--ink-2); }
+.cp-form { display: flex; gap: 8px; padding: 10px 14px 14px; border-top: 1px solid var(--line); }
+.cp-form textarea { flex: 1; resize: none; font: 400 13px/1.4 var(--ui); padding: 9px 10px; border-radius: 10px;
+  border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--ink); min-height: 40px; max-height: 120px; }
+.cursor::after { content: "▍"; animation: blink 1s steps(1) infinite; color: var(--accent); }
+@keyframes blink { 50% { opacity: 0; } }
+.fab { position: fixed; right: 18px; bottom: 18px; z-index: 39; box-shadow: 0 14px 30px -12px rgba(0,0,0,.45); padding: 12px 16px; }
 
-.quote {
-  border-left: 2px solid var(--uncertain); background: var(--uncertain-soft);
-  padding: 12px 14px; border-radius: 0 var(--radius) var(--radius) 0;
-}
-.quote .tag { font: 600 10px/1 var(--ui); letter-spacing: 0.09em; text-transform: uppercase;
-  color: var(--uncertain); display: block; margin-bottom: 6px; }
+/* monitor */
+.mon-top { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; padding: 26px 0 14px; }
+.mon-top h1 { font: 500 34px/1.05 var(--display); letter-spacing: -.02em; margin: 6px 0 6px; }
+.mon-top p { margin: 0; color: var(--ink-2); max-width: 70ch; }
+.mon-ctl { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.mon-ctl select { font: 500 12px var(--ui); padding: 8px 10px; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); }
+.mon-kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 1000px) { .mon-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .mon-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.mon-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 14px; margin-top: 14px; }
+@media (max-width: 1000px) { .mon-grid { grid-template-columns: 1fr; } }
+.feed { list-style: none; margin: 0; padding: 0; max-height: 620px; overflow: auto; }
+.feed li { display: grid; grid-template-columns: 3px minmax(0, 1fr) auto; gap: 4px 12px; padding: 10px 14px 10px 0;
+  border-top: 1px solid var(--line); animation: slidein .35s ease-out; }
+.feed li:first-child { border-top: 0; }
+@keyframes slidein { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.feed .stripe { border-radius: 2px; background: var(--line-strong); }
+.feed .v-fraud .stripe, .feed li.v-fraud .stripe { background: var(--fraud); }
+.feed li.v-uncertain .stripe { background: var(--uncertain); } .feed li.v-legitimate .stripe { background: var(--legit); }
+.feed .l1 { font: 500 12.5px var(--mono); }
+.feed .l2 { font-size: 11.5px; color: var(--ink-3); grid-column: 2 / 4; display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+.feed .r { text-align: right; font: 500 12px var(--mono); font-variant-numeric: tabular-nums; }
+.feed .r small { display: block; color: var(--ink-3); font-weight: 400; font-size: 10.5px; }
+.spark svg { display: block; width: 100%; height: 56px; }
 
-.tip {
-  position: fixed; z-index: 30; max-width: 320px; pointer-events: none;
-  background: var(--ink); color: var(--ground); padding: 8px 10px; border-radius: var(--radius-s);
-  font-size: 12px; line-height: 1.45; box-shadow: 0 6px 20px rgba(0,0,0,.22);
-}
-.empty { color: var(--ink-3); font-size: 13px; }
-.note { color: var(--ink-3); font-size: 11.5px; margin-top: 8px; }
-.banner {
-  background: var(--uncertain-soft); color: var(--uncertain);
-  border-bottom: 1px solid var(--line);
-  font: 500 11.5px/1.4 var(--ui); padding: 8px 20px;
-}
+/* how it works */
+.how { padding-top: 26px; }
+.how h1 { font: 500 34px/1.05 var(--display); letter-spacing: -.02em; margin: 6px 0 10px; }
+.arch svg { display: block; width: 100%; height: auto; }
+.arch text { font: 500 11.5px var(--ui); fill: var(--ink); }
+.arch text.s { font: 400 10px var(--mono); fill: var(--ink-3); }
+.arch .box { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1.2; }
+.arch .box.tg { stroke: var(--tiger); stroke-width: 1.8; }
+.arch .box.llm { stroke: var(--accent); stroke-dasharray: 4 3; }
+.arch .ln { stroke: var(--ink-3); stroke-width: 1.2; fill: none; marker-end: url(#arr); }
+.facts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 14px; }
+.facts-grid h3 { font: 600 15px var(--ui); margin: 0 0 6px; }
+.facts-grid p, .facts-grid li { color: var(--ink-2); font-size: 13px; }
+.facts-grid ul { margin: 0; padding-left: 18px; }
+footer.foot { max-width: 1440px; margin: 0 auto; padding: 18px 20px 90px; color: var(--ink-3); font-size: 11.5px;
+  display: flex; flex-wrap: wrap; gap: 6px 18px; }
 </style>
 </head>
 <body>
 
 <div class="banner" id="banner" hidden></div>
 
-<header class="masthead">
-  <div>
-    <h1>Fraud Case Register</h1>
-    <div class="sub" id="runsub">loading</div>
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#/overview" aria-label="Tidewatch home">
+      <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M5 19c3-4 6-4 9 0s6 4 9 0 4-3 4-3" stroke="var(--surface)" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="23" cy="10" r="3" fill="#F2A33A"/></svg>
+      <span><b>Tidewatch</b><small>agentic fraud investigation</small></span>
+    </a>
+    <nav class="nav" aria-label="Views">
+      <a href="#/overview" data-v="overview">Overview</a>
+      <a href="#/case" data-v="case">Cases</a>
+      <a href="#/monitor" data-v="monitor">Live monitor</a>
+      <a href="#/how" data-v="how">How it works</a>
+    </nav>
+    <div class="top-right">
+      <span class="pill tg hide-s" title="Graph backend"><i></i>TigerGraph Savanna</span>
+      <span class="pill hide-s" id="pill-live" title="Live investigation engine"><i></i>recorded runs</span>
+      <span class="pill hide-s" id="pill-llm" title="Analyst copilot"><i></i>copilot off</span>
+      <button class="iconbtn" id="theme" type="button" aria-label="Toggle light and dark">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
   </div>
-  <dl class="runstrip" id="runstrip"></dl>
 </header>
 
-<main class="console">
-  <aside class="register" aria-label="Case register">
-    <div class="filters" id="filters" role="group" aria-label="Filter cases"></div>
-    <div id="rows"></div>
-  </aside>
-  <section class="record" id="record" aria-live="polite"></section>
+<main>
+  <!-- ====================================================== OVERVIEW -->
+  <section class="view" id="v-overview" aria-label="Overview"></section>
+  <!-- ====================================================== CASES -->
+  <section class="view" id="v-case" aria-label="Cases" hidden>
+    <div class="ws">
+      <aside class="card register" aria-label="Case register">
+        <div class="reg-head">
+          <input id="q" type="search" placeholder="Search id, pattern, action…" aria-label="Search cases">
+          <div class="filters" id="filters" role="group" aria-label="Filter cases"></div>
+        </div>
+        <div id="rows"></div>
+      </aside>
+      <div class="ws-main" id="record" aria-live="polite"></div>
+    </div>
+  </section>
+  <!-- ====================================================== MONITOR -->
+  <section class="view" id="v-monitor" aria-label="Live monitor" hidden></section>
+  <!-- ====================================================== HOW -->
+  <section class="view" id="v-how" aria-label="How it works" hidden></section>
 </main>
+
+<footer class="foot">
+  <span>Tidewatch · built at Hacker House Goa for the TigerGraph × HHGOA Agentic Fraud Investigation challenge</span>
+  <span>Graph: TigerGraph Savanna 4.2.5 · decisions: deterministic rubric + Fraud Policy v1.0 · copilot: Claude</span>
+  <span>Simulated actions and assumed customer responses are labelled wherever they appear.</span>
+</footer>
+
+<button class="btn primary fab" id="fab" type="button" hidden>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  Ask Claude about this case
+</button>
+<aside class="copilot" id="copilot" hidden aria-label="Analyst copilot">
+  <div class="cp-head">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>
+    <div><b id="cp-title">Copilot</b><div class="muted" id="cp-sub">reads the case file and the Fraud Policy · cannot change the decision</div></div>
+    <button class="iconbtn" id="cp-close" type="button" aria-label="Close copilot" style="margin-left:auto">✕</button>
+  </div>
+  <div class="cp-body" id="cp-body"></div>
+  <div class="cp-chips" id="cp-chips"></div>
+  <form class="cp-form" id="cp-form">
+    <textarea id="cp-in" rows="1" placeholder="Ask about the evidence, the policy, the next step…" aria-label="Question"></textarea>
+    <button class="btn primary" type="submit" id="cp-send">Ask</button>
+  </form>
+</aside>
 
 <script>
 /* ===========================================================================
-   Data. The page runs in two places from one file:
-     - served by src/ui/app.py, where it fetches the live case files
-     - standalone, where a build step inlines window.__CASES__ first
+   Data. One file, three homes:
+     - served by src/ui/app.py: fetches the case files, may run live, may stream the copilot
+     - built static by src/ui/build_static.py: window.__CASES__ is inlined, replay only
+   Everything the page draws is read from the answer files, their diagnostics
+   sidecar and the run manifest. The page computes nothing it then presents as
+   the investigation's own finding.
    =========================================================================== */
-const state = { cases: {}, diag: {}, manifest: null, selected: null, filter: "all" };
+const S = { cases: {}, diag: {}, manifest: null, monitorSample: null, caps: { live: false, copilot: false },
+  selected: null, filter: "all", q: "", chats: {}, approvals: {}, live: {} };
 
-const money = n => "$" + Number(n || 0).toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
-const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = n => "$" + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pretty = s => String(s || "").replace(/_/g, " ");
+const $ = id => document.getElementById(id);
+const vcolor = v => v === "fraud" ? "var(--fraud)" : v === "legitimate" ? "var(--legit)" : "var(--uncertain)";
+const fmtMs = ms => ms >= 1000 ? (ms / 1000).toFixed(2) + " s" : (ms >= 10 ? ms.toFixed(0) : ms.toFixed(1)) + " ms";
 
 async function load() {
   if (window.__CASES__) {
-    state.cases = window.__CASES__.cases || {};
-    state.diag = window.__CASES__.diagnostics || {};
-    state.manifest = window.__CASES__.manifest || null;
-    banner(window.__CASES__.banner);
+    const d = window.__CASES__;
+    Object.assign(S, { cases: d.cases || {}, diag: d.diagnostics || {}, manifest: d.manifest || null,
+      monitorSample: d.monitor_sample || null });
+    S.caps = { live: false, copilot: false, static: true };
+    banner(d.banner);
     return;
   }
   const r = await fetch("api/cases");
   if (!r.ok) throw new Error("the case API returned " + r.status);
   const d = await r.json();
-  state.cases = d.cases || {};
-  state.diag = d.diagnostics || {};
-  state.manifest = d.manifest || null;
+  Object.assign(S, { cases: d.cases || {}, diag: d.diagnostics || {}, manifest: d.manifest || null,
+    monitorSample: d.monitor_sample || null });
+  S.caps = d.capabilities || S.caps;
   banner(d.banner);
 }
+function banner(text) { const el = $("banner"); el.hidden = !text; el.textContent = text || ""; }
 
-function banner(text) {
-  const el = document.getElementById("banner");
-  if (!text) { el.hidden = true; return; }
-  el.textContent = text;
-  el.hidden = false;
+function pills() {
+  const live = $("pill-live"), llm = $("pill-llm");
+  live.classList.toggle("on", !!S.caps.live);
+  live.innerHTML = `<i></i>${S.caps.live ? "live engine" : "recorded runs"}`;
+  llm.classList.toggle("on", !!S.caps.copilot);
+  llm.innerHTML = `<i></i>${S.caps.copilot ? "copilot · " + esc(S.caps.copilot_model || "claude") : "copilot off"}`;
 }
 
-/* --- run summary ---------------------------------------------------------- */
-function renderRun() {
-  const m = state.manifest && state.manifest.run ? state.manifest.run : {};
-  const n = Object.keys(state.cases).length;
-  const filed = Object.values(state.cases).filter(c => c.sar && c.sar.file).length;
-  document.getElementById("runsub").textContent =
-    (state.manifest ? state.manifest.backend + " backend" : "no run manifest") +
-    (state.manifest && state.manifest.llm ? " · " + state.manifest.llm : " · deterministic, no model calls");
-
-  const tiles = [
-    ["cases", n + "/20"],
-    ["graph queries", (m.total_tool_calls || 0).toLocaleString()],
-    ["model calls", (m.total_llm_calls || 0).toLocaleString()],
-    ["cost", "$" + Number(m.total_cost_usd || 0).toFixed(4)],
-    ["wall clock", (m.total_latency_s || 0).toFixed(1) + "s"],
-    ["evidence from graph", Math.round((m.mean_deterministic_evidence_share || 0) * 100) + "%"],
-    ["reports filed", filed + "/" + n],
-  ];
-  document.getElementById("runstrip").innerHTML = tiles
-    .map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("");
+/* --- derived facts ---------------------------------------------------------- */
+const allCases = () => Object.values(S.cases);
+function initialP(id) {
+  const t = (S.diag[id] || {}).trace || [];
+  const a = t.find(e => e.kind === "assessment" && e.label === "initial");
+  return a ? a.p : null;
+}
+function pendingHuman() {
+  const out = [];
+  for (const c of allCases()) for (const a of (c.next_best_actions || {}).final || [])
+    if (a.route !== "auto") out.push({ case_id: c.case_id, verdict: c.case.verdict, ...a });
+  return out;
+}
+function runStats() {
+  const m = (S.manifest && S.manifest.run) || {};
+  const cs = allCases();
+  const lat = cs.map(c => Number(c.latency_s) || 0);
+  return {
+    n: cs.length, queries: m.total_tool_calls || cs.reduce((s, c) => s + (c.tool_calls || 0), 0),
+    llm: m.total_llm_calls || 0, cost: m.total_cost_usd || 0,
+    total_s: lat.reduce((a, b) => a + b, 0),
+    median_ms: lat.length ? [...lat].sort((a, b) => a - b)[Math.floor(lat.length / 2)] * 1000 : 0,
+    graphShare: m.mean_deterministic_evidence_share || 0,
+    filed: cs.filter(c => c.sar && c.sar.file).length,
+    written: cs.filter(c => c.case.written_to_graph).length,
+    asked: cs.filter(c => (c.evidence_requests || []).length).length,
+    moved: cs.filter(c => (c.evidence_requests || []).length &&
+      JSON.stringify(c.next_best_actions.initial) !== JSON.stringify(c.next_best_actions.final)).length,
+    verdicts: ["fraud", "uncertain", "legitimate"].map(v => [v, cs.filter(c => c.case.verdict === v).length]),
+  };
 }
 
-/* --- register ------------------------------------------------------------- */
+/* ===========================================================================
+   OVERVIEW
+   =========================================================================== */
+function renderOverview() {
+  const st = runStats();
+  const pend = pendingHuman();
+  const el = $("v-overview");
+  const kp = (v, k, s, unit = "") => `<div class="card kpi"><div class="v">${v}${unit ? `<small>${unit}</small>` : ""}</div><div class="k">${k}</div><div class="s">${s}</div></div>`;
+  el.innerHTML = `
+  <div class="hero">
+    <div>
+      <span class="eyebrow">TigerGraph × Hacker House Goa · agentic fraud investigation</span>
+      <h1>${st.n} alerts investigated in <em>${st.total_s.toFixed(1)} s</em>.<br>No model in the decision loop.</h1>
+      <p class="lede">Each alert is worked like an analyst would: graph queries against 590,742 transactions on TigerGraph,
+        a transparent score, the cheapest question that could change the answer, and actions routed by the bank's policy.
+        Claude sits beside the analyst to explain it, never to decide it.</p>
+      <div class="ctas">
+        <a class="btn primary" href="#/case/${esc(bestDemoCase())}">Open the ring case →</a>
+        <a class="btn" href="#/monitor">Watch the live monitor</a>
+        <a class="btn" href="#/how">How it works</a>
+      </div>
+    </div>
+    <div class="kpis">
+      ${kp(st.median_ms < 1000 ? st.median_ms.toFixed(0) : (st.median_ms / 1000).toFixed(1), "median investigation", "graph queries, scoring, evidence loop, policy, write-back", st.median_ms < 1000 ? "ms" : "s")}
+      ${kp("$" + Number(st.cost).toFixed(2), "model spend on decisions", `${st.llm} model calls across the pack`)}
+      ${kp(st.queries, "graph queries", `${Math.round(st.graphShare * 100)}% of evidence straight from the graph`)}
+      ${kp(`${st.moved}<small>/${st.asked}</small>`, "recommendations changed", "after the agent asked for evidence")}
+      ${kp(`${st.filed}<small>/${st.n}</small>`, "reports filed", "policy 3a: a case is not a report")}
+      ${kp(`${st.written}<small>/${st.n}</small>`, "written to TigerGraph", "each read back before it counts")}
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1200 14" preserveAspectRatio="none" aria-hidden="true"><path d="M0 7 Q 25 0 50 7 T 100 7 T 150 7 T 200 7 T 250 7 T 300 7 T 350 7 T 400 7 T 450 7 T 500 7 T 550 7 T 600 7 T 650 7 T 700 7 T 750 7 T 800 7 T 850 7 T 900 7 T 950 7 T 1000 7 T 1050 7 T 1100 7 T 1150 7 T 1200 7" stroke="currentColor" fill="none" stroke-width="1.2"/></svg>
+  <div class="ov-grid">
+    <div class="card pad dumb">
+      <h2 class="sec">Where the ${st.n} cases landed, and what asking for evidence did</h2>
+      ${dumbbell()}
+      <div class="legend">
+        <span><i class="hollow"></i> before the evidence request</span>
+        <span><i class="sw" style="background:var(--fraud)"></i> fraud</span>
+        <span><i class="sw" style="background:var(--uncertain)"></i> uncertain</span>
+        <span><i class="sw" style="background:var(--legit)"></i> legitimate</span>
+        <span>shaded: 0.15–0.85, where one family of evidence can never decide a case</span>
+      </div>
+    </div>
+    <div class="grid" style="align-content:start">
+      <div class="card pad">
+        <h2 class="sec">Verdicts</h2>
+        <div class="bars">${st.verdicts.map(([v, n]) => `<div class="bar"><span class="vtext-${v}" style="font-weight:600">${v}</span>
+          <span class="tr"><span class="fl" style="width:${st.n ? n / st.n * 100 : 0}%;background:${vcolor(v)}"></span></span>
+          <span class="n">${n}</span></div>`).join("")}</div>
+        <p class="note">Calibrated against the closed-case history: most alerts are not fraud, and an agent that says “fraud” twenty times is not investigating.</p>
+      </div>
+      <div class="card pad">
+        <h2 class="sec">Waiting on a human <span class="chip">${pend.length}</span></h2>
+        ${pend.length ? `<ul class="queue">${pend.slice(0, 7).map(a => `<li>
+            <span><a href="#/case/${esc(a.case_id)}" style="font:500 12px var(--mono)">${esc(a.case_id)}</a> <span class="an">${esc(a.action)}</span></span>
+            <span class="chip route-${esc(a.route)}">${esc(a.route)}</span>
+            <span class="why">${esc(a.reason)}</span></li>`).join("")}</ul>
+          ${pend.length > 7 ? `<p class="note">and ${pend.length - 7} more in the case register.</p>` : ""}`
+          : `<p class="empty">Nothing needs approval. Every recommended action is within the agent's own authority.</p>`}
+        <p class="note">Routes come from the policy's approval table. The agent executes only what is routed <code>auto</code>.</p>
+      </div>
+    </div>
+  </div>`;
+  wireTips(el);
+  el.querySelectorAll("[data-go]").forEach(n => n.addEventListener("click", () => { location.hash = "#/case/" + n.dataset.go; }));
+}
+function short(pattern) {
+  const map = { card_not_present_fraud: "card not present", card_not_present_new_device: "CNP new device",
+    out_of_region_use: "out of region", account_takeover: "account takeover", card_testing: "card testing",
+    undocumented: "undocumented", none: "" };
+  return map[pattern] != null ? map[pattern] : pretty(pattern).slice(0, 18);
+}
+function bestDemoCase() {
+  const cs = allCases();
+  const ring = cs.find(c => (c.case.connected_card_ids || []).length > 3);
+  return (ring || cs[0] || { case_id: "" }).case_id;
+}
+
+/* The dumbbell: one row per case, the final probability as a filled dot, and
+   for cases that asked for evidence, a hollow dot where the probability stood
+   before - so the evidence loop's effect is drawn, not claimed. */
+function dumbbell() {
+  const cs = allCases().sort((a, b) => b.case.fraud_probability - a.case.fraud_probability);
+  const rowH = 22, T = 26, L = 200, R = 22, W = 760, H = T + cs.length * rowH + 26;
+  const x = v => L + v * (W - L - R);
+  const ticks = [0, 0.2, 0.5, 0.7, 1];
+  const rows = cs.map((c, i) => {
+    const y = T + i * rowH + rowH / 2;
+    const p = c.case.fraud_probability, p0 = initialP(c.case_id);
+    const asked = (c.evidence_requests || []).length > 0;
+    const col = vcolor(c.case.verdict);
+    const tip = `${c.case_id} · ${c.case.verdict} at ${p.toFixed(2)}` + (asked && p0 != null ? ` · was ${p0.toFixed(2)} before asking for ${c.evidence_requests.map(r => pretty(r.type)).join(", ")}` : "") + ` · ${pretty(c.case.pattern)}`;
+    return `<g class="row" data-go="${esc(c.case_id)}" data-tip="${esc(tip)}">
+      <rect class="hit" x="0" y="${y - rowH / 2}" width="${W}" height="${rowH}" rx="4"></rect>
+      <text class="lab" x="8" y="${y + 4}">${esc(c.case_id)}</text>
+      <text x="74" y="${y + 4}">${esc(short(c.case.pattern))}</text>
+      ${asked && p0 != null ? `<line x1="${x(p0)}" y1="${y}" x2="${x(p)}" y2="${y}" stroke="${col}" stroke-width="2" opacity=".55"></line>
+        <circle cx="${x(p0)}" cy="${y}" r="4.5" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="2"></circle>` : ""}
+      <circle cx="${x(p)}" cy="${y}" r="5.5" fill="${col}" stroke="var(--surface)" stroke-width="2"></circle>
+    </g>`;
+  }).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Fraud probability for each case, with the value before any evidence request">
+    <rect x="${x(0.15)}" y="${T - 8}" width="${x(0.85) - x(0.15)}" height="${cs.length * rowH + 8}" fill="var(--band)" opacity=".55" rx="3"></rect>
+    ${ticks.map(v => `<line x1="${x(v)}" y1="${T - 8}" x2="${x(v)}" y2="${T + cs.length * rowH}" stroke="var(--line)" stroke-width="1"></line>
+      <text x="${x(v)}" y="${H - 8}" text-anchor="middle">${v.toFixed(v === 0 || v === 1 ? 0 : 2)}</text>`).join("")}
+    <text x="${x(0.2)}" y="${T - 12}" text-anchor="middle">legitimate ≤ 0.20</text>
+    <text x="${x(0.7)}" y="${T - 12}" text-anchor="middle">fraud ≥ 0.70</text>
+    ${rows}
+  </svg>`;
+}
+
+/* ===========================================================================
+   CASE REGISTER
+   =========================================================================== */
 const FILTERS = [
   ["all", c => true],
   ["fraud", c => c.case.verdict === "fraud"],
   ["uncertain", c => c.case.verdict === "uncertain"],
   ["legitimate", c => c.case.verdict === "legitimate"],
-  ["asked for evidence", c => (c.evidence_requests || []).length > 0],
-  ["report filed", c => c.sar && c.sar.file],
+  ["asked", c => (c.evidence_requests || []).length > 0],
+  ["needs human", c => (c.next_best_actions.final || []).some(a => a.route !== "auto")],
+  ["report", c => c.sar && c.sar.file],
 ];
-
-function renderFilters() {
-  document.getElementById("filters").innerHTML = FILTERS.map(([name]) => {
-    const count = Object.values(state.cases).filter(FILTERS.find(f => f[0] === name)[1]).length;
-    return `<button type="button" data-f="${esc(name)}" aria-pressed="${state.filter === name}">
-              ${esc(name)} <span style="opacity:.6">${count}</span></button>`;
-  }).join("");
-  document.querySelectorAll("#filters button").forEach(b => {
-    b.onclick = () => { state.filter = b.dataset.f; renderFilters(); renderRows(); };
-  });
-}
-
 function visibleCases() {
-  const pred = FILTERS.find(f => f[0] === state.filter)[1];
-  // Highest probability first: the register's job is to surface what needs attention.
-  return Object.values(state.cases).filter(pred)
+  const pred = FILTERS.find(f => f[0] === S.filter)[1];
+  const q = S.q.trim().toLowerCase();
+  return allCases().filter(pred).filter(c => !q || JSON.stringify([c.case_id, c.case.pattern, c.case.verdict,
+    (c.next_best_actions.final || []).map(a => a.action)]).toLowerCase().includes(q))
     .sort((a, b) => b.case.fraud_probability - a.case.fraud_probability);
 }
-
+function renderFilters() {
+  $("filters").innerHTML = FILTERS.map(([name, f]) =>
+    `<button type="button" data-f="${esc(name)}" aria-pressed="${S.filter === name}">${esc(name)} <span style="opacity:.6">${allCases().filter(f).length}</span></button>`).join("");
+  $("filters").querySelectorAll("button").forEach(b => b.onclick = () => { S.filter = b.dataset.f; renderFilters(); renderRows(); });
+}
 function renderRows() {
   const rows = visibleCases();
-  document.getElementById("rows").innerHTML = rows.length ? rows.map(c => {
-    const k = c.case;
-    const asked = (c.evidence_requests || []).length;
-    const bits = [k.pattern === "none" ? "no pattern claimed" : k.pattern.replace(/_/g, " ")];
+  $("rows").innerHTML = rows.length ? rows.map(c => {
+    const k = c.case, asked = (c.evidence_requests || []).length;
+    const bits = [k.pattern === "none" ? "no pattern claimed" : pretty(k.pattern)];
     if (asked) bits.push("asked " + asked);
-    if (c.sar && c.sar.file) bits.push("report filed");
-    return `<button class="caserow v-${esc(k.verdict)}" data-id="${esc(c.case_id)}"
-              aria-current="${state.selected === c.case_id}">
+    if (c.sar && c.sar.file) bits.push("report");
+    return `<button class="caserow v-${esc(k.verdict)}" data-id="${esc(c.case_id)}" aria-current="${S.selected === c.case_id}">
       <span class="stripe"></span>
-      <span class="body">
-        <span class="id">${esc(c.case_id)}</span>
-        <span class="meta">${esc(bits.join(" · "))}</span>
-      </span>
-      <span class="tail">
-        <span class="p">${k.fraud_probability.toFixed(2)}</span><br>
-        <span class="exp">${k.exposure_usd ? money(k.exposure_usd) : "—"}</span>
-      </span>
+      <span class="body"><span class="id">${esc(c.case_id)}</span><span class="meta">${esc(bits.join(" · "))}</span></span>
+      <span class="tail"><span class="p">${k.fraud_probability.toFixed(2)}</span><br><span class="exp">${k.exposure_usd ? money(k.exposure_usd) : "—"}</span></span>
     </button>`;
-  }).join("") : `<p class="empty" style="padding:16px">No case matches this filter.</p>`;
-
-  document.querySelectorAll(".caserow").forEach(b => {
-    b.onclick = () => select(b.dataset.id);
-  });
+  }).join("") : `<p class="empty" style="padding:14px">No case matches.</p>`;
+  $("rows").querySelectorAll(".caserow").forEach(b => b.onclick = () => { location.hash = "#/case/" + b.dataset.id; });
 }
 
-/* --- the probability instrument ------------------------------------------
-   One value on a 0-1 scale, with the regions that actually govern the
-   decision drawn on it: the 0.15-0.85 band inside which the policy forbids a
-   confident call on a single signal, and the two verdict thresholds. Every
-   label names a value the scale reaches.
-   ------------------------------------------------------------------------- */
-function instrument(p, verdict) {
-  const W = 620, H = 74, L = 14, R = 26, y = 34, h = 13;
-  const x = v => L + v * (W - L - R);
-  const colour = verdict === "fraud" ? "var(--fraud)" : verdict === "legitimate" ? "var(--legit)" : "var(--uncertain)";
-  const ticks = [[0, "0"], [0.20, "0.20"], [0.70, "0.70"], [1, "1.0"]];
-  return `<svg class="instrument" viewBox="0 0 ${W} ${H}" role="img"
-    aria-label="Fraud probability ${p.toFixed(2)} on a zero to one scale; the uncertainty band runs from 0.15 to 0.85">
-    <rect x="${x(0)}" y="${y}" width="${x(1) - x(0)}" height="${h}" rx="2" fill="var(--surface-3)"></rect>
-    <rect x="${x(0.15)}" y="${y}" width="${x(0.85) - x(0.15)}" height="${h}" fill="var(--band)"></rect>
-    <text x="${(x(0.15) + x(0.85)) / 2}" y="${y - 8}" text-anchor="middle">uncertainty band 0.15 – 0.85</text>
-    ${ticks.map(([v, lab]) => `
-      <line x1="${x(v)}" y1="${y}" x2="${x(v)}" y2="${y + h + 4}" stroke="var(--line-strong)" stroke-width="1"></line>
-      <text x="${x(v)}" y="${y + h + 16}" text-anchor="middle">${lab}</text>`).join("")}
-    <text x="${x(0.20)}" y="${y + h + 27}" text-anchor="middle">legitimate at or below</text>
-    <text x="${x(0.70)}" y="${y + h + 27}" text-anchor="middle">fraud at or above</text>
-    <rect x="${x(Math.min(p, 1)) - 1.5}" y="${y - 5}" width="3" height="${h + 10}" rx="1.5" fill="${colour}"></rect>
-    <circle cx="${x(Math.min(p, 1))}" cy="${y + h / 2}" r="5.5" fill="${colour}" stroke="var(--surface)" stroke-width="2"></circle>
-    <text class="val" x="${x(Math.min(p, 1))}" y="${y - 12}" text-anchor="middle" fill="${colour}">${p.toFixed(2)}</text>
-  </svg>`;
+/* ===========================================================================
+   CASE RECORD
+   =========================================================================== */
+function caseData(id) {
+  const lv = S.live[id];
+  return lv ? { c: lv.case, d: lv.diagnostics, live: lv } : { c: S.cases[id], d: S.diag[id] || {}, live: null };
 }
 
-/* --- driver contributions -------------------------------------------------
-   Diverging bars from a centre zero: the signals that raised the probability
-   to the right, the ones that lowered it to the left, each direct-labelled.
-   Sub-material contributions are shown faded and marked, because "this signal
-   is present but is not allowed to count as independent evidence" is one of
-   the more important things the page has to say.
-   ------------------------------------------------------------------------- */
-function drivers(assessment) {
-  const all = (assessment.all_contributions || []).filter(c => c.log_odds !== 0);
-  if (!all.length) return `<p class="empty">No signal moved the assessment away from the base rate of ${Number(assessment.prior).toFixed(2)}.</p>`;
-  const scale = Math.max(2.0, ...all.map(c => Math.abs(c.log_odds)));
-  const rows = all.sort((a, b) => Math.abs(b.log_odds) - Math.abs(a.log_odds)).map(c => {
-    const pct = (Math.abs(c.log_odds) / scale) * 50;
-    const pos = c.log_odds > 0;
-    return `<div class="driver ${c.material ? "" : "weak"}" data-tip="${esc(c.note)}">
-      <span class="name" title="${esc(c.signal)}"><b>${esc(c.signal)}</b>${c.material ? "" : "<em>not independent evidence</em>"}</span>
-      <span class="track"><span class="zero"></span>
-        <span class="fill ${pos ? "pos" : "neg"}" style="${pos ? `left:50%;width:${pct}%` : `right:50%;width:${pct}%`}"></span>
-      </span>
-      <span class="amt ${pos ? "pos" : "neg"}">${c.log_odds > 0 ? "+" : ""}${c.log_odds.toFixed(2)}</span>
-    </div>`;
-  }).join("");
-  return `<div class="drivers">${rows}</div>
-    <div class="legend">
-      <span><i style="background:var(--fraud)"></i> raises fraud probability</span>
-      <span><i style="background:var(--legit)"></i> lowers it</span>
-      <span>faded = below the materiality floor, so it cannot count as one of the two independent signals</span>
-      <span>log-odds, added to a prior of ${Number(assessment.prior).toFixed(2)}</span>
-    </div>`;
-}
-
-/* --- action diff ---------------------------------------------------------- */
-function actionList(list, other, mark) {
-  const names = new Set((other || []).map(a => a.action));
-  if (!list.length) return `<p class="empty">No action recommended.</p>`;
-  return `<ul class="actions">` + list.map(a => {
-    const cls = mark && !names.has(a.action) ? mark : "";
-    return `<li class="${cls}"><span class="an">${esc(a.action)}</span>
-      <span class="chip route-${esc(a.route)}">${esc(a.route)}</span>
-      <span class="why">${esc(a.reason)}</span></li>`;
-  }).join("") + `</ul>`;
-}
-
-/* --- the record ----------------------------------------------------------- */
 function renderRecord(id) {
-  const c = state.cases[id];
-  const d = state.diag[id] || {};
-  const el = document.getElementById("record");
-  if (!c) { el.innerHTML = `<p class="empty">Select a case.</p>`; return; }
-  const k = c.case, nba = c.next_best_actions || {initial: [], final: []};
-  const a = d.assessment || {prior: 0.3, all_contributions: [], families: []};
+  const { c, d, live } = caseData(id);
+  const el = $("record");
+  if (!c) { el.innerHTML = `<div class="card pad"><p class="empty">Select a case.</p></div>`; return; }
+  const k = c.case, nba = c.next_best_actions || { initial: [], final: [] };
+  const a = d.assessment || { prior: 0.3, all_contributions: [], families: [] };
   const changed = JSON.stringify(nba.initial) !== JSON.stringify(nba.final);
-
+  const trig = d.trigger || {};
   const parts = [];
 
-  parts.push(`<section class="casehead v-${esc(k.verdict)}">
-    <span class="cid">${esc(c.case_id)}</span>
-    <span class="stamp v-${esc(k.verdict)}"><span class="dot"></span>${esc(k.verdict)}</span>
-    <span class="chip">${esc((d.trigger && d.trigger.type || "").replace(/_/g, " ") || "trigger unknown")}</span>
-    <span class="chip">${esc(k.status.replace(/_/g, " "))}</span>
-    <span class="who">customer <code>${esc(d.card && d.card.card_id ? d.card.card_id.split("-")[0] : "—")}</code>
-      · card <code>${esc(d.card && d.card.card_id || "not citable")}</code>
-      · flagged txn <code>${esc(d.trigger && d.trigger.flagged_txn_id || "—")}</code></span>
+  parts.push(`<section style="margin-top:0">
+    <div class="casehead">
+      <span class="cid">${esc(c.case_id)}</span>
+      <span class="stamp v-${esc(k.verdict)}"><span class="dot"></span>${esc(k.verdict)} · ${k.fraud_probability.toFixed(2)}</span>
+      <span class="chip">${esc(pretty(k.pattern === "none" ? "no pattern claimed" : k.pattern))}</span>
+      <span class="chip">${esc(pretty(k.status))}</span>
+      ${live ? `<span class="chip src-graph">re-run live · ${fmtMs(live.server_ms)}</span>` : ""}
+      <span class="spacer"></span>
+      <span class="mono small muted" style="font-family:var(--mono)">exposure <b style="color:var(--ink)">${money(k.exposure_usd)}</b></span>
+    </div>
+    <div class="facts">
+      <span>trigger <code>${esc(pretty(trig.type || "unknown"))}</code></span>
+      <span>opened <code>${esc(String(trig.opened_at || "").slice(0, 16))}</code></span>
+      <span>customer <code>${esc(d.card && d.card.card_id ? d.card.card_id.split("-")[0] : "—")}</code></span>
+      <span>card <code>${esc(d.card && d.card.card_id || "not citable")}</code></span>
+      <span>flagged txn <code>${esc(trig.flagged_txn_id || "—")}</code></span>
+    </div>
+    ${trig.narrative ? `<div class="trigger"><p class="prose">${esc(trig.narrative)}</p></div>` : ""}
+  </section>`);
+
+  parts.push(`<section class="two">
+    <div class="card pad" id="replay">${replayShell(c, d)}</div>
+    <div class="card pad graph"><h2 class="sec">The case in the graph <span class="chip src-graph">TigerGraph</span></h2>${graphView(c, d)}
+      <p class="note">Vertex and edge names are the schema's own (<code>src/graph/gsql/schema.gsql</code>). The case vertex is what the next investigation retrieves.</p></div>
   </section>`);
 
   parts.push(`<section>
-    <h2>Assessment</h2>
-    <div class="panel">
-      ${instrument(k.fraud_probability, k.verdict)}
+    <h2 class="sec">Assessment</h2>
+    <div class="card pad instrument">${instrument(k.fraud_probability, k.verdict)}
       <p class="note">${a.n_independent_signals || 0} independent signal${(a.n_independent_signals || 0) === 1 ? "" : "s"}
         ${(a.families || []).length ? "(" + esc(a.families.join(", ")) + ")" : ""}.
         ${a.clamped_to_band ? "Held inside the band because it rested on a single family of evidence." : ""}
-        ${a.override ? esc(a.override) + "." : ""}</p>
-    </div>
-    <div class="panel">${drivers(a)}</div>
+        ${a.override ? esc(a.override) + "." : ""}</p></div>
+    <div class="card pad" style="margin-top:10px">${drivers(a)}</div>
   </section>`);
 
-  parts.push(`<section>
-    <h2>Summary</h2>
-    <div class="panel"><p class="prose">${esc(k.summary)}</p></div>
-  </section>`);
-
-  const pat = d.pattern || {};
-  parts.push(`<section>
-    <h2>Pattern</h2>
-    <div class="panel">
-      <h3>${esc(k.pattern === "none" ? "No pattern claimed" : k.pattern.replace(/_/g, " "))}</h3>
-      <p class="prose small">${esc(pat.rationale || "")}</p>
-      ${k.pattern_description ? `<p class="prose small" style="margin-top:8px">${esc(k.pattern_description)}</p>` : ""}
-      ${(pat.alternatives || []).length ? `<div class="scroll" style="margin-top:12px"><table>
-        <thead><tr><th>alternative</th><th>score</th><th>why it lost</th></tr></thead>
-        <tbody>${pat.alternatives.slice(0, 4).map(alt => `<tr>
-          <td style="font-family:var(--mono);font-size:11.5px">${esc(alt.pattern)}</td>
-          <td class="num">${Number(alt.score).toFixed(2)}</td>
-          <td>${esc(alt.rejected || alt.rationale)}</td></tr>`).join("")}</tbody></table></div>` : ""}
-    </div>
-  </section>`);
+  parts.push(`<section><h2 class="sec">Summary</h2><div class="card pad"><p class="prose">${esc(k.summary)}</p></div></section>`);
 
   parts.push(`<section>
-    <h2>Next best action ${changed ? "· changed after evidence" : ""}</h2>
+    <h2 class="sec">Next best action ${changed ? `<span class="chip src-graph">changed after evidence</span>` : ""}</h2>
     <div class="diff">
-      <div class="panel"><h3>Before requesting evidence</h3>${actionList(nba.initial || [], nba.final, "gone")}</div>
-      <div class="panel"><h3>After</h3>${actionList(nba.final || [], nba.initial, "added")}</div>
+      <div class="card pad"><b>Before requesting evidence</b>${actionList(c.case_id, nba.initial || [], nba.final, "gone", false)}</div>
+      <div class="card pad"><b>Recommended now</b>${actionList(c.case_id, nba.final || [], nba.initial, "added", true)}</div>
     </div>
-    <p class="note">What changed: ${esc(nba.what_changed)}</p>
+    <p class="note">What changed: ${esc(nba.what_changed)}. Actions routed <code>L1</code> or <code>L2</code> wait for a person; approvals are logged to <code>approvals.jsonl</code> and nothing is executed.</p>
   </section>`);
 
   const reqs = c.evidence_requests || [];
-  const voi = (d.evidence_value || []).flatMap(l => l.options || []);
+  const voi = (d.evidence_value || []).flatMap(l => (l.options || []).map(o => ({ ...o, loop: l.loop })));
   parts.push(`<section>
-    <h2>Evidence requested</h2>
-    ${reqs.length ? reqs.map(r => `<div class="panel">
-        <h3>${esc(r.type.replace(/_/g, " "))} <span class="chip">after step ${esc(r.asked_after_step)}</span></h3>
-        <div class="quote" style="margin-top:10px">
-          <span class="tag">assumed response</span>
-          <span class="prose small">${esc(r.assumed_response)}</span>
-        </div>
-      </div>`).join("") : `<div class="panel"><p class="empty">No evidence was requested.</p></div>`}
-    ${voi.length ? `<div class="panel"><h3>Every option the agent weighed</h3>
-      <div class="scroll"><table>
-        <thead><tr><th>request</th><th>expected change</th><th>friction</th><th>net</th><th>reasoning</th></tr></thead>
-        <tbody>${voi.map(o => `<tr>
+    <h2 class="sec">Evidence the agent asked for</h2>
+    ${reqs.length ? reqs.map(r => `<div class="card pad" style="margin-bottom:10px">
+        <b>${esc(pretty(r.type))}</b> <span class="chip">after step ${esc(r.asked_after_step)}</span>
+        <div class="quote"><span class="tag">assumed response · simulated</span><span class="prose s">${esc(r.assumed_response)}</span></div>
+      </div>`).join("") : `<div class="card pad"><p class="empty">No evidence was requested - no available question could change the recommendation enough to justify asking.</p></div>`}
+    ${voi.length ? `<div class="card pad" style="margin-top:10px"><b>Every question it priced</b>
+      <div class="scroll" style="margin-top:8px"><table>
+        <thead><tr><th>loop</th><th>request</th><th>expected change</th><th>friction</th><th>net</th><th>reasoning</th></tr></thead>
+        <tbody>${voi.map(o => `<tr><td class="num">${o.loop}</td>
           <td style="font-family:var(--mono);font-size:11.5px">${esc(o.request_type)}${o.selected ? " ✓" : ""}</td>
-          <td class="num">${Number(o.expected_decision_change).toFixed(2)}</td>
-          <td class="num">${Number(o.friction).toFixed(2)}</td>
+          <td class="num">${Number(o.expected_decision_change).toFixed(2)}</td><td class="num">${Number(o.friction).toFixed(2)}</td>
           <td class="num">${Number(o.net_value) > 0 ? "+" : ""}${Number(o.net_value).toFixed(2)}</td>
           <td>${esc(o.rationale)}</td></tr>`).join("")}</tbody></table></div>
-      <p class="note">Expected change is how far the recommended action would move, weighted by how
-        likely each answer is. Friction is the cost of asking. The agent asks only when the
-        difference is positive.</p></div>` : ""}
+      <p class="note">Expected change is how far the recommended action would move, weighted by how likely each answer is; friction is the cost of asking the customer. It asks only when the difference is positive.</p></div>` : ""}
   </section>`);
 
   parts.push(`<section>
-    <h2>Evidence · ${(k.evidence || []).length} items</h2>
-    <div class="panel"><div class="scroll"><table>
-      <thead><tr><th>claim</th><th>source</th><th>query</th></tr></thead>
-      <tbody>${(k.evidence || []).map(e => `<tr>
-        <td>${esc(e.claim)}</td>
+    <h2 class="sec">Evidence · ${(k.evidence || []).length} items</h2>
+    <div class="card pad"><div class="scroll"><table id="evtable">
+      <thead><tr><th>#</th><th>claim</th><th>source</th><th>query</th></tr></thead>
+      <tbody>${(k.evidence || []).map((e, i) => `<tr id="ev-${i + 1}"><td class="num">E${i + 1}</td><td>${esc(e.claim)}</td>
         <td><span class="chip ${e.source === "graph" ? "src-graph" : ""}">${esc(e.source)}</span></td>
         <td class="ref">${esc(e.ref)}</td></tr>`).join("")}</tbody></table></div></div>
   </section>`);
 
-  const links = [];
-  if ((k.connected_card_ids || []).length) links.push(`<tr><td>connected cards</td><td class="ref">${k.connected_card_ids.map(esc).join(", ")}</td></tr>`);
-  if ((k.connected_device_profiles || []).length) links.push(`<tr><td>shared device profiles</td><td class="ref">${k.connected_device_profiles.map(esc).join("<br>")}</td></tr>`);
-  if ((k.similar_prior_cases || []).length) links.push(`<tr><td>similar prior cases</td><td class="ref">${k.similar_prior_cases.map(esc).join(", ")}</td></tr>`);
-  if ((k.affected_txn_ids || []).length) links.push(`<tr><td>affected transactions</td><td class="ref">${k.affected_txn_ids.map(esc).join(", ")}</td></tr>`);
-  links.push(`<tr><td>written to graph</td><td class="ref">${k.written_to_graph ? "yes · " + esc(k.graph_case_id) : "no"}</td></tr>`);
-  parts.push(`<section><h2>Connections and memory</h2>
-    <div class="panel"><div class="scroll"><table><tbody>${links.join("")}</tbody></table></div></div></section>`);
-
   const sar = c.sar || {};
   parts.push(`<section>
-    <h2>Suspicious activity report</h2>
-    <div class="panel">
-      ${sar.file ? `<h3>Filed · ${money(sar.total_amount_usd)} · ${esc((sar.activity_dates || []).join(" to "))}</h3>
-        <p class="note">${esc(sar.reason)}</p>
-        <p class="prose" style="margin-top:12px">${esc(sar.narrative)}</p>
+    <h2 class="sec">Suspicious activity report</h2>
+    <div class="card pad">${sar.file ? `<b>Filed · ${money(sar.total_amount_usd)} · ${esc((sar.activity_dates || []).join(" to "))}</b>
+        <p class="note">${esc(sar.reason)}</p><p class="prose" style="margin-top:12px">${esc(sar.narrative)}</p>
         <p class="note">Subjects: ${(sar.subjects || []).map(esc).join(", ")}</p>`
-      : `<h3>Not filed</h3><p class="prose small">${esc(sar.reason)}</p>`}
-    </div>
+      : `<b>Not filed</b><p class="prose s" style="margin-top:6px">${esc(sar.reason)}</p>`}</div>
   </section>`);
 
   const m = d.meter || {};
   const stages = Object.entries(m.by_stage || {});
   parts.push(`<section>
-    <h2>How the investigation stopped, and what it cost</h2>
-    <div class="panel">
-      <p class="prose small">${esc(c.stop_reason)}</p>
+    <h2 class="sec">Why it stopped, and what it cost</h2>
+    <div class="card pad"><p class="prose s">${esc(c.stop_reason)}</p>
       <div class="scroll" style="margin-top:12px"><table>
         <thead><tr><th>stage</th><th>graph queries</th><th>model calls</th><th>tokens</th><th>seconds</th></tr></thead>
-        <tbody>${stages.map(([name, r]) => `<tr>
-          <td>${esc(name.replace(/_/g, " "))}</td>
-          <td class="num">${r.tool_calls || 0}</td>
-          <td class="num">${r.llm_calls || 0}</td>
-          <td class="num">${(r.tokens || 0).toLocaleString()}</td>
+        <tbody>${stages.map(([name, r]) => `<tr><td>${esc(pretty(name))}</td><td class="num">${r.tool_calls || 0}</td>
+          <td class="num">${r.llm_calls || 0}</td><td class="num">${(r.tokens || 0).toLocaleString()}</td>
           <td class="num">${Number(r.wall_seconds || r.tool_seconds || 0).toFixed(3)}</td></tr>`).join("")}
-        <tr><td><strong>case total</strong></td>
-          <td class="num"><strong>${c.tool_calls}</strong></td>
-          <td class="num"><strong>${m.llm_calls || 0}</strong></td>
-          <td class="num"><strong>${(c.tokens || 0).toLocaleString()}</strong></td>
-          <td class="num"><strong>${Number(c.latency_s).toFixed(2)}</strong></td></tr>
-        </tbody></table></div>
-    </div>
+        <tr><td><b>case total</b></td><td class="num"><b>${c.tool_calls}</b></td><td class="num"><b>${m.llm_calls || 0}</b></td>
+          <td class="num"><b>${(c.tokens || 0).toLocaleString()}</b></td><td class="num"><b>${Number(c.latency_s).toFixed(3)}</b></td></tr>
+        </tbody></table></div></div>
   </section>`);
 
-  parts.push(`<section>
-    <h2>Decision log</h2>
-    <div class="panel"><ol class="prose small" style="margin:0;padding-left:20px">
-      ${(d.decisions || []).map(x => `<li style="margin-bottom:6px">${esc(x)}</li>`).join("")}
-    </ol></div>
-  </section>`);
+  parts.push(`<section><details class="card pad"><summary><h2 class="sec" style="margin:0">Decision log · ${(d.decisions || []).length} entries ▸</h2></summary>
+    <ol class="prose s" style="margin:12px 0 0;padding-left:20px">${(d.decisions || []).map(x => `<li style="margin-bottom:6px">${esc(x)}</li>`).join("")}</ol></details></section>`);
 
   el.innerHTML = parts.join("");
-  wireTips();
+  wireReplay(c, d);
+  wireApprovals(el);
+  wireTips(el);
 }
 
-/* --- hover layer on the driver bars -------------------------------------- */
-let tipEl = null;
-function wireTips() {
-  document.querySelectorAll("[data-tip]").forEach(node => {
-    node.addEventListener("pointerenter", ev => {
-      if (!tipEl) { tipEl = document.createElement("div"); tipEl.className = "tip"; document.body.appendChild(tipEl); }
-      tipEl.textContent = node.dataset.tip;
-      tipEl.hidden = false;
-      const r = node.getBoundingClientRect();
-      tipEl.style.left = Math.min(ev.clientX + 12, window.innerWidth - 340) + "px";
-      tipEl.style.top = Math.max(8, r.top - 8) + "px";
-    });
-    node.addEventListener("pointerleave", () => { if (tipEl) tipEl.hidden = true; });
+/* --- probability instrument ------------------------------------------------ */
+function instrument(p, verdict, opts = {}) {
+  const W = 620, H = opts.compact ? 58 : 74, L = 14, R = 26, y = opts.compact ? 26 : 34, h = 13;
+  const x = v => L + v * (W - L - R);
+  const col = vcolor(verdict);
+  const ticks = [[0, "0"], [0.2, "0.20"], [0.7, "0.70"], [1, "1.0"]];
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Fraud probability ${p.toFixed(2)}">
+    <rect x="${x(0)}" y="${y}" width="${x(1) - x(0)}" height="${h}" rx="3" fill="var(--surface-3)"></rect>
+    <rect x="${x(0.15)}" y="${y}" width="${x(0.85) - x(0.15)}" height="${h}" fill="var(--band)"></rect>
+    ${opts.compact ? "" : `<text x="${(x(0.15) + x(0.85)) / 2}" y="${y - 9}" text-anchor="middle">uncertainty band 0.15 – 0.85</text>`}
+    ${ticks.map(([v, lab]) => `<line x1="${x(v)}" y1="${y}" x2="${x(v)}" y2="${y + h + 4}" stroke="var(--line-strong)"></line>
+      <text x="${x(v)}" y="${y + h + 16}" text-anchor="middle">${lab}</text>`).join("")}
+    ${opts.compact ? "" : `<text x="${x(0.2)}" y="${y + h + 28}" text-anchor="middle">legitimate at or below</text>
+      <text x="${x(0.7)}" y="${y + h + 28}" text-anchor="middle">fraud at or above</text>`}
+    <g class="needle" style="transform:translateX(${x(Math.min(p, 1))}px)" ${opts.id ? `id="${opts.id}"` : ""}>
+      <rect x="-1.5" y="${y - 5}" width="3" height="${h + 10}" rx="1.5" fill="${col}"></rect>
+      <circle cx="0" cy="${y + h / 2}" r="5.5" fill="${col}" stroke="var(--surface)" stroke-width="2"></circle>
+      <text class="val" x="0" y="${y - 10}" text-anchor="middle" fill="${col}">${p.toFixed(2)}</text>
+    </g>
+  </svg>`;
+}
+function moveNeedle(id, p, verdict) {
+  const g = document.getElementById(id);
+  if (!g) return;
+  const W = 620, L = 14, R = 26, x = L + Math.min(p, 1) * (W - L - R), col = vcolor(verdict);
+  g.style.transform = `translateX(${x}px)`;
+  g.querySelectorAll("rect,circle").forEach(n => n.setAttribute("fill", col));
+  const t = g.querySelector("text"); t.textContent = p.toFixed(2); t.setAttribute("fill", col);
+}
+
+/* --- driver contributions --------------------------------------------------- */
+function drivers(assessment) {
+  const all = (assessment.all_contributions || []).filter(c => c.log_odds !== 0);
+  if (!all.length) return `<p class="empty">No signal moved the assessment from the base rate of ${Number(assessment.prior).toFixed(2)}.</p>`;
+  const scale = Math.max(2.0, ...all.map(c => Math.abs(c.log_odds)));
+  return `<div class="drivers">${all.sort((a, b) => Math.abs(b.log_odds) - Math.abs(a.log_odds)).map(c => {
+    const pct = Math.abs(c.log_odds) / scale * 50, pos = c.log_odds > 0;
+    return `<div class="driver ${c.material ? "" : "weak"}" data-tip="${esc(c.note)}">
+      <span class="name"><b>${esc(c.signal)}</b>${c.material ? `<em>${esc(pretty(c.family))}</em>` : "<em>below materiality - not independent evidence</em>"}</span>
+      <span class="track"><span class="zero"></span><span class="fill ${pos ? "pos" : "neg"}" style="${pos ? `left:50%;width:${pct}%` : `right:50%;width:${pct}%`}"></span></span>
+      <span class="amt">${pos ? "+" : ""}${c.log_odds.toFixed(2)}</span></div>`;
+  }).join("")}</div>
+  <div class="legend"><span><i class="sw" style="background:var(--fraud);border-radius:2px"></i> raises fraud probability</span>
+    <span><i class="sw" style="background:var(--legit);border-radius:2px"></i> lowers it</span>
+    <span>log-odds added to a prior of ${Number(assessment.prior).toFixed(2)} · faded = below the materiality floor</span></div>`;
+}
+
+/* --- actions, with approvals for anything a human must sign ----------------- */
+function actionList(caseId, list, other, mark, approvable) {
+  const names = new Set((other || []).map(a => a.action));
+  if (!list.length) return `<p class="empty" style="margin-top:10px">No action recommended.</p>`;
+  return `<ul class="actions">${list.map(a => {
+    const cls = mark && !names.has(a.action) ? mark : "";
+    const key = caseId + "|" + a.action, done = S.approvals[key];
+    const ctl = approvable && a.route !== "auto" ? (done ? `<span class="${done === "approved" ? "approved" : "rejected"}">${done}</span>`
+      : `<span class="approve"><button class="btn xs" data-ap="${esc(key)}" data-d="approved">Approve</button><button class="btn xs" data-ap="${esc(key)}" data-d="rejected">Reject</button></span>`) : "";
+    return `<li class="${cls}"><span class="an">${esc(a.action)}</span><span class="chip route-${esc(a.route)}">${esc(a.route)}</span>${ctl}
+      <span class="why">${esc(a.reason)}</span></li>`;
+  }).join("")}</ul>`;
+}
+function wireApprovals(root) {
+  root.querySelectorAll("[data-ap]").forEach(b => b.onclick = async () => {
+    const [caseId, action] = b.dataset.ap.split("|");
+    S.approvals[b.dataset.ap] = b.dataset.d;
+    if (!S.caps.static) {
+      try { await fetch(`api/approve/${encodeURIComponent(caseId)}?action=${encodeURIComponent(action)}&decision=${b.dataset.d}`, { method: "POST" }); } catch (e) {}
+    }
+    renderRecord(caseId);
   });
 }
 
-function select(id) {
-  state.selected = id;
-  renderRows();
-  renderRecord(id);
-  window.scrollTo({top: 0, behavior: "smooth"});
+/* ===========================================================================
+   REPLAY. The trace is what really happened, in the order it happened, with
+   real timestamps. A full investigation takes tens of milliseconds, so the
+   player slows it down for a human and says by how much.
+   =========================================================================== */
+const ICON = { open: "▶", query: "Q", evidence: "E", assessment: "P", recommendation: "A", evidence_value: "?", request: "↗", memory: "✓" };
+function stepText(e, evIndex) {
+  switch (e.kind) {
+    case "open": return `Alert opened: <b>${esc(pretty(e.trigger))}</b> on transaction <code>${esc(e.flagged_txn_id)}</code>. Prior ${Number(e.prior).toFixed(2)}.`;
+    case "query": return `<code>${esc(String(e.name).replace("graph.", ""))}</code> <span class="ms">${fmtMs(e.ms)}${e.ok === false ? " · failed" : ""}</span>`;
+    case "evidence": return `<span class="chip ${e.source === "graph" ? "src-graph" : ""}" style="padding:2px 6px">E${evIndex}</span> ${esc(e.claim.length > 170 ? e.claim.slice(0, 168) + "…" : e.claim)}`;
+    case "assessment": return `<b>Assessed ${esc(e.label)}:</b> <span class="vtext-${esc(e.verdict)}" style="font-weight:600">${esc(e.verdict)} ${Number(e.p).toFixed(2)}</span> on ${e.n_signals} independent signal${e.n_signals === 1 ? "" : "s"}${e.families && e.families.length ? " (" + esc(e.families.join(", ")) + ")" : ""}.`;
+    case "recommendation": return `<b>Recommends ${esc(e.label)}:</b> <code>${(e.actions || []).map(esc).join(", ")}</code>`;
+    case "evidence_value": {
+      const sel = (e.options || []).find(o => o.selected);
+      return `Priced ${(e.options || []).length} questions: ` + (e.options || []).map(o => `<code>${esc(o.request_type)}</code> ${o.net_value > 0 ? "+" : ""}${Number(o.net_value).toFixed(2)}`).join(" · ") + (sel ? ` → <b>asks ${esc(pretty(sel.request_type))}</b>` : " → <b>none worth asking</b>");
+    }
+    case "request": return `<b>Asks for ${esc(pretty(e.type))}.</b> <span class="muted">${esc(String(e.response).slice(0, 160))}…</span>`;
+    case "memory": return `Case written to the graph as <code>${esc(e.graph_case_id)}</code> and read back: <b>${e.read_back ? "found" : "missing"}</b>.`;
+    default: return esc(e.kind);
+  }
+}
+function replayShell(c, d) {
+  const tr = d.trace || [];
+  const total = tr.length ? Math.max(...tr.map(e => (e.t_ms || 0) + (e.ms || 0))) : 0;
+  let ev = 0;
+  return `<div class="replay-head">
+      <h2 class="sec" style="margin:0">Investigation replay</h2>
+      <span class="chip">${tr.filter(e => e.kind === "query").length} graph queries</span>
+      <span class="clock" id="rp-clock">${fmtMs(total)} end to end</span>
+    </div>
+    <div class="gauge" style="margin-top:6px">${instrument(0.3, "uncertain", { compact: true, id: "rp-needle" })}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+      <button class="btn primary xs" id="rp-play" ${tr.length ? "" : "disabled"}>▶ Replay</button>
+      <button class="btn xs" id="rp-live" ${S.caps.live ? "" : "disabled"} title="${S.caps.live ? "Re-run this investigation now on the warm engine" : "Live runs need the parquet engine - this deploy shows recorded runs"}">⚡ Run it live now</button>
+      <span class="muted small" id="rp-note" style="align-self:center">${tr.length ? "Recorded run. Replay is slowed down so you can read it." : "No trace recorded for this case."}</span>
+    </div>
+    <ol class="steps" id="rp-steps">${tr.map((e, i) => {
+      if (e.kind === "evidence") ev++;
+      return `<li class="step ${esc(e.kind)} shown" data-i="${i}"><span class="t">${(e.t_ms || 0).toFixed(1)}</span><span class="ic">${ICON[e.kind] || "·"}</span><span class="tx">${stepText(e, ev)}</span></li>`;
+    }).join("")}</ol>`;
+}
+let replayTimer = null;
+function wireReplay(c, d) {
+  const tr = d.trace || [];
+  const fin = [...tr].reverse().find(e => e.kind === "assessment");
+  if (fin) moveNeedle("rp-needle", fin.p, fin.verdict);
+  const play = $("rp-play"), liveBtn = $("rp-live");
+  if (play) play.onclick = () => runReplay(tr);
+  if (liveBtn) liveBtn.onclick = async () => {
+    liveBtn.disabled = true; liveBtn.textContent = "running…";
+    try {
+      const r = await fetch(`api/investigate/${encodeURIComponent(c.case_id)}`, { method: "POST" });
+      if (!r.ok) throw new Error((await r.json()).detail || r.status);
+      const j = await r.json();
+      S.live[c.case_id] = j;
+      renderRecord(c.case_id);
+      $("rp-note").innerHTML = `Ran just now in <b>${fmtMs(j.server_ms)}</b> on the warm engine. Replaying it slowed down.`;
+      runReplay(j.diagnostics.trace || []);
+    } catch (e) {
+      liveBtn.textContent = "live run failed"; $("rp-note").textContent = String(e.message || e);
+    }
+  };
+}
+function runReplay(tr) {
+  clearTimeout(replayTimer);
+  const items = [...document.querySelectorAll("#rp-steps .step")];
+  items.forEach(n => n.classList.remove("shown"));
+  moveNeedle("rp-needle", 0.3, "uncertain");
+  const total = tr.length ? Math.max(1, ...tr.map(e => e.t_ms || 0)) : 1;
+  // Spread the run over ~9s of reading time; every step still carries its real timestamp.
+  const slow = Math.max(1, Math.round(9000 / total));
+  const note = $("rp-note");
+  if (note && !note.innerHTML.includes("Ran just now")) note.textContent = `Replaying at ${slow.toLocaleString()}× slower than it ran.`;
+  let i = 0, last = 0;
+  const box = $("rp-steps");
+  const tick = () => {
+    if (i >= items.length) return;
+    const e = tr[i];
+    items[i].classList.add("shown");
+    items[i].scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (e.kind === "assessment") moveNeedle("rp-needle", e.p, e.verdict);
+    $("rp-clock").textContent = `t = ${fmtMs(e.t_ms || 0)}`;
+    i++;
+    const next = tr[i];
+    const gap = next ? Math.min(900, Math.max(110, ((next.t_ms || 0) - (e.t_ms || 0)) * slow)) : 0;
+    last = e.t_ms || 0;
+    replayTimer = setTimeout(tick, next && ["assessment", "recommendation", "request"].includes(next.kind) ? Math.max(gap, 500) : gap);
+  };
+  box.scrollTop = 0;
+  tick();
 }
 
-load().then(() => {
-  renderRun();
-  renderFilters();
-  const first = visibleCases()[0];
-  state.selected = first ? first.case_id : null;
-  renderRows();
-  renderRecord(state.selected);
-}).catch(err => {
-  document.getElementById("record").innerHTML =
-    `<section><h2>Could not load the cases</h2><div class="panel">
-      <p class="prose small">${esc(err.message)}</p>
-      <p class="note">Run <code>python -m src.agent.run --data data_fixture --out cases_fixture</code>
-      first, then start the console with <code>python -m src.ui.app --cases cases_fixture</code>.</p>
-    </div></section>`;
+/* ===========================================================================
+   GRAPH NEIGHBOURHOOD. Drawn from the case file's own entity references, laid
+   out by type in columns so the same case always draws the same picture.
+   =========================================================================== */
+function graphView(c, d) {
+  const k = c.case, trig = d.trigger || {};
+  const ev = k.evidence || [];
+  const idsOf = ref => (ev.find(e => e.ref === ref) || {}).entity_ids || [];
+  const txn = String(trig.flagged_txn_id || (k.affected_txn_ids || [])[0] || "");
+  const devices = [...new Set([...(k.connected_device_profiles || []), ...idsOf("query:device_for_transaction").slice(1)])].slice(0, 2);
+  const ring = k.connected_card_ids || [];
+  const others = (k.affected_txn_ids || []).filter(t => t !== txn);
+  const similar = k.similar_prior_cases || [];
+  const card = (d.card && d.card.card_id) || "card";
+  const cust = card.split("-")[0];
+  const W = 640, H = 360, midY = 196;
+  const nodes = [], edges = [];
+  const N = (id, x, y, label, shape, cls = "", tip = "") => nodes.push({ id, x, y, label, shape, cls, tip });
+  const E = (a, b, label, hot = false, t = 0.5) => edges.push({ a, b, label, hot, t });
+  N("cust", 56, midY, cust, "circle", "", `Customer ${cust}`);
+  N("card", 172, midY, card, "rect", "", `PaymentCard ${card}`);
+  N("txn", 300, midY, txn, "dot", "flag", `Flagged Transaction ${txn}`);
+  E("cust", "card", "OWNS", true); E("card", "txn", "USED_IN", true);
+  const shownOthers = others.slice(0, 5);
+  shownOthers.forEach((t, i) => { N("o" + i, 300 + (i - (shownOthers.length - 1) / 2) * 34, midY + 92, t, "dot", "", `Transaction ${t} (same episode)`); E("card", "o" + i, ""); });
+  devices.forEach((p, i) => {
+    const y = midY + (devices.length === 2 ? (i ? 56 : -56) : 0);
+    N("dev" + i, 428, y, p.split("|")[0].trim().slice(0, 18), "diamond", "", `DeviceProfile: ${p}`);
+    E("txn", "dev" + i, "ON_DEVICE", true);
+  });
+  const shownRing = ring.slice(0, 16);
+  const perArc = Math.ceil(shownRing.length / 2);
+  shownRing.forEach((r, i) => {
+    // two concentric arcs, alternating, so sixteen cards never overlap
+    const arc = i % 2, j = Math.floor(i / 2), n = arc ? shownRing.length - perArc : perArc;
+    const ang = (-54 + 108 * (n <= 1 ? 0.5 : j / (n - 1))) * Math.PI / 180;
+    const rad = arc ? 176 : 118;
+    const x = 428 + Math.cos(ang) * rad * 0.9, y = midY + Math.sin(ang) * rad * (arc ? 0.84 : 0.95);
+    N("r" + i, x, y, r, "rect", "ring", `PaymentCard ${r} (another customer, same device profile)`);
+    E(devices.length ? "dev0" : "txn", "r" + i, "");
+  });
+  if (ring.length > shownRing.length) N("rmore", 604, midY + 158, `+${ring.length - shownRing.length} more`, "none", "", "");
+  if (k.graph_case_id || k.written_to_graph) {
+    N("case", 236, 50, k.graph_case_id || "FraudCase", "case", "", `FraudCase vertex written by this investigation - ${k.verdict} ${k.fraud_probability.toFixed(2)}`);
+    E("case", "cust", "ABOUT", false, 0.4); E("case", "card", "CASE_CARD", false, 0.62); E("case", "txn", "TRIGGERED_BY", false, 0.78);
+    similar.slice(0, 3).forEach((s, i) => { N("s" + i, 70 + i * 0 + 0, 50, s, "case2", "", `ClosedCase ${s} - similar prior case`); });
+    similar.slice(0, 3).forEach((s, i) => { const n = nodes.find(q => q.id === "s" + i); n.x = 380 + i * 88; n.y = 50; E("case", "s" + i, i === 0 ? "SIMILAR_TO" : ""); });
+  }
+  const P = Object.fromEntries(nodes.map(n => [n.id, n]));
+  const shape = n => {
+    if (n.shape === "circle") return `<circle class="node" cx="${n.x}" cy="${n.y}" r="12"></circle>`;
+    if (n.shape === "rect") return `<rect class="node ${n.cls}" x="${n.x - 11}" y="${n.y - 8}" width="22" height="16" rx="3"></rect>`;
+    if (n.shape === "dot") return `<circle class="node ${n.cls}" cx="${n.x}" cy="${n.y}" r="${n.cls === "flag" ? 9 : 6}"></circle>`;
+    if (n.shape === "diamond") return `<path class="node" d="M${n.x} ${n.y - 13} L${n.x + 13} ${n.y} L${n.x} ${n.y + 13} L${n.x - 13} ${n.y} Z"></path>`;
+    if (n.shape === "case") return `<rect class="node" x="${n.x - 13}" y="${n.y - 13}" width="26" height="26" rx="6" style="stroke:${vcolor(k.verdict)};stroke-width:2.4"></rect>`;
+    if (n.shape === "case2") return `<rect class="node" x="${n.x - 9}" y="${n.y - 9}" width="18" height="18" rx="4" style="stroke-dasharray:3 2"></rect>`;
+    return "";
+  };
+  const lab = n => {
+    if (n.cls === "ring") return "";
+    const dy = n.shape === "case" ? -20 : n.shape === "case2" ? -15 : (n.id.startsWith("o") ? 20 : 26);
+    return `<text x="${n.x}" y="${n.y + (n.shape === "none" ? 4 : dy)}" text-anchor="middle">${esc(String(n.label).slice(0, 20))}</text>`;
+  };
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Graph neighbourhood of ${esc(c.case_id)}">
+    ${edges.map(e => { const a = P[e.a], b = P[e.b]; if (!a || !b) return "";
+      const mx = a.x + (b.x - a.x) * e.t, my = a.y + (b.y - a.y) * e.t;
+      return `<line class="edge ${e.hot ? "hot" : ""}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"></line>${e.label ? `<text class="et" x="${mx}" y="${my - 5}" text-anchor="middle">${e.label}</text>` : ""}`; }).join("")}
+    ${nodes.map(n => `<g class="n" data-tip="${esc(n.tip)}">${shape(n)}${lab(n)}</g>`).join("")}
+  </svg>
+  <div class="legend">
+    <span>● customer</span><span>▭ card</span><span>• transaction (blue: flagged)</span><span>◆ device profile</span>
+    <span>▢ case: this one solid, similar prior cases dashed</span>
+    ${ring.length ? `<span><b style="color:var(--ink)">${ring.length}</b> other customers' cards whose transactions ran <code>ON_DEVICE</code> the same profile</span>` : ""}
+  </div>`;
+}
+
+/* ===========================================================================
+   COPILOT
+   =========================================================================== */
+const PRESETS = [
+  ["Why this verdict?", "Explain why the investigation reached this verdict, citing the evidence items that mattered most."],
+  ["What would change it?", "What single piece of evidence would most change this recommendation, and in which direction?"],
+  ["Brief my approver", "Write a three-bullet brief for the approver who must sign off the actions routed L1 or L2 on this case. If none need sign-off, say so."],
+  ["Challenge it", "Argue the strongest case that the automated decision is wrong. Then say whether you would actually change it."],
+  ["Draft customer message", "Draft the short message to the cardholder that the recommended actions imply. Do not promise anything the policy does not allow."],
+];
+function openCopilot(id) {
+  const box = $("copilot");
+  box.hidden = false; $("fab").hidden = true;
+  $("cp-title").textContent = `Copilot · ${id}`;
+  $("cp-sub").textContent = S.caps.copilot ? `${S.caps.copilot_model || "Claude"} · reads the case file and the Fraud Policy · cannot change the decision`
+    : "not available on this deploy (no API key) - run locally with ANTHROPIC_API_KEY set";
+  $("cp-chips").innerHTML = PRESETS.map(([l], i) => `<button type="button" data-i="${i}" ${S.caps.copilot ? "" : "disabled"}>${esc(l)}</button>`).join("");
+  $("cp-chips").querySelectorAll("button").forEach(b => b.onclick = () => ask(PRESETS[b.dataset.i][1], PRESETS[b.dataset.i][0]));
+  $("cp-send").disabled = !S.caps.copilot; $("cp-in").disabled = !S.caps.copilot;
+  renderChat();
+  if (S.caps.copilot) $("cp-in").focus();
+}
+function renderChat() {
+  const id = S.selected, turns = S.chats[id] || [];
+  $("cp-body").innerHTML = turns.length ? turns.map(t => t.role === "user"
+    ? `<div class="msg q">${esc(t.label || t.content)}</div>`
+    : `<div class="msg a ${t.streaming ? "cursor" : ""}">${md(t.content)}${t.meta ? `<div class="meta">${esc(t.meta)}</div>` : ""}</div>`
+    + (t.error ? `<div class="msg err">${esc(t.error)}</div>` : "")).join("")
+    : `<p class="empty">Ask anything about ${esc(id)}. Answers cite evidence as <span class="eref">E3</span> - click one to jump to it.</p>`;
+  $("cp-body").querySelectorAll(".eref[data-e]").forEach(b => b.onclick = () => {
+    const row = document.getElementById("ev-" + b.dataset.e);
+    if (row) { row.scrollIntoView({ block: "center", behavior: "smooth" }); row.classList.remove("flash"); void row.offsetWidth; row.classList.add("flash"); }
+  });
+  $("cp-body").scrollTop = $("cp-body").scrollHeight;
+}
+function md(text) {
+  const blocks = esc(text || "").split(/\n{2,}/);
+  const inline = s => s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/(^|[^*\w])\*([^*\n]+)\*(?!\w)/g, "$1<em>$2</em>").replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\[E(\d+)\]/g, (m, n) => `<button class="eref" type="button" data-e="${n}">E${n}</button>`);
+  return blocks.map(b => {
+    const lines = b.split("\n");
+    if (lines.every(l => /^\s*([-*]|\d+\.)\s/.test(l) || !l.trim()))
+      return `<ul>${lines.filter(l => l.trim()).map(l => `<li>${inline(l.replace(/^\s*([-*]|\d+\.)\s/, ""))}</li>`).join("")}</ul>`;
+    return `<p>${inline(lines.join("<br>"))}</p>`;
+  }).join("");
+}
+async function ask(question, label) {
+  const id = S.selected; if (!id || !S.caps.copilot) return;
+  const turns = S.chats[id] = S.chats[id] || [];
+  const history = turns.filter(t => !t.error).map(t => ({ role: t.role, content: t.content }));
+  turns.push({ role: "user", content: question, label });
+  const ans = { role: "assistant", content: "", streaming: true };
+  turns.push(ans); renderChat();
+  $("cp-send").disabled = true;
+  const { c, d } = caseData(id);
+  try {
+    const r = await fetch("api/ask", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ case_id: id, question, history, ...(S.live[id] ? { case: c, diagnostics: d } : {}) }) });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || ("HTTP " + r.status));
+    const reader = r.body.getReader(), dec = new TextDecoder();
+    let buf = "";
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let cut;
+      while ((cut = buf.indexOf("\n\n")) >= 0) {
+        const chunk = buf.slice(0, cut); buf = buf.slice(cut + 2);
+        const line = chunk.split("\n").find(l => l.startsWith("data:"));
+        if (!line) continue;
+        const ev = JSON.parse(line.slice(5));
+        if (ev.type === "text") { ans.content += ev.text; renderChat(); }
+        else if (ev.type === "done") {
+          const u = ev.usage || {};
+          ans.meta = `${ev.model} · first token ${ev.first_token_s}s · ${ev.latency_s}s · ${(u.cache_read_tokens || 0).toLocaleString()} cached / ${(u.input_tokens || 0).toLocaleString()} new in · ${(u.output_tokens || 0).toLocaleString()} out · $${Number(ev.cost_usd).toFixed(4)}`;
+        } else if (ev.type === "error") ans.error = ev.message;
+      }
+    }
+  } catch (e) { ans.error = String(e.message || e); }
+  ans.streaming = false; renderChat();
+  $("cp-send").disabled = false;
+}
+$("cp-form").addEventListener("submit", ev => { ev.preventDefault(); const q = $("cp-in").value.trim(); if (q) { $("cp-in").value = ""; ask(q); } });
+$("cp-in").addEventListener("keydown", ev => { if (ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); $("cp-form").requestSubmit(); } });
+$("cp-close").onclick = () => { $("copilot").hidden = true; $("fab").hidden = !isCaseView(); };
+$("fab").onclick = () => openCopilot(S.selected);
+
+/* ===========================================================================
+   LIVE MONITOR - the autonomous track
+   =========================================================================== */
+const MON = { es: null, items: [], queue: [], running: false, start: 0 };
+function renderMonitor() {
+  const el = $("v-monitor");
+  const canLive = S.caps.live, sample = S.monitorSample;
+  el.innerHTML = `
+  <div class="mon-top">
+    <div>
+      <span class="eyebrow">Autonomous monitoring</span>
+      <h1>The agent watches the stream.</h1>
+      <p>High-risk authorisations from across the 590,742-transaction book arrive in time order. Each is investigated end to end -
+        the same graph queries, scoring, evidence pricing and policy as the graded cases. Actions routed <code>auto</code> run on their own
+        (simulated, as the brief permits). Anything that needs <code>L1</code> or <code>L2</code> sign-off stops in the queue on the right.</p>
+    </div>
+    <div class="mon-ctl">
+      <select id="mon-pace" aria-label="Pace"><option value="700">calm pace</option><option value="300" selected>brisk</option><option value="0">flat out</option></select>
+      <button class="btn primary" id="mon-go">${canLive ? "▶ Start watching" : sample ? "▶ Replay recorded session" : "Monitor unavailable"}</button>
+      <button class="btn" id="mon-stop" disabled>Stop</button>
+    </div>
+  </div>
+  ${canLive ? "" : `<p class="note" style="margin:0 0 12px">${sample ? "This deploy has no transaction data, so it replays a session recorded from the live engine - every row below is a real investigation of a real alert." : "Run the console with the parquet built to use the live monitor."}</p>`}
+  <div class="mon-kpis" id="mon-kpis"></div>
+  <div class="mon-grid">
+    <div class="card"><div class="pad" style="padding-bottom:6px"><h2 class="sec" style="margin:0">Alert feed <span class="muted" id="mon-src"></span></h2></div>
+      <ul class="feed" id="mon-feed"><li style="grid-template-columns:1fr;padding:18px"><span class="empty">Nothing yet. Start watching to stream alerts.</span></li></ul></div>
+    <div class="grid" style="align-content:start">
+      <div class="card pad"><h2 class="sec">Queued for a human <span class="chip" id="mon-qn">0</span></h2><ul class="queue" id="mon-queue"><li class="empty" style="display:block">Empty.</li></ul></div>
+      <div class="card pad spark"><h2 class="sec">Investigation time per alert</h2><div id="mon-spark"></div><p class="note">Each bar is one alert, in arrival order. Real engine time; the pace control only spaces the feed for reading.</p></div>
+    </div>
+  </div>`;
+  monKpis();
+  $("mon-go").disabled = !canLive && !sample;
+  $("mon-go").onclick = () => startMonitor();
+  $("mon-stop").onclick = () => stopMonitor();
+  if (MON.items.length) { monRedraw(); }
+}
+function monKpis() {
+  const it = MON.items;
+  const auto = it.filter(x => !x.human.length).length;
+  const ms = it.map(x => x.ms).sort((a, b) => a - b);
+  const med = ms.length ? ms[Math.floor(ms.length / 2)] : 0;
+  const k = (v, l, s) => `<div class="card kpi"><div class="v">${v}</div><div class="k">${l}</div>${s ? `<div class="s">${s}</div>` : ""}</div>`;
+  $("mon-kpis").innerHTML = [
+    k(it.length, "alerts investigated", MON.running ? "streaming…" : ""),
+    k(auto, "handled within authority", "no human needed"),
+    k(MON.queue.length, "actions awaiting sign-off", "L1 / L2 routes"),
+    k(it.filter(x => x.verdict === "fraud").length, "confirmed fraud", ""),
+    k(it.filter(x => x.report).length, "reports filed", "policy 3a"),
+    k(med ? fmtMs(med) : "—", "median time per alert", "$0.00 model spend"),
+  ].join("");
+}
+function monAdd(e) {
+  MON.items.push(e);
+  e.human.forEach(h => MON.queue.push({ ...h, case_id: e.case_id, verdict: e.verdict }));
+  const feed = $("mon-feed");
+  if (MON.items.length === 1) feed.innerHTML = "";
+  feed.insertAdjacentHTML("afterbegin", monRow(e));
+  while (feed.children.length > 120) feed.lastElementChild.remove();
+  monQueue(); monKpis(); monSpark();
+}
+function monRow(e) {
+  return `<li class="v-${esc(e.verdict)}" title="${esc(e.summary)}"><span class="stripe" style="grid-row:1 / 3"></span>
+    <span class="l1">${esc(String(e.at).slice(0, 16))} · txn ${esc(e.txn)} · ${money(e.amount)} <span class="muted">· model ${Number(e.risk_score).toFixed(2)} · ${esc(pretty(e.channel))}</span></span>
+    <span class="r"><span class="vtext-${esc(e.verdict)}">${esc(e.verdict)} ${Number(e.p).toFixed(2)}</span><small>${fmtMs(e.ms)} · ${e.queries} queries</small></span>
+    <span class="l2">${e.pattern !== "none" ? `<span class="chip">${esc(pretty(e.pattern))}</span>` : ""}
+      ${e.auto.map(a => `<span class="chip route-auto">${esc(a)}</span>`).join("")}
+      ${e.human.map(h => `<span class="chip route-${esc(h.route)}">${esc(h.action)} · ${esc(h.route)}</span>`).join("")}
+      ${e.report ? `<span class="chip route-L2">report</span>` : ""}</span></li>`;
+}
+function monQueue() {
+  $("mon-qn").textContent = MON.queue.length;
+  $("mon-queue").innerHTML = MON.queue.length ? MON.queue.slice(-9).reverse().map(q => `<li>
+    <span><span class="an">${esc(q.action)}</span> <span class="muted small">on ${esc(q.case_id)} · ${esc(q.verdict)}</span></span>
+    <span class="chip route-${esc(q.route)}">${esc(q.route)}</span></li>`).join("") : `<li class="empty" style="display:block">Empty.</li>`;
+}
+function monSpark() {
+  const it = MON.items.slice(-80);
+  if (!it.length) { $("mon-spark").innerHTML = ""; return; }
+  const W = 400, H = 56, max = Math.max(20, ...it.map(x => x.ms));
+  const bw = W / Math.max(40, it.length);
+  $("mon-spark").innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Investigation time per alert">
+    ${it.map((x, i) => { const h = Math.max(2, x.ms / max * (H - 12)); return `<rect x="${i * bw + 0.5}" y="${H - h}" width="${Math.max(1, bw - 1.5)}" height="${h}" rx="1.5" fill="${vcolor(x.verdict)}" opacity=".85"><title>${esc(x.case_id)} · ${fmtMs(x.ms)}</title></rect>`; }).join("")}
+    <text x="${W - 2}" y="10" text-anchor="end" style="font:400 9.5px var(--mono);fill:var(--ink-3)">max ${fmtMs(max)}</text></svg>`;
+}
+function monRedraw() {
+  const feed = $("mon-feed");
+  feed.innerHTML = MON.items.slice(-120).reverse().map(monRow).join("");
+  monQueue(); monKpis(); monSpark();
+}
+function startMonitor() {
+  stopMonitor();
+  MON.items = []; MON.queue = []; MON.running = true;
+  $("mon-go").disabled = true; $("mon-stop").disabled = false;
+  const pace = Number($("mon-pace").value);
+  if (S.caps.live) {
+    MON.start = MON.start || Math.floor(Math.random() * 3000);
+    $("mon-src").textContent = "· live engine";
+    MON.es = new EventSource(`api/monitor?start=${MON.start}&limit=120&pace_ms=${pace}`);
+    MON.es.onmessage = m => {
+      const e = JSON.parse(m.data);
+      if (e.type === "case") monAdd(e);
+      else if (e.type === "hello") $("mon-src").textContent = `· live engine · ${e.alerts_in_book.toLocaleString()} alerts in the book`;
+      else if (e.type === "end") { MON.start += 120; stopMonitor(); }
+    };
+    MON.es.onerror = () => stopMonitor();
+  } else if (S.monitorSample) {
+    $("mon-src").textContent = "· recorded session";
+    const ev = S.monitorSample.events || [];
+    let i = 0;
+    const step = () => { if (!MON.running || i >= ev.length) return stopMonitor(); monAdd(ev[i++]); MON.timer = setTimeout(step, Math.max(60, pace)); };
+    step();
+  }
+  monKpis();
+}
+function stopMonitor() {
+  if (MON.es) { MON.es.close(); MON.es = null; }
+  clearTimeout(MON.timer);
+  MON.running = false;
+  if ($("mon-go")) { $("mon-go").disabled = !S.caps.live && !S.monitorSample; $("mon-stop").disabled = true; monKpis(); }
+}
+
+/* ===========================================================================
+   HOW IT WORKS
+   =========================================================================== */
+function renderHow() {
+  const st = runStats();
+  $("v-how").innerHTML = `<div class="how">
+    <span class="eyebrow">Architecture</span>
+    <h1>The graph gathers. The rules decide. The model explains.</h1>
+    <p class="prose" style="color:var(--ink-2)">Every decision in a case file can be reproduced to the byte and traced to a graph query, a rubric weight or a policy rule.
+      That is a design choice, not a limitation: it is why ${st.n} investigations cost $${Number(st.cost).toFixed(2)} in model spend and finish in ${st.total_s.toFixed(1)} seconds,
+      and why a regulator can audit them.</p>
+    <div class="card pad arch" style="margin-top:18px">${archSvg()}</div>
+    <div class="facts-grid">
+      <div class="card pad"><h3>TigerGraph does the investigating</h3><ul>
+        <li>Full book on Savanna: 590,742 transactions, 144,432 device records, 575,849 <code>NEXT_TXN</code> and 128,852 <code>SHARES_DEVICE</code> edges.</li>
+        <li>GSQL queries for card baselines, device lookups, ring detection, card-testing bursts, prior and similar cases.</li>
+        <li>Every finished case is written back as a <code>FraudCase</code> vertex with <code>ABOUT</code>, <code>CASE_CARD</code>, <code>TRIGGERED_BY</code> and <code>SIMILAR_TO</code> edges, then read back before the file may say so.</li></ul></div>
+      <div class="card pad"><h3>Uncertainty is priced, not guessed</h3><ul>
+        <li>A log-odds rubric with evidence families: one family of evidence can never push a case out of the 0.15–0.85 band.</li>
+        <li>Before asking the customer anything, the agent prices every possible question by how far the answer could move the recommended action, minus the friction of asking.</li>
+        <li>It asks only when that is positive - ${st.asked} of ${st.n} cases here - and records what changed.</li></ul></div>
+      <div class="card pad"><h3>Fast because it is deterministic</h3><ul>
+        <li>~40 ms per investigation on the warm parquet engine; ~3 s per case against Savanna, where independent GSQL reads go out in two concurrent waves.</li>
+        <li>No model call sits in the decision path, so the cost of investigating 4,462 high-risk alerts is the cost of the graph queries.</li>
+        <li>Two backends, one contract: a test suite proves the parquet and GSQL backends return the same evidence.</li></ul></div>
+      <div class="card pad"><h3>Claude as the analyst's copilot</h3><ul>
+        <li>Reads the case file, the diagnostics and the Fraud Policy; cites evidence as E-numbers and rules by id.</li>
+        <li>May disagree with the decision out loud - but changing it is a human's job, through the approval route.</li>
+        <li>Policy and case are a cached prefix: a follow-up question costs about two cents.</li></ul></div>
+      <div class="card pad"><h3>Honest about its limits</h3><ul>
+        <li>Customer responses are simulated (the dataset has none) and labelled SIMULATED wherever they appear.</li>
+        <li>The GSQL ring query currently undercounts profiles also active outside the window (a precomputed edge span); the graded answers use the parquet computation, and the gap is a strict expected-failure test.</li>
+        <li>Actions are recorded, never executed against a real card.</li></ul></div>
+    </div>
+  </div>`;
+}
+function archSvg() {
+  const B = (x, y, w, h, t, s, cls = "") => `<rect class="box ${cls}" x="${x}" y="${y}" width="${w}" height="${h}" rx="10"></rect>
+    <text x="${x + w / 2}" y="${y + h / 2 - (s ? 3 : -4)}" text-anchor="middle">${t}</text>${s ? `<text class="s" x="${x + w / 2}" y="${y + h / 2 + 13}" text-anchor="middle">${s}</text>` : ""}`;
+  const A = (x1, y1, x2, y2) => `<path class="ln" d="M${x1} ${y1} L${x2} ${y2}"></path>`;
+  return `<svg viewBox="0 0 1000 300" role="img" aria-label="Architecture: alert to graph queries to rubric to evidence pricing to policy to actions and case memory, with the copilot alongside">
+    <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink-3)"></path></marker></defs>
+    ${B(10, 110, 120, 60, "Alert", "model score / dispute")}
+    ${B(170, 30, 190, 220, "", "", "tg")}
+    <text x="265" y="56" text-anchor="middle" style="font-weight:600">TigerGraph Savanna</text>
+    <text class="s" x="265" y="82" text-anchor="middle">get_transaction · card_baseline</text>
+    <text class="s" x="265" y="100" text-anchor="middle">device_for_transaction</text>
+    <text class="s" x="265" y="118" text-anchor="middle">ring_signals · card_testing</text>
+    <text class="s" x="265" y="136" text-anchor="middle">recurring_charge</text>
+    <text class="s" x="265" y="154" text-anchor="middle">prior + similar cases</text>
+    <text class="s" x="265" y="190" text-anchor="middle">write_case → read_case</text>
+    <text class="s" x="265" y="208" text-anchor="middle">(case memory)</text>
+    ${B(400, 40, 150, 60, "Rubric", "log-odds · families")}
+    ${B(400, 180, 150, 60, "Evidence pricing", "value of information")}
+    ${B(590, 110, 150, 60, "Fraud Policy v1.0", "R1–R10 · routes")}
+    ${B(780, 40, 200, 60, "Actions", "auto → run · L1/L2 → human")}
+    ${B(780, 180, 200, 60, "Case file + SAR", "validated · written to graph")}
+    ${B(590, 248, 150, 44, "Claude copilot", "", "llm")}
+    ${A(130, 140, 168, 140)}${A(360, 90, 398, 72)}${A(475, 100, 475, 178)}${A(550, 205, 588, 150)}${A(550, 70, 588, 128)}
+    ${A(740, 130, 778, 76)}${A(740, 150, 778, 204)}${A(780, 222, 362, 196)}${A(665, 248, 665, 172)}
+  </svg>`;
+}
+
+/* ===========================================================================
+   Routing, tooltips, theme
+   =========================================================================== */
+let tipEl = null;
+function wireTips(root) {
+  root.querySelectorAll("[data-tip]").forEach(node => {
+    node.addEventListener("pointerenter", ev => {
+      if (!node.dataset.tip) return;
+      if (!tipEl) { tipEl = document.createElement("div"); tipEl.className = "tip"; document.body.appendChild(tipEl); }
+      tipEl.textContent = node.dataset.tip; tipEl.hidden = false;
+      tipEl.style.left = Math.min(ev.clientX + 14, window.innerWidth - 350) + "px";
+      tipEl.style.top = Math.max(8, ev.clientY - 44) + "px";
+    });
+    node.addEventListener("pointermove", ev => { if (tipEl && !tipEl.hidden) { tipEl.style.left = Math.min(ev.clientX + 14, window.innerWidth - 350) + "px"; tipEl.style.top = Math.max(8, ev.clientY - 44) + "px"; } });
+    node.addEventListener("pointerleave", () => { if (tipEl) tipEl.hidden = true; });
+  });
+}
+const isCaseView = () => location.hash.startsWith("#/case");
+function route() {
+  const h = location.hash || "#/overview";
+  const [, view, arg] = h.split("/");
+  const v = ["overview", "case", "monitor", "how"].includes(view) ? view : "overview";
+  document.querySelectorAll(".view").forEach(s => s.hidden = s.id !== "v-" + v);
+  document.querySelectorAll(".nav a").forEach(a => a.setAttribute("aria-current", a.dataset.v === v ? "page" : "false"));
+  if (tipEl) tipEl.hidden = true;
+  clearTimeout(replayTimer);
+  if (v !== "monitor") stopMonitor();
+  $("fab").hidden = v !== "case" || !$("copilot").hidden;
+  if (v !== "case") $("copilot").hidden = true;
+  if (v === "overview") renderOverview();
+  if (v === "monitor") renderMonitor();
+  if (v === "how") renderHow();
+  if (v === "case") {
+    const id = arg && S.cases[decodeURIComponent(arg)] ? decodeURIComponent(arg) : (S.selected || (visibleCases()[0] || {}).case_id);
+    if (id && id !== S.selected) { S.selected = id; if (!$("copilot").hidden) openCopilot(id); }
+    renderFilters(); renderRows(); renderRecord(S.selected);
+    if (arg) window.scrollTo({ top: 0 });
+  }
+}
+$("q").addEventListener("input", ev => { S.q = ev.target.value; renderRows(); });
+$("theme").onclick = () => {
+  const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const next = cur === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem("tidewatch-theme", next); } catch (e) {}
+};
+try { const t = localStorage.getItem("tidewatch-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+addEventListener("hashchange", route);
+document.addEventListener("keydown", ev => {
+  if (!isCaseView() || ev.target.closest("input,textarea")) return;
+  const list = visibleCases().map(c => c.case_id), i = list.indexOf(S.selected);
+  if (ev.key === "j" && i < list.length - 1) location.hash = "#/case/" + list[i + 1];
+  if (ev.key === "k" && i > 0) location.hash = "#/case/" + list[i - 1];
+  if (ev.key === "/") { ev.preventDefault(); openCopilot(S.selected); }
+});
+
+load().then(() => { pills(); route(); }).catch(err => {
+  $("v-overview").innerHTML = `<div class="card pad" style="margin-top:24px"><h2 class="sec">Could not load the cases</h2>
+    <p class="prose s">${esc(err.message)}</p>
+    <p class="note">Run <code>python -m src.agent.run</code> first, then <code>python -m src.ui.app</code>.</p></div>`;
 });
 </script>
 </body>
