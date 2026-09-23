@@ -1,0 +1,127 @@
+// FraudCase memory and GraphRAG: retrieving prior investigations, retrieving policy, writing the
+// live case back so the next investigation can find it.
+//
+//   gsql -g $GRAPH src/graph/gsql/queries_memory.gsql
+//
+// THE RETRIEVAL PROBLEM, AND WHY IT IS HYBRID. `analyst_notes` in the closed-case history are
+// heavily templated - most differ only in ids, amounts and dates. Pure vector similarity over
+// them returns near-random neighbours with uniformly high scores, and five retrieved cases that
+// merely share a sentence template are worse than none: they manufacture confidence and they
+// pollute `similar_prior_cases`, which is a scored field. So every retrieval here filters
+// STRUCTURALLY first - same channel, comparable exposure band, same pattern where one is
+// hypothesised, closed before the cutoff - and ranks by embedding only within that set.
+//
+// ON THE EMBEDDING TYPE. Embeddings are stored as `LIST<DOUBLE>` and cosine similarity is
+// computed in an accumulator below. That works on any TigerGraph version we might be given.
+// TigerVector's native vector attribute (4.2+) does the same ranking inside the engine with an
+// ANN index, and swapping to it is a change to the two ranking queries in this file and the two
+// attribute declarations in the schema - not to anything else. The decision is recorded rather
+// than hidden because it is a real trade: native vectors are faster and are the better story,
+// and this version is the one that is certain to run.
+
+USE GRAPH $GRAPH
+
+// --------------------------------------------------------------------------------------------
+// Prior cases on this customer - the cheapest, highest-value evidence in the investigation
+// --------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE QUERY prior_cases_for_customer(STRING customer_id, DATETIME as_of)
+  FOR GRAPH $GRAPH SYNTAX v2
+{
+  // Free evidence for 16 of the 20 exam customers, and the first thing the investigation reads.
+  //
+  // Bounded by `closed_at < as_of`, which matters more than it looks: in the closed-case
+  // backtest, a case opened later than the one being replayed would hand the agent the answer it
+  // is being asked to produce.
+  Cust = {Customer.*};
+  Start = SELECT c FROM Cust:c WHERE c.customer_id == customer_id;
+  Cases = SELECT cc FROM Start:c -(HAS_CASE>:e)- ClosedCase:cc
+          WHERE cc.closed_at < as_of
+          ORDER BY cc.opened_at ASC;
+  PRINT Cases;
+}
+
+// --------------------------------------------------------------------------------------------
+// Similar prior investigations - structural filter, then vector rank
+// --------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE QUERY similar_closed_cases(DATETIME as_of, INT k)
+  FOR GRAPH $GRAPH SYNTAX v2
+{
+  // Returns the cases VISIBLE at `as_of`, projected to the fields the ranker needs. It does not
+  // apply the channel, pattern or exposure filters, and that is the fix for a real divergence:
+  //
+  // those three filters are RELAXABLE - `features/casesim.narrow` keeps each one only if at
+  // least k candidates survive it, because a perfectly-filtered set of one is worse evidence
+  // than a loosely-filtered set of five. When the query applied them itself, nothing survived
+  // for the ranker to relax, and the graph backend returned zero similar cases where the parquet
+  // backend returned three. The relaxation has to happen where the candidates are, so the query
+  // hands over the pool and the ranker decides.
+  //
+  // The as-of cut is the one filter that is NOT relaxable and so belongs here: a case closed
+  // after the one being replayed would hand the agent the answer it is being asked to produce.
+  //
+  // `analyst_notes` is deliberately not projected. It is the longest field in the dataset and
+  // the ranker does not read it - only the vector queries in vector_upgrade.gsql do.
+  TYPEDEF TUPLE<STRING case_id, STRING customer_id, STRING card_id, DATETIME opened_at,
+                DATETIME closed_at, STRING outcome, STRING pattern, DOUBLE exposure_usd,
+                INT n_txns, STRING channel, STRING product_cd, STRING report_filed> CaseRow;
+  HeapAccum<CaseRow>(20000, closed_at DESC) @@pool;
+
+  Cases = {ClosedCase.*};
+  Eligible = SELECT cc FROM Cases:cc
+             WHERE cc.closed_at < as_of
+             ACCUM @@pool += CaseRow(cc.case_id, cc.customer_id, cc.card_id, cc.opened_at,
+                                     cc.closed_at, cc.outcome, cc.pattern, cc.exposure_usd,
+                                     cc.n_txns, cc.channel, cc.product_cd, cc.report_filed);
+
+  PRINT @@pool AS Ranked;
+}
+
+// `policy_search` moved to gsql/vector_upgrade.gsql as `policy_search_ann`:
+// searching a corpus by meaning IS a vector query, and the only legal way to pass a
+// query vector into GSQL is TigerVector's built-in vectorSearch.
+
+// --------------------------------------------------------------------------------------------
+// Reading the live case back, and finding what recurs across our own cases
+// --------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE QUERY read_case(STRING graph_case_id) FOR GRAPH $GRAPH SYNTAX v2 {
+  // `written_to_graph` in an answer file is set by reading the case back, never by a constant.
+  // A write that returns success and a case that cannot be found are not the same thing, and the
+  // brief asks specifically that the next investigation be able to find the last one.
+  Cases = {FraudCase.*};
+  Found = SELECT c FROM Cases:c WHERE c.graph_case_id == graph_case_id;
+  Linked = SELECT cc FROM Found:c -(SIMILAR_TO>:e)- ClosedCase:cc;
+  PRINT Found AS live_case;
+  PRINT Linked AS similar_prior_cases;
+}
+
+CREATE OR REPLACE QUERY recurring_entities_across_cases(DATETIME as_of, INT min_cases)
+  FOR GRAPH $GRAPH SYNTAX v2
+{
+  // Entities appearing in more than one of OUR OWN cases: the brief's "identify recurring fraud
+  // patterns, entities, and relationships across cases".
+  //
+  // This is the query that makes case memory a feature rather than a claim. It only returns
+  // anything once several cases have been written, which is why the runner processes the pack in
+  // chronological order - a later case can then find what an earlier one recorded, and the effect
+  // is logged rather than asserted.
+  SetAccum<STRING> @case_ids;
+  SumAccum<INT> @n_cases;
+
+  Cases = {FraudCase.*};
+  Recent = SELECT c FROM Cases:c WHERE c.opened_at < as_of;
+
+  Cards = SELECT card FROM Recent:c -(CASE_CARD>:e)- PaymentCard:card
+          ACCUM card.@case_ids += c.case_id, card.@n_cases += 1;
+  RepeatCards = SELECT card FROM Cards:card WHERE card.@n_cases >= min_cases;
+
+  Devices = SELECT d FROM Recent:c -(TRIGGERED_BY>:e1)- Transaction:t -(ON_DEVICE>:e2)-
+                 DeviceProfile:d
+            ACCUM d.@case_ids += c.case_id, d.@n_cases += 1;
+  RepeatDevices = SELECT d FROM Devices:d WHERE d.@n_cases >= min_cases;
+
+  PRINT RepeatCards AS cards_in_multiple_cases;
+  PRINT RepeatDevices AS devices_in_multiple_cases;
+}

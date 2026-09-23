@@ -1,0 +1,21 @@
+case_id,customer_id,card_id,flagged_txn_id,trigger_type,risk_score,opened_at,narrative
+HHG-001,C00001,C00001-K1,3000066,risk_score,0.57,2017-01-03 01:46:32,Model score above alerting threshold.
+HHG-002,C00002,C00002-K1,3000145,risk_score,0.37,2017-01-23 17:36:59,Model score above alerting threshold.
+HHG-003,C00003,C00003-K1,3000197,customer_report,,2016-11-09 22:00:00,Cardholder called: does not recognise this charge.
+HHG-004,C00004,C00004-K1,3000285,customer_report,,2017-02-15 20:41:03,Cardholder called: does not recognise this charge.
+HHG-005,C00005,C00005-K1,3000346,risk_score,0.51,2016-11-22 08:13:39,Model score above alerting threshold.
+HHG-006,C00006,C00006-K1,3000423,customer_report,,2017-02-17 16:58:25,Cardholder called: does not recognise this charge.
+HHG-007,C00007,C00007-K1,3000470,risk_score,0.55,2016-11-26 00:38:42,Model score above alerting threshold.
+HHG-008,C00008,C00008-K1,3000557,customer_report,,2016-11-09 14:00:00,Cardholder called: does not recognise this charge.
+HHG-009,C00009,C00009-K1,3000605,customer_report,,2016-12-01 12:39:31,Cardholder called: does not recognise this charge.
+HHG-010,C00010,C00010-K1,3000693,risk_score,0.64,2017-02-09 09:46:51,Model score above alerting threshold.
+HHG-011,C00011,C00011-K1,3000758,customer_report,,2016-12-14 00:01:24,Cardholder called: does not recognise this charge.
+HHG-012,C00012,C00012-K1,3000793,risk_score,0.62,2016-11-15 13:11:54,Model score above alerting threshold.
+HHG-013,C00013,C00013-K1,3000836,risk_score,0.62,2016-11-30 20:58:23,Model score above alerting threshold.
+HHG-014,C00014,C00014-K1,3000897,analyst_request,,2016-12-07 23:09:20,Analyst asked for a review of connected activity.
+HHG-015,C00015,C00015-K1,3000956,risk_score,0.61,2016-12-10 06:07:49,Model score above alerting threshold.
+HHG-016,C00016,C00016-K1,3001042,customer_report,,2017-02-03 22:22:41,Cardholder called: does not recognise this charge.
+HHG-017,C00017,C00017-K1,3001102,risk_score,0.44,2016-11-21 08:32:07,Model score above alerting threshold.
+HHG-018,C00018,C00018-K1,3001182,customer_report,,2016-11-09 03:00:00,Cardholder called: does not recognise this charge.
+HHG-019,C00019,C00019-K1,3001249,risk_score,0.88,2016-12-06 13:36:17,Model score above alerting threshold.
+HHG-020,C00020,C00020-K1,3001281,risk_score,0.52,2016-12-06 10:18:43,Model score above alerting threshold.

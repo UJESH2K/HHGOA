@@ -38,6 +38,7 @@ class PolicyContext:
 
     ring_signal: bool = False                  # shared device / region / another card's fraud
     ring_element: str = ""                     # R6 requires naming it
+    ring_strength: str = "strong"              # strong | moderate (features/rings)
     connected_card_ids: list[str] = field(default_factory=list)
 
     card_testing: bool = False
@@ -73,9 +74,21 @@ def r1_verify_before_block(c: PolicyContext) -> Outcome:
 
 
 def r2_customer_denies(c: PolicyContext) -> Outcome:
-    if c.customer_response != "denied":
+    """Fires on a dispute however it arrived - as a response, or as the trigger itself.
+
+    This previously tested `customer_response == "denied"` only, which meant none of the eight
+    customer-report cases in the exam pack could ever reach R2: the cardholder had already said
+    the transaction was not theirs, but because that arrived as the trigger rather than as an
+    answer to a question, the rule stayed silent and the recommendation collapsed to
+    CREATE_CASE with no protective action at all. ARCHITECTURE.md section 6 states the intended
+    behaviour outright - "a customer-report trigger already means the customer disputes it (R2
+    applies without asking again)" - and `PolicyContext.customer_disputes` already derives it.
+    R7 remains the brake for a dispute that matches the cardholder's own recurring pattern.
+    """
+    if not c.customer_disputes:
         return False, [], ""
-    cite = "R2: customer denies the transaction"
+    cite = ("R2: customer denies the transaction" if c.customer_response == "denied"
+            else "R2: the cardholder reported this transaction as unrecognised")
     acts = [(Action.BLOCK_CARD, cite), (Action.CREATE_CASE, cite)]
     if c.exposure_usd > 1000 or c.ring_signal:
         connects_to = c.ring_element or "another card's fraud"
@@ -115,9 +128,29 @@ def r5_card_testing(c: PolicyContext) -> Outcome:
 
 
 def r6_shared_origin(c: PolicyContext) -> Outcome:
+    """R6 is proportionate to how strong the shared origin actually is.
+
+    The rule reads "when several cards show FRAUD from the same device profile" - it is not
+    triggered by cards merely sharing a profile. On a strong link (a rare, fully specified
+    profile on at most ten cards book-wide) treating the shared usage as shared fraud is a fair
+    reading. On a moderate link - a common-ish device model that happens to sit on 11 to 60 cards
+    - it is not: we have established that other cardholders used the same model of phone, not
+    that they were defrauded. So a moderate link names the element, opens a case and monitors the
+    connected cards, but does not file with the regulator on its own.
+
+    That distinction is the difference between a defensible filing and a wrong one, and the
+    brief scores it: "Deciding correctly between case only and case plus report is part of the
+    next-best-action score."
+    """
     if not c.ring_signal:
         return False, [], ""
     element = c.ring_element or "a shared origin"
+    if c.ring_strength == "moderate":
+        cite = (f"R6: {element} links several cards across different customers in one window; "
+                "the profile is common enough that shared use is not yet shared fraud")
+        return True, [(Action.CREATE_CASE, cite),
+                      (Action.MONITOR_CONNECTED_CARDS,
+                       f"{cite}; monitoring every card that shares it")], cite
     cite = f"R6: several cards show fraud from {element}"
     return True, [(Action.CREATE_CASE, cite),
                   (Action.FILE_REPORT, cite),
@@ -201,6 +234,32 @@ def evaluate(c: PolicyContext) -> Decision:
             and c.verdict != "fraud"):
         proposed = [(a, r) for a, r in proposed if a != Action.BLOCK_ALL_CARDS]
 
+    # VERIFY BEFORE YOU BLOCK, when the evidence is strong but no rule has produced a protective
+    # step yet.
+    #
+    # This replaces an inferred "block on an established finding" gate that cited "Policy 4".
+    # Reading the actual policy showed that was wrong twice over. Section 4 is the definition of
+    # exposure, not an action rule - so the citation was fabricated - and the policy deliberately
+    # does NOT authorise a block on an assessment alone. Blocks come from R2 (the cardholder
+    # denies it), R5 (a testing sequence where a purchase over $100 already cleared), and R10.
+    # That is a considered position, not an omission: R1's whole point is that blocking a
+    # legitimate customer on the bank's own suspicion is the failure mode being guarded against.
+    #
+    # What the policy does authorise, without approval, is asking (section 5). So a confident
+    # assessment with nothing protective attached gets a verification step, and the answer then
+    # takes the case to R2 or R3. That is also the shape of the worked example in the brief:
+    # verify first, block after the denial - which is exactly why `initial` and `final` differ.
+    protective = {Action.BLOCK_CARD, Action.BLOCK_ALL_CARDS, Action.DECLINE_TRANSACTION,
+                  Action.VERIFY_WITH_CUSTOMER, Action.STEP_UP_AUTH, Action.CLOSE_NO_FRAUD}
+    strong = c.verdict == "fraud" or c.fraud_probability >= R1_PROBABILITY
+    if (strong and not (protective & {a for a, _ in proposed})
+            and c.customer_response is None
+            and not c.matches_recurring_pattern):
+        proposed.append((Action.VERIFY_WITH_CUSTOMER,
+                         f"R1: probability {c.fraud_probability:.2f} rests on the bank's own "
+                         "evidence with no cardholder response on record; the policy authorises "
+                         "asking (section 5) and reserves a block for R2"))
+
     # policy 3a gates, independent of any single rule
     if should_create_case(fraud_probability=c.fraud_probability,
                           evidence_requested=c.evidence_requested,
@@ -209,12 +268,21 @@ def evaluate(c: PolicyContext) -> Decision:
 
     files_report = should_file_report(verdict=c.verdict, fraud_probability=c.fraud_probability,
                                       exposure_usd=c.exposure_usd, ring_signal=c.ring_signal,
-                                      pattern=c.pattern)
+                                      pattern=c.pattern, ring_strength=c.ring_strength)
     if not files_report:
         proposed = [(a, r) for a, r in proposed if a != Action.FILE_REPORT]
 
-    if c.verdict == "legitimate" and not any(
-            a in (Action.BLOCK_CARD, Action.DECLINE_TRANSACTION) for a, _ in proposed):
+    # A legitimate verdict cannot coexist with seizing the instrument. R2 fires on any dispute,
+    # so a cardholder disputing a charge that the evidence explains - a subscription they forgot -
+    # would otherwise be told no fraud was found and have their card blocked in the same breath.
+    # The rubric holds the verdict at `uncertain` unless the dispute is explained, so by the time
+    # `legitimate` reaches here it means the explanation exists and the block should be withdrawn.
+    if c.verdict == "legitimate":
+        withdrawn = [a for a, _ in proposed
+                     if a in (Action.BLOCK_CARD, Action.BLOCK_ALL_CARDS,
+                              Action.DECLINE_TRANSACTION)]
+        if withdrawn:
+            proposed = [(a, r) for a, r in proposed if a not in withdrawn]
         proposed.append((Action.CLOSE_NO_FRAUD, "Verdict legitimate; no fraud found"))
 
     if not proposed:

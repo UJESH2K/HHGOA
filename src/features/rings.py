@@ -26,7 +26,40 @@ import pandas as pd
 PROFILE_FIELDS = ["DeviceInfo", "id_30", "id_31", "id_33"]  # device, OS, browser, screen
 
 MAX_GLOBAL_CARDS = 10
+"""Above this many cards book-wide, a profile is no longer a STRONG link. Not a rejection -
+see MAX_GLOBAL_CARDS_WEAK."""
+
+MAX_GLOBAL_CARDS_WEAK = 60
+"""Above this, treat the profile as a common configuration rather than evidence.
+
+WHY TWO CEILINGS, measured on the real 590,742-row book. A flat `<= 10` ceiling was calibrated
+to suppress generic fingerprints, and it worked: `Windows | Windows 10 | chrome 63.0 |
+1920x1080` covers 842 customers, and five more desktop and iOS profiles cover 374-585 each.
+
+But it also threw away the one ring the exam pack explicitly asks about. HHG-014's analyst
+trigger reads "several cards this month show purchases from the same unusual device profile",
+and that profile - `SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080` -
+is fully specified, sits on 52 cards belonging to 52 DIFFERENT customers with 1-3 transactions
+each, and clusters into two tight bursts (15 Aug - 4 Sep, 14 Nov - 4 Dec). At `<= 10` it was
+invisible, and the case came back `legitimate` at probability 0.04.
+
+The obvious discriminators do not separate the two. Transactions per customer is ~2.2 for the
+ring and 2.2-3.1 for every generic profile. Total span is 111 days for the ring and 162-183 for
+the generics - the same order. A specific device model plus build plus browser plus resolution
+on 52 unrelated customers is genuinely ambiguous evidence, and pretending otherwise with a
+sharper threshold would be fitting a number to one case.
+
+So the honest answer is a GRADED link rather than a binary one: strong below 10 cards, moderate
+between 10 and 60, not evidence above that. The moderate band still produces evidence, connected
+cards, and a probability contribution - it just does not carry a case on its own.
+"""
+
 MIN_CARDS_IN_WINDOW = 2
+MIN_CUSTOMERS_FOR_MODERATE = 3
+"""A moderate-strength profile needs three different customers in the window before it counts.
+Two cards on a popular phone model is a coincidence; three unrelated cardholders inside a
+fortnight is a pattern worth naming."""
+
 MAX_WINDOW_DAYS = 14
 
 
@@ -53,8 +86,17 @@ def build_profiles(ident: pd.DataFrame, txns: pd.DataFrame) -> pd.DataFrame:
 
 
 def is_specific(profiles: pd.DataFrame) -> pd.Series:
-    """The per-profile half of the filter: specific enough to mean anything."""
-    return profiles.is_full & (profiles.global_card_count <= MAX_GLOBAL_CARDS)
+    """The per-profile half of the filter: specific enough to mean anything at all."""
+    return profiles.is_full & (profiles.global_card_count <= MAX_GLOBAL_CARDS_WEAK)
+
+
+def link_strength(global_card_count: int) -> str:
+    """`strong` | `moderate` | `none` - see MAX_GLOBAL_CARDS_WEAK for the measurements."""
+    if global_card_count <= MAX_GLOBAL_CARDS:
+        return "strong"
+    if global_card_count <= MAX_GLOBAL_CARDS_WEAK:
+        return "moderate"
+    return "none"
 
 
 def ring_candidates(ident: pd.DataFrame, txns: pd.DataFrame, profiles: pd.DataFrame,

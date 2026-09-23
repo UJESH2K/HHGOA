@@ -1,0 +1,208 @@
+{
+  "case_id": "HHG-018",
+  "case": {
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.515,
+    "pattern": "account_takeover",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3491361"
+    ],
+    "first_suspicious_txn_id": "3491361",
+    "connected_card_ids": [
+      "C00854-K2",
+      "C03185-K1",
+      "C03218-K2",
+      "C06224-K2",
+      "C06270-K1",
+      "C07878-K1",
+      "C08918-K2",
+      "C09241-K2",
+      "C11000-K2",
+      "C11309-K1",
+      "C11951-K1"
+    ],
+    "connected_device_profiles": [
+      "MacOS | Mac OS X 10_13_4 | safari generic | 1440x900"
+    ],
+    "exposure_usd": 39.08,
+    "similar_prior_cases": [
+      "CC-5494",
+      "CC-4742",
+      "CC-4626"
+    ],
+    "summary": "The evidence is not sufficient to decide on this customer report alert for card C02354-K2, at a fraud probability of 0.51 resting on 3 independent signal(s): $39.08 is low for this card (18% percentile); a fully specified device profile links 14 cards across 14 different customers inside a 14-day window; the profile appears on 27 cards book-wide, so it is a real link rather than a rare one; the cardholder does not recognise the transaction (arrived as the trigger). The activity fits account takeover: there is session-level evidence, but the device profile is shared across 14 different customers' cards, which is coordinated abuse across accounts rather than one account being taken over. No other documented pattern fits the evidence. The evidence points both ways, which is why the case goes to an analyst rather than being decided here (R8). Recommended actions: BLOCK_CARD, MONITOR_CONNECTED_CARDS, CREATE_CASE, ESCALATE_TO_ANALYST, with exposure of $39.08.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-018",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a in-person authorisation of $39.08 on 2016-11-27 13:41 under product code W, scored 0.48 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3491361"
+        ]
+      },
+      {
+        "claim": "The cardholder reported this transaction as unrecognised: Customer C02354 message: 'I never made this $39.08 purchase. Please check my card.' Refers to 3491361.",
+        "source": "customer",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3491361"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 5,860 transactions, $39.08 sits at the 18% percentile (mean $141.17, largest previously $4,438.01).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3491361"
+        ]
+      },
+      {
+        "claim": "0 prior authorisation(s) on this card in the preceding hour and 41 in the preceding 24 hours.",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3491361"
+        ]
+      },
+      {
+        "claim": "The transaction is card present, so no device or connection record exists - true of every in-person transaction in the book, and not a signal.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3491361"
+        ]
+      },
+      {
+        "claim": "144 prior charges of about $39.08 exist on this card but their spacing is irregular (intervals 1d, 0d, 1d, 0d, 4d, 1d, 0d, 1d, 5d, 2d, 1d, 0d, 2d, 0d, 1d, 0d, 1d, 4d, 1d, 0d, 3d, 1d, 1d, 1d, 2d, 0d, 1d, 0d, 1d, 3d, 0d, 2d, 0d, 1d, 1d, 1d, 1d, 1d, 1d, 0d, 0d, 1d, 0d, 0d, 1d, 1d, 2d, 0d, 0d, 2d, 1d, 0d, 0d, 1d, 0d, 0d, 0d, 1d, 1d, 0d, 1d, 2d, 0d, 3d, 1d, 0d, 0d, 2d, 0d, 0d, 1d, 0d, 3d, 3d, 1d, 3d, 0d, 0d, 1d, 1d, 0d, 1d, 2d, 2d, 4d, 1d, 0d, 2d, 1d, 1d, 2d, 0d, 2d, 1d, 1d, 0d, 3d, 0d, 2d, 2d, 2d, 0d, 1d, 0d, 3d, 1d, 0d, 2d, 1d, 1d, 1d, 0d, 2d, 0d, 1d, 0d, 2d, 0d, 0d, 0d, 1d, 3d, 1d, 1d, 1d, 0d, 1d, 1d, 0d, 0d, 0d, 0d, 0d, 2d, 1d, 0d, 2d, 0d, 0d, 0d, 1d, 1d, 3d), so this is a repeated amount rather than a recurring charge",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3491361"
+        ]
+      },
+      {
+        "claim": "device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900` links 14 cards across 14 customers within 11.9 days, and appears on only 27 cards book-wide.",
+        "source": "graph",
+        "ref": "query:ring_signals",
+        "entity_ids": [
+          "3491361",
+          "MacOS | Mac OS X 10_13_4 | safari generic | 1440x900",
+          "C00854-K2",
+          "C02354-K2",
+          "C03185-K1",
+          "C03218-K2",
+          "C06224-K2",
+          "C06270-K1",
+          "C07878-K1",
+          "C08918-K2",
+          "C09241-K2",
+          "C11000-K2",
+          "C11309-K1",
+          "C11951-K1"
+        ]
+      },
+      {
+        "claim": "This customer has 20 closed investigation(s) before this alert: 19 confirmed fraud, 1 cleared. Patterns previously found: account_takeover, card_not_present_fraud, out_of_region_use.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C02354",
+          "CC-0255",
+          "CC-0405",
+          "CC-0454",
+          "CC-0631",
+          "CC-1450",
+          "CC-1699",
+          "CC-2051",
+          "CC-2187",
+          "CC-2432",
+          "CC-2589",
+          "CC-3085",
+          "CC-3537",
+          "CC-3634",
+          "CC-3899",
+          "CC-4070",
+          "CC-4436",
+          "CC-4721",
+          "CC-4942",
+          "CC-5441",
+          "CC-5558"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5494, CC-4742, CC-4626. The nearest, CC-5494, was a $38.95 in_person case closed as confirmed_fraud with pattern account_takeover.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5494",
+          "CC-4742",
+          "CC-4626"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud; monitoring every card that shares it"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: evidence conflicts"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud; monitoring every card that shares it"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: evidence conflicts"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "No regulatory filing is required: policy 3a needs confirmed or strongly suspected fraud together with an aggravating condition (exposure over $1,000, a shared origin across accounts, or an undocumented pattern), and this case meets none of them.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
+  "tool_calls": 10,
+  "tokens": 0,
+  "latency_s": 0.14
+}

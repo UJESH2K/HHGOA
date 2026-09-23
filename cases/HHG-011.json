@@ -1,0 +1,200 @@
+{
+  "case_id": "HHG-011",
+  "case": {
+    "status": "escalated",
+    "verdict": "fraud",
+    "fraud_probability": 0.978,
+    "pattern": "undocumented",
+    "pattern_description": "Coordinated use of a single rare device profile across 4 cards belonging to different customers within a two-week window, with no shared billing region or product pattern. It fits none of the five documented typologies: the cards are not being tested, the activity is not confined to one cardholder's account, and the anomaly is the link between accounts rather than any single transaction.",
+    "affected_txn_ids": [
+      "3583368"
+    ],
+    "first_suspicious_txn_id": "3583368",
+    "connected_card_ids": [
+      "C05416-K1",
+      "C08450-K2",
+      "C11000-K2"
+    ],
+    "connected_device_profiles": [
+      "SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081",
+      "SM-G610F Build/NRD90M | ? | chrome 66.0 for android | ?"
+    ],
+    "exposure_usd": 131.3,
+    "similar_prior_cases": [
+      "CC-5551",
+      "CC-5526",
+      "CC-5515"
+    ],
+    "summary": "The evidence supports fraud on this customer report alert for card C11923-K2, at a fraud probability of 0.98 resting on 3 independent signal(s): a rare, fully specified device profile links 4 cards across 4 different customers inside a 14-day window; $131.30 sits at the 97% percentile of this card's own history; the cardholder does not recognise the transaction (arrived as the trigger). The activity fits undocumented: a rare device profile links 4 cards belonging to 4 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The closest alternative was card_not_present_new_device (0.65 against 0.90): a card-not-present transaction on a device new to the account. Recommended actions: BLOCK_CARD, MONITOR_CONNECTED_CARDS, CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST, with exposure of $131.30.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-011",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a online authorisation of $131.30 on 2016-12-29 03:27 under product code C, scored 0.39 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3583368"
+        ]
+      },
+      {
+        "claim": "The cardholder reported this transaction as unrecognised: Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368.",
+        "source": "customer",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3583368"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 10,306 transactions, $131.30 sits at the 97% percentile (mean $39.42, largest previously $486.52).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3583368"
+        ]
+      },
+      {
+        "claim": "1 prior authorisation(s) on this card in the preceding hour and 26 in the preceding 24 hours.",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3583368"
+        ]
+      },
+      {
+        "claim": "The transaction ran on device profile `SM-G610F Build/NRD90M | ? | chrome 66.0 for android | ?`, reported as New to this account. That profile appears on 4 card(s) book-wide.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3583368",
+          "SM-G610F Build/NRD90M | ? | chrome 66.0 for android | ?"
+        ]
+      },
+      {
+        "claim": "17 prior charges of about $131.30 exist on this card but their spacing is irregular (intervals 16d, 1d, 22d, 6d, 2d, 8d, 49d, 2d, 4d, 0d, 0d, 1d, 2d, 0d, 0d, 45d), so this is a repeated amount rather than a recurring charge",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3583368"
+        ]
+      },
+      {
+        "claim": "device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081` links 4 cards across 4 customers within 4.0 days, and appears on only 6 cards book-wide.",
+        "source": "graph",
+        "ref": "query:ring_signals",
+        "entity_ids": [
+          "3583368",
+          "SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081",
+          "C05416-K1",
+          "C08450-K2",
+          "C11000-K2",
+          "C11923-K2"
+        ]
+      },
+      {
+        "claim": "This customer has 11 closed investigation(s) before this alert: 10 confirmed fraud, 1 cleared. Patterns previously found: card_not_present_new_device, card_testing.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C11923",
+          "CC-0031",
+          "CC-0290",
+          "CC-1056",
+          "CC-2247",
+          "CC-2673",
+          "CC-2799",
+          "CC-3039",
+          "CC-3206",
+          "CC-3905",
+          "CC-4501",
+          "CC-4743"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5551, CC-5526, CC-5515. The nearest, CC-5551, was a $127.16 online case closed as confirmed_fraud with pattern card_not_present_fraud.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5551",
+          "CC-5526",
+          "CC-5515"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: several cards show fraud from device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081`; monitoring every card that shares it"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2: case connects to device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081`"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: several cards show fraud from device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081`; monitoring every card that shares it"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2: case connects to device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081`"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": true,
+    "reason": "R2: case connects to device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081`",
+    "narrative": "Customer C11923, holder of card C11923-K2 and 1 other card(s) on the same account. 1 transaction(s) totalling $131.30 are reported as suspicious. The activity occurred between 2016-12-29 and 2016-12-29. The activity was online and ran on device profile `SAMSUNG SM-G965U Build/R16NW | Android 8.0.0 | samsung browser 7.0 | 2220x1081`. The pattern identified is undocumented. a rare device profile links 4 cards belonging to 4 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The assessment rests on: a rare, fully specified device profile links 4 cards across 4 different customers inside a 14-day window; $131.30 sits at the 97% percentile of this card's own history; the cardholder does not recognise the transaction (arrived as the trigger). The resulting fraud probability is 0.98. The investigation was opened following customer report. Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368. The shared origin also touches card(s) C05416-K1, C08450-K2, C11000-K2, held by other customers, which is why this filing covers activity beyond a single account.",
+    "subjects": [
+      "C11923"
+    ],
+    "total_amount_usd": 131.3,
+    "activity_dates": [
+      "2016-12-29",
+      "2016-12-29"
+    ]
+  },
+  "stop_reason": "Probability 0.98 is outside the 0.15-0.85 band on 3 independent pieces of evidence.",
+  "tool_calls": 11,
+  "tokens": 0,
+  "latency_s": 0.12
+}

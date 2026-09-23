@@ -1,0 +1,212 @@
+{
+  "case_id": "HHG-012",
+  "case": {
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.259,
+    "pattern": "account_takeover",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3553342"
+    ],
+    "first_suspicious_txn_id": "3553342",
+    "connected_card_ids": [
+      "C00197-K1",
+      "C00750-K2",
+      "C00750-K2",
+      "C00952-K1",
+      "C00969-K2",
+      "C01104-K2",
+      "C01155-K2",
+      "C01983-K1",
+      "C03066-K1",
+      "C03593-K1",
+      "C03598-K2",
+      "C03738-K2",
+      "C04108-K2",
+      "C04125-K2",
+      "C04476-K1",
+      "C05148-K1",
+      "C05245-K2",
+      "C05388-K1",
+      "C05704-K2",
+      "C07212-K2",
+      "C07867-K2",
+      "C08070-K1",
+      "C08122-K1",
+      "C11464-K2",
+      "C12634-K1",
+      "C12777-K1",
+      "C12887-K1"
+    ],
+    "connected_device_profiles": [
+      "Windows | Windows 7 | chrome 66.0 | 1366x768"
+    ],
+    "exposure_usd": 30.91,
+    "similar_prior_cases": [
+      "CC-5319",
+      "CC-5425",
+      "CC-5554"
+    ],
+    "summary": "The evidence is not sufficient to decide on this risk score alert for card C05876-K2, at a fraud probability of 0.26 resting on 2 independent signal(s): $30.91 is low for this card (25% percentile); a fully specified device profile links 28 cards across 27 different customers inside a 14-day window; the profile appears on 49 cards book-wide, so it is a real link rather than a rare one. The activity fits account takeover: there is session-level evidence, but the device profile is shared across 27 different customers' cards, which is coordinated abuse across accounts rather than one account being taken over. No other documented pattern fits the evidence. The evidence points both ways, which is why the case goes to an analyst rather than being decided here (R8). Recommended actions: MONITOR_CONNECTED_CARDS, CREATE_CASE, ESCALATE_TO_ANALYST, with exposure of $30.91.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-012",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a in-person authorisation of $30.91 on 2016-12-18 04:00 under product code W, scored 0.55 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3553342"
+        ]
+      },
+      {
+        "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3553342 ($30.91, in billing region 494.0) at 0.55. Review and decide.",
+        "source": "external",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3553342"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 910 transactions, $30.91 sits at the 25% percentile (mean $82.40, largest previously $2,681.01).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3553342"
+        ]
+      },
+      {
+        "claim": "1 prior authorisation(s) on this card in the preceding hour and 5 in the preceding 24 hours.",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3553342"
+        ]
+      },
+      {
+        "claim": "The transaction is card present, so no device or connection record exists - true of every in-person transaction in the book, and not a signal.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3553342"
+        ]
+      },
+      {
+        "claim": "17 prior charges of about $30.91 exist on this card but their spacing is irregular (intervals 7d, 16d, 10d, 13d, 1d, 6d, 4d, 0d, 19d, 20d, 0d, 13d, 3d, 1d, 19d, 2d), so this is a repeated amount rather than a recurring charge",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3553342"
+        ]
+      },
+      {
+        "claim": "device profile `Windows | Windows 7 | chrome 66.0 | 1366x768` links 28 cards across 27 customers within 11.1 days, and appears on only 49 cards book-wide.",
+        "source": "graph",
+        "ref": "query:ring_signals",
+        "entity_ids": [
+          "3553342",
+          "Windows | Windows 7 | chrome 66.0 | 1366x768",
+          "C00197-K1",
+          "C00750-K2",
+          "C00750-K2",
+          "C00952-K1",
+          "C00969-K2",
+          "C01104-K2",
+          "C01155-K2",
+          "C01983-K1",
+          "C03066-K1",
+          "C03593-K1",
+          "C03598-K2",
+          "C03738-K2",
+          "C04108-K2",
+          "C04125-K2",
+          "C04476-K1",
+          "C05148-K1",
+          "C05245-K2",
+          "C05388-K1",
+          "C05704-K2",
+          "C05876-K2",
+          "C07212-K2",
+          "C07867-K2",
+          "C08070-K1",
+          "C08122-K1",
+          "C11464-K2",
+          "C12634-K1",
+          "C12777-K1",
+          "C12887-K1"
+        ]
+      },
+      {
+        "claim": "This customer has 2 closed investigation(s) before this alert: 1 confirmed fraud, 1 cleared. Patterns previously found: card_not_present_fraud.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C05876",
+          "CC-0003",
+          "CC-2370"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5319, CC-5425, CC-5554. The nearest, CC-5319, was a $30.97 in_person case closed as confirmed_fraud with pattern account_takeover.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5319",
+          "CC-5425",
+          "CC-5554"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: device profile `Windows | Windows 7 | chrome 66.0 | 1366x768` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud; monitoring every card that shares it"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R6: device profile `Windows | Windows 7 | chrome 66.0 | 1366x768` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: evidence conflicts"
+      }
+    ],
+    "final": [
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: device profile `Windows | Windows 7 | chrome 66.0 | 1366x768` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud; monitoring every card that shares it"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R6: device profile `Windows | Windows 7 | chrome 66.0 | 1366x768` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: evidence conflicts"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "No regulatory filing is required: policy 3a needs confirmed or strongly suspected fraud together with an aggravating condition (exposure over $1,000, a shared origin across accounts, or an undocumented pattern), and this case meets none of them.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
+  "tool_calls": 10,
+  "tokens": 0,
+  "latency_s": 0.16
+}

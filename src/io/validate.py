@@ -314,7 +314,11 @@ def main() -> int:
     a = ap.parse_args()
 
     ds = Dataset(a.data)
-    paths = sorted(glob.glob(os.path.join(a.path, "*.json")))
+    # Underscore-prefixed files are run artifacts, not answers - `_run_manifest.json` carries the
+    # cost ledger and lives beside the answers so the fixed answer schema stays untouched.
+    # Validating it produced 33 structure errors about a file that was never an answer.
+    paths = sorted(p for p in glob.glob(os.path.join(a.path, "*.json"))
+                   if not os.path.basename(p).startswith("_"))
     if not paths:
         print(f"no answer files in {a.path}/", file=sys.stderr)
         return 1

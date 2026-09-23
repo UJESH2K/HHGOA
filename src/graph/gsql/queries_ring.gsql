@@ -1,0 +1,161 @@
+// Shared-origin detection: connected components and centrality over a filtered edge set.
+//
+//   gsql -g $GRAPH src/graph/gsql/queries_ring.gsql
+//
+// THIS IS THE FILE WHERE THE GRAPH EARNS ITS PLACE. Every other query here could be a SQL
+// statement against a well-indexed table. "Which other cards reach this one through a shared
+// device, how tightly are they connected, and which of them is the hub" is a traversal, and
+// writing it any other way means reimplementing a graph engine badly.
+//
+// THE FILTER IS THE WHOLE TRICK, AND IT IS IN THE EDGE SET. `SHARES_DEVICE` is written at load
+// time only between cards that share a profile which is fully specified and appears on at most
+// ten cards book-wide. The measured reason: 4,793 of 9,706 device profiles span more than one
+// card, the largest of them being 1,023 cards' worth of all-null fields, and
+// `Windows | Windows 10 | chrome 63.0 | 1920x1080` alone covers 842 customers. Connected
+// Components over an UNFILTERED shared-device edge set returns one component containing half the
+// book, which is not a fraud ring, it is a census of Windows users. With the filter, the Nov-Dec
+// candidate count falls from 1,671 to 266.
+//
+// WHY THE COMPONENT WALK IS WRITTEN OUT RATHER THAN CALLED FROM THE GDS LIBRARY. `tg_wcc` and
+// `tg_louvain` are the right tools for the batch discovery pass in `queries_discover.gsql`,
+// where they run over the whole Nov-Dec window and the library's tuning matters. Here the
+// component is needed for ONE card, inside a time window, during an investigation, and a bounded
+// expansion from a single seed is both cheaper and easier to reason about than a whole-graph
+// partition - it touches the few dozen vertices that matter instead of all 14,893 cards.
+// The library version is used where it belongs; this one is used where it belongs.
+
+USE GRAPH $GRAPH
+
+CREATE OR REPLACE QUERY ring_component(STRING card_key, DATETIME as_of, INT window_days, INT max_hops)
+  FOR GRAPH $GRAPH SYNTAX v2
+{
+  // The connected component reachable from one card through filtered shared-device links inside
+  // a time window, with the degree of each member.
+  //
+  // Returns EMPTY for almost every case, and that is the correct answer. A ring signal is a claim
+  // about other people's cards: under R6 it pulls in FILE_REPORT and MONITOR_CONNECTED_CARDS,
+  // which is expensive to get wrong. The bar is set in the edge set and in the window, not in the
+  // agent's judgement.
+  //
+  // `volume_artefact` is the documented failure mode, not a hypothetical: a card with thousands
+  // of transactions touches many devices, which put HHG-018 (7,091 transactions) into nine
+  // "rings" and HHG-007 (2,792) into four. When EVERY card in the component is high-volume, the
+  // link is a consequence of transaction count rather than a shared origin, and the flag says so
+  // rather than the query silently dropping it - the agent should see the link and discount it.
+
+  SumAccum<INT> @degree;                    // filtered shared-device links per card, in-window
+  SumAccum<INT> @hops;
+  OrAccum @in_component;
+  SetAccum<STRING> @@profiles;
+  SetAccum<STRING> @@customers;
+  MinAccum<DATETIME> @@first_ts;
+  MaxAccum<DATETIME> @@last_ts;
+  SumAccum<INT> @@min_card_txns;
+  INT hop;
+
+  Cards = {PaymentCard.*};
+  Seed = SELECT c FROM Cards:c WHERE c.card_key == card_key
+         ACCUM c.@in_component += TRUE, c.@hops += 0;
+
+  Frontier = Seed;
+  Component = Seed;
+  hop = 0;
+
+  // Iterative expansion - a connected-component walk, bounded by `max_hops`. A ring that needs
+  // more than two or three hops to connect is not a ring, it is the transitive closure of
+  // coincidence.
+  WHILE Frontier.size() > 0 AND hop < max_hops DO
+    hop = hop + 1;
+    Frontier = SELECT other
+               FROM Frontier:c -(SHARES_DEVICE:e)- PaymentCard:other
+               WHERE other.@in_component == FALSE
+                 AND e.last_ts < as_of
+                 AND datetime_diff(as_of, e.first_ts) <= window_days * 86400
+                 AND e.span_days <= window_days
+               ACCUM other.@in_component += TRUE,
+                     other.@hops += hop,
+                     @@profiles += e.device_profile,
+                     @@first_ts += e.first_ts,
+                     @@last_ts += e.last_ts
+               POST-ACCUM @@customers += other.customer_id;
+    Component = Component UNION Frontier;
+  END;
+
+  // Degree within the component: who is central and who is a leaf. This is what separates a ring
+  // with a hub from a set of cards that merely brushed the same profile once.
+  Degrees = SELECT c FROM Component:c -(SHARES_DEVICE:e)- PaymentCard:other
+            WHERE other.@in_component == TRUE
+              AND e.last_ts < as_of
+              AND e.span_days <= window_days
+            ACCUM c.@degree += 1;
+
+  PRINT Component AS component;
+  PRINT @@profiles AS shared_profiles;
+  PRINT @@customers AS other_customers;
+  PRINT @@first_ts AS first_seen;
+  PRINT @@last_ts AS last_seen;
+  PRINT Component.size() AS n_cards;
+}
+
+CREATE OR REPLACE QUERY shares_device_edges(STRING card_key, DATETIME as_of, INT window_days)
+  FOR GRAPH $GRAPH SYNTAX v2
+{
+  // The raw filtered links for one card, for the evidence log. R6 requires the shared element to
+  // be NAMED in the recommendation - "several cards show fraud from a shared origin" is not a
+  // finding unless the origin is stated - so the profile string comes back with the edge.
+  // `global_card_count` is the profile's BOOK-WIDE card count, read off the DeviceProfile
+  // vertex. Returning the in-window count instead - which is what the backend was doing from
+  // the link rows alone - understates how common the profile is, and that number is exactly
+  // what makes a shared profile meaningful or meaningless.
+  TYPEDEF TUPLE<STRING other_card_key, STRING other_card_id, STRING other_customer_id,
+                STRING device_profile, DATETIME first_ts, DATETIME last_ts, DOUBLE span_days,
+                INT other_card_txns, INT global_card_count, BOOL is_full> LinkRow;
+  ListAccum<LinkRow> @@links;
+
+  Cards = {PaymentCard.*};
+  Seed = SELECT c FROM Cards:c WHERE c.card_key == card_key;
+  MapAccum<STRING, INT> @@profile_cards;
+  MapAccum<STRING, BOOL> @@profile_full;
+  Profiles = {DeviceProfile.*};
+  Known = SELECT d FROM Profiles:d
+          ACCUM @@profile_cards += (d.device_profile -> d.global_card_count),
+                @@profile_full += (d.device_profile -> d.is_full);
+
+  Links = SELECT other FROM Seed:c -(SHARES_DEVICE:e)- PaymentCard:other
+          WHERE e.last_ts < as_of
+            AND datetime_diff(as_of, e.first_ts) <= window_days * 86400
+            AND e.span_days <= window_days
+          ACCUM @@links += LinkRow(other.card_key, other.card_id, other.customer_id,
+                                   e.device_profile, e.first_ts, e.last_ts, e.span_days,
+                                   other.n_txns, @@profile_cards.get(e.device_profile),
+                                   @@profile_full.get(e.device_profile));
+
+  PRINT @@links AS links;
+}
+
+CREATE OR REPLACE QUERY device_hub_scores(DATETIME as_of, INT window_days, INT min_cards)
+  FOR GRAPH $GRAPH SYNTAX v2
+{
+  // Device profiles acting as hubs across cards in the window, ranked by how many DISTINCT
+  // customers they touch rather than how many transactions they carry.
+  //
+  // Customers, not cards and not transactions, because the question a ring poses is "are
+  // different people's cards being used from one place". One customer with four cards on one
+  // laptop is a household. Four customers on one profile in a fortnight is not.
+  SumAccum<INT> @cards_in_window;
+  SetAccum<STRING> @customers_in_window;
+
+  Devices = {DeviceProfile.*};
+  Specific = SELECT d FROM Devices:d
+             WHERE d.is_full == TRUE AND d.global_card_count <= 10;
+
+  Touched = SELECT d FROM Specific:d -(DEVICE_USED_BY>:e)- Transaction:t
+            WHERE t.ts < as_of AND datetime_diff(as_of, t.ts) <= window_days * 86400
+            ACCUM d.@cards_in_window += 1, d.@customers_in_window += t.customer_id;
+
+  Hubs = SELECT d FROM Touched:d
+         WHERE d.@customers_in_window.size() >= min_cards
+         ORDER BY d.@customers_in_window.size() DESC;
+
+  PRINT Hubs;
+}

@@ -1,0 +1,173 @@
+{
+  "case_id": "HHG-008",
+  "case": {
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.551,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3558054"
+    ],
+    "first_suspicious_txn_id": "3558054",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 55.68,
+    "similar_prior_cases": [
+      "CC-5513",
+      "CC-5457",
+      "CC-5380"
+    ],
+    "summary": "The evidence is not sufficient to decide on this customer report alert for card C13171-K2, at a fraud probability of 0.55 resting on 1 independent signal(s): the cardholder does not recognise the transaction (arrived as the trigger). The activity fits card not present fraud: a card-not-present transaction on a device the account has used before, or with no device record at all. No other documented pattern fits the evidence. Recommended actions: STEP_UP_AUTH, VERIFY_WITH_CUSTOMER, BLOCK_CARD, CREATE_CASE, with exposure of $55.68.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-008",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a online authorisation of $55.68 on 2016-12-19 22:08 under product code C, scored 0.38 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3558054"
+        ]
+      },
+      {
+        "claim": "The cardholder reported this transaction as unrecognised: Customer C13171 message: 'I never made this $55.68 purchase. Please check my card.' Refers to 3558054.",
+        "source": "customer",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3558054"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 899 transactions, $55.68 sits at the 68% percentile (mean $54.02, largest previously $407.32).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3558054"
+        ]
+      },
+      {
+        "claim": "2 prior authorisation(s) on this card in the preceding hour and 6 in the preceding 24 hours.",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3558054"
+        ]
+      },
+      {
+        "claim": "The transaction ran on device profile `? | ? | chrome 66.0 | ?`, reported as Found to this account. That profile appears on 175 card(s) book-wide.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3558054",
+          "? | ? | chrome 66.0 | ?"
+        ]
+      },
+      {
+        "claim": "8 prior charges of about $55.68 exist on this card but their spacing is irregular (intervals 1d, 11d, 23d, 16d, 90d, 10d, 0d), so this is a repeated amount rather than a recurring charge",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3558054"
+        ]
+      },
+      {
+        "claim": "This customer has 19 closed investigation(s) before this alert: 18 confirmed fraud, 1 cleared. Patterns previously found: card_not_present_fraud, card_not_present_new_device.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C13171",
+          "CC-0056",
+          "CC-0467",
+          "CC-0772",
+          "CC-1293",
+          "CC-1715",
+          "CC-1925",
+          "CC-2059",
+          "CC-2244",
+          "CC-2454",
+          "CC-2716",
+          "CC-3079",
+          "CC-3422",
+          "CC-3566",
+          "CC-3728",
+          "CC-3928",
+          "CC-4163",
+          "CC-4485",
+          "CC-4819",
+          "CC-5010"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5513, CC-5457, CC-5380. The nearest, CC-5513, was a $56.07 online case closed as confirmed_fraud with pattern card_not_present_fraud.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5513",
+          "CC-5457",
+          "CC-5380"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "STEP_UP_AUTH",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.55 (<0.7); verify before any block"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.55 (<0.7); verify before any block"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      }
+    ],
+    "final": [
+      {
+        "action": "STEP_UP_AUTH",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.55 (<0.7); verify before any block"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.55 (<0.7); verify before any block"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "No regulatory filing is required: policy 3a needs confirmed or strongly suspected fraud together with an aggravating condition (exposure over $1,000, a shared origin across accounts, or an undocumented pattern), and this case meets none of them.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
+  "tool_calls": 11,
+  "tokens": 0,
+  "latency_s": 0.03
+}

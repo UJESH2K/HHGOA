@@ -6,6 +6,15 @@
 
 # derived data — rebuild with `python -m src.features.build`
 data/
+data_fixture/
+cases_fixture/
+# graph-backend comparison run; the graded answers are cases/
+cases_tg/
+graph_csv/
+graph_csv_fixture/
+approvals.jsonl
+# fixtures/*.csv ARE committed (281 KB): they make the repo runnable without the
+# 704 MB dataset. Regenerate with `python -m src.fixtures.generate`.
 analysis/*.csv
 !analysis/exam_triage.csv
 

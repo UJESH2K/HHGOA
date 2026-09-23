@@ -1,0 +1,149 @@
+{
+  "case_id": "HHG-001",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.045,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0,
+    "similar_prior_cases": [
+      "CC-5483",
+      "CC-5220",
+      "CC-5279"
+    ],
+    "summary": "The evidence does not support fraud on this risk score alert for card C12382-K1, at a fraud probability of 0.05 resting on 2 independent signal(s): step-up authentication was requested and passed, so whoever holds the card also holds the second factor; the transaction is consistent with this card on 3 independent dimensions: it bills to a region the card already uses, uses a product code the card already uses, arrives at the card's normal pace, with no burst around it. Additional evidence was requested (step_up_auth) because it was the cheapest question whose answer could change the recommendation. Recommended actions: CREATE_CASE, CLOSE_NO_FRAUD.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-001",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a in-person authorisation of $77.07 on 2016-12-04 19:55 under product code W, scored 0.61 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3514030"
+        ]
+      },
+      {
+        "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3514030 ($77.07, in billing region 444.0) at 0.61. Review and decide.",
+        "source": "external",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3514030"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 358 transactions, $77.07 sits at the 46% percentile (mean $117.02, largest previously $845.01).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3514030"
+        ]
+      },
+      {
+        "claim": "0 prior authorisation(s) on this card in the preceding hour and 3 in the preceding 24 hours.",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3514030"
+        ]
+      },
+      {
+        "claim": "The transaction is card present, so no device or connection record exists - true of every in-person transaction in the book, and not a signal.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3514030"
+        ]
+      },
+      {
+        "claim": "10 prior charges of about $77.07 exist on this card but their spacing is irregular (intervals 4d, 20d, 13d, 10d, 24d, 16d, 1d, 2d, 4d), so this is a repeated amount rather than a recurring charge",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3514030"
+        ]
+      },
+      {
+        "claim": "This customer has 4 closed investigation(s) before this alert: 4 confirmed fraud, 0 cleared. Patterns previously found: card_not_present_new_device, out_of_region_use.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C12382",
+          "CC-1066",
+          "CC-1673",
+          "CC-2964",
+          "CC-3587"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5483, CC-5220, CC-5279. The nearest, CC-5483, was a $76.97 in_person case closed as confirmed_fraud with pattern out_of_region_use.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5483",
+          "CC-5220",
+          "CC-5279"
+        ]
+      },
+      {
+        "claim": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.81 under the response model in src/agent/voi.py), given a fraud probability of 0.05 before the request.",
+        "source": "customer",
+        "ref": "evidence_request:step_up_auth",
+        "entity_ids": [
+          "3514030"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [
+    {
+      "type": "step_up_auth",
+      "asked_after_step": 3,
+      "assumed_response": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.81 under the response model in src/agent/voi.py), given a fraud probability of 0.05 before the request. Had the answer been the step-up challenge is not completed (p=0.19), the recommendation would have moved to VERIFY_WITH_CUSTOMER with a fraud probability of 0.79."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "STEP_UP_AUTH",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.18 (<0.7); verify before any block"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.18 (<0.7); verify before any block"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy 3a: case opened for the internal record"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "Verdict legitimate; no fraud found"
+      }
+    ],
+    "what_changed": "After the step_up_auth response, the recommendation added CLOSE_NO_FRAUD, CREATE_CASE and withdrew STEP_UP_AUTH, VERIFY_WITH_CUSTOMER."
+  },
+  "sar": {
+    "file": false,
+    "reason": "No regulatory filing is required: policy 3a needs confirmed or strongly suspected fraud together with an aggravating condition (exposure over $1,000, a shared origin across accounts, or an undocumented pattern), and this case meets none of them.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Probability 0.05 is outside the 0.15-0.85 band on 2 independent pieces of evidence.",
+  "tool_calls": 10,
+  "tokens": 0,
+  "latency_s": 0.05
+}

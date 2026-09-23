@@ -1,0 +1,150 @@
+{
+  "case_id": "HHG-020",
+  "case": {
+    "status": "escalated",
+    "verdict": "legitimate",
+    "fraud_probability": 0.168,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0,
+    "similar_prior_cases": [
+      "CC-5551",
+      "CC-5526",
+      "CC-5499"
+    ],
+    "summary": "The evidence does not support fraud on this risk score alert for card C12265-K2, at a fraud probability of 0.17 resting on 2 independent signal(s): step-up authentication was requested and passed, so whoever holds the card also holds the second factor; first use of this product code on the card. Additional evidence was requested (step_up_auth) because it was the cheapest question whose answer could change the recommendation. The evidence points both ways, so the recommendation to close is routed to an analyst for confirmation rather than acted on directly (R8). Recommended actions: CREATE_CASE, ESCALATE_TO_ANALYST, CLOSE_NO_FRAUD.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-020",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a online authorisation of $125.08 on 2016-12-03 06:04 under product code R, scored 0.52 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3509359"
+        ]
+      },
+      {
+        "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3509359 ($125.08, online) at 0.52. Review and decide.",
+        "source": "external",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3509359"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 82 transactions, $125.08 sits at the 59% percentile (mean $218.79, largest previously $1,960.95).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3509359"
+        ]
+      },
+      {
+        "claim": "The transaction ran on device profile `Trident/7.0 | Windows 10 | ie 11.0 for desktop | 1920x1080`, reported as New to this account. That profile appears on 254 card(s) book-wide.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3509359",
+          "Trident/7.0 | Windows 10 | ie 11.0 for desktop | 1920x1080"
+        ]
+      },
+      {
+        "claim": "Only 0 prior charge(s) on this card fall within $2.50 of $125.08, which is too few to establish a recurring pattern",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3509359"
+        ]
+      },
+      {
+        "claim": "This customer has 2 closed investigation(s) before this alert: 2 confirmed fraud, 0 cleared. Patterns previously found: account_takeover.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C12265",
+          "CC-2277",
+          "CC-2447"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5551, CC-5526, CC-5499. The nearest, CC-5551, was a $127.16 online case closed as confirmed_fraud with pattern card_not_present_fraud.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5551",
+          "CC-5526",
+          "CC-5499"
+        ]
+      },
+      {
+        "claim": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.57 under the response model in src/agent/voi.py), given a fraud probability of 0.17 before the request.",
+        "source": "customer",
+        "ref": "evidence_request:step_up_auth",
+        "entity_ids": [
+          "3509359"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [
+    {
+      "type": "step_up_auth",
+      "asked_after_step": 3,
+      "assumed_response": "SIMULATED (no response data is provided with this dataset): the cardholder completes the step-up challenge. Assumed because it is the most likely answer at this point in the investigation (p=0.57 under the response model in src/agent/voi.py), given a fraud probability of 0.17 before the request. Had the answer been the step-up challenge is not completed (p=0.43), the recommendation would have moved to VERIFY_WITH_CUSTOMER with a fraud probability of 0.87."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "STEP_UP_AUTH",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.48 (<0.7); verify before any block"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.48 (<0.7); verify before any block"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy 3a: case opened for the internal record"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy 3a: case opened for the internal record"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: evidence conflicts"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "Verdict legitimate; no fraud found"
+      }
+    ],
+    "what_changed": "After the step_up_auth response, the recommendation added CLOSE_NO_FRAUD, ESCALATE_TO_ANALYST and withdrew STEP_UP_AUTH, VERIFY_WITH_CUSTOMER."
+  },
+  "sar": {
+    "file": false,
+    "reason": "No regulatory filing is required: policy 3a needs confirmed or strongly suspected fraud together with an aggravating condition (exposure over $1,000, a shared origin across accounts, or an undocumented pattern), and this case meets none of them.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
+  "tool_calls": 11,
+  "tokens": 0,
+  "latency_s": 0.05
+}

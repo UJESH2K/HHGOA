@@ -173,6 +173,24 @@ def section_f(txns, ident, closed, pack, out_dir):
             proxy=(rec.id_23 if rec is not None and pd.notna(rec.id_23) else ""),
             prior_fraud=int((prior.outcome == "confirmed_fraud").sum()),
             prior_cleared=int((prior.outcome == "cleared").sum()),
+            # --- consistency columns, the other half of the rubric ----------------------
+            # Novelty raises suspicion; consistency lowers it. Both have to be observable or
+            # the scorer can only ever escalate - see src/scoring/rubric.py, _profile_fit.
+            # `known_*` is NOT the negation of `new_*`: a null value is neither.
+            region_recorded=bool(pd.notna(f.addr1)),
+            known_region=bool(pd.notna(f.addr1) and len(hist)
+                              and f.addr1 in set(hist.addr1.dropna())),
+            known_product=bool(len(hist) and f.ProductCD in set(hist.ProductCD)),
+            new_email_domain=bool(pd.notna(f.P_emaildomain) and len(hist)
+                                  and f.P_emaildomain not in set(hist.P_emaildomain.dropna())),
+            known_email_domain=bool(pd.notna(f.P_emaildomain) and len(hist)
+                                    and f.P_emaildomain in set(hist.P_emaildomain.dropna())),
+            new_time_of_day=bool(len(hist) >= 20
+                                 and (f.ts.hour // 6) not in set(hist.ts.dt.hour // 6)),
+            timing_typical=bool(len(hist) >= 20
+                                and (f.ts.hour // 6) in set(hist.ts.dt.hour // 6)),
+            prior_1h=int(((hist.ts >= f.ts - pd.Timedelta(hours=1)) & (hist.ts < f.ts)).sum()),
+            prior_24h=int(((hist.ts >= f.ts - pd.Timedelta(hours=24)) & (hist.ts < f.ts)).sum()),
         ))
     ex = pd.DataFrame(rows)
     print(ex.to_string(index=False))

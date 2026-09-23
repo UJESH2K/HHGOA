@@ -1,0 +1,136 @@
+// TigerVector: native vector attributes and ANN search. Run AFTER schema.gsql.
+//
+//   python -m src.graph.deploy --vectors
+//
+// WHY THIS IS A SEPARATE FILE. `schema.gsql` stores embeddings as `LIST<DOUBLE>` and ranks them
+// with cosine computed in a GSQL accumulator, which runs on any engine we might be handed. This
+// file upgrades that to the real thing: a native vector attribute with an HNSW index and the
+// built-in `vectorSearch` function, which is what TigerGraph can do that a graph database beside
+// a vector database cannot. It needs **TigerGraph 4.2 or later** - TigerVector shipped in 4.2,
+// and Savanna runs the latest 4.x - so it is applied separately and the fallback stays behind it.
+//
+// The syntax below is taken from the 4.2 GSQL vector reference and the official VectorSearch
+// tutorial rather than inferred: a vector attribute is added by a SCHEMA_CHANGE JOB, not in the
+// CREATE VERTEX statement, and `vectorSearch` requires SYNTAX v3 while the rest of our queries
+// are SYNTAX v2. Both facts are easy to get wrong and both cost an install cycle.
+//
+// DIMENSION 1024 matches the Voyage embedding size. Changing embedding model means changing this
+// number and re-running, because the index is built for a fixed width.
+// METRIC COSINE because these are text embeddings and magnitude carries no meaning here -
+// an analyst note is not more similar to another for being longer.
+
+USE GRAPH $GRAPH
+
+// --------------------------------------------------------------------------------------------
+// 1. Add the native vector attributes
+// --------------------------------------------------------------------------------------------
+
+CREATE SCHEMA_CHANGE JOB add_fraud_vectors FOR GRAPH $GRAPH {
+  // The retrievable policy corpus: fraud policy, the five documented typologies, FinCEN
+  // narrative guidance, and any typology the discovery pass writes back.
+  ALTER VERTEX PolicyChunk ADD VECTOR ATTRIBUTE embedding_v(DIMENSION=1024, METRIC="COSINE");
+
+  // The analyst notes from the 5,565 closed investigations, embedded VERBATIM. Paraphrasing
+  // them through a model first would lose the detail that makes retrieval work at all - they
+  // are already well-written prose, and the differences between them are exactly the ids,
+  // amounts and dates a paraphrase would smooth away.
+  ALTER VERTEX ClosedCase ADD VECTOR ATTRIBUTE notes_v(DIMENSION=1024, METRIC="COSINE");
+
+  // The live case, re-embedded as evidence accrues, so the NEXT_TXN investigation can find this one.
+  ALTER VERTEX FraudCase ADD VECTOR ATTRIBUTE summary_v(DIMENSION=1024, METRIC="COSINE");
+}
+
+RUN SCHEMA_CHANGE JOB add_fraud_vectors
+
+// --------------------------------------------------------------------------------------------
+// 2. Load embeddings
+// --------------------------------------------------------------------------------------------
+
+CREATE LOADING JOB load_fraud_vectors FOR GRAPH $GRAPH {
+  DEFINE FILENAME f_policy_vec = "ANY:policy_vectors.csv";
+  DEFINE FILENAME f_notes_vec  = "ANY:closed_case_vectors.csv";
+
+  // Two columns: id, then the vector as a comma-separated list. The pipe separator is what makes
+  // that possible - a comma-separated file cannot carry a comma-separated vector in one field.
+  LOAD f_policy_vec TO VECTOR ATTRIBUTE embedding_v ON VERTEX PolicyChunk
+    VALUES ($0, SPLIT($1, ",")) USING SEPARATOR="|", header="true";
+
+  LOAD f_notes_vec TO VECTOR ATTRIBUTE notes_v ON VERTEX ClosedCase
+    VALUES ($0, SPLIT($1, ",")) USING SEPARATOR="|", header="true";
+}
+
+// --------------------------------------------------------------------------------------------
+// 3. ANN search, and the hybrid query that is the actual point
+// --------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE QUERY policy_search_ann(LIST<float> query_vector, INT k)
+  FOR GRAPH $GRAPH SYNTAX v3
+{
+  // Pure ANN over the policy corpus. Used when retrieving guidance rather than cases - the
+  // policy text is not templated, so similarity alone is a sound ranking for it.
+  MapAccum<Vertex, Float> @@distances;
+  chunks = vectorSearch({PolicyChunk.embedding_v}, query_vector, k, {distance_map: @@distances});
+  PRINT chunks WITH VECTOR;
+  PRINT @@distances AS distances;
+}
+
+CREATE OR REPLACE QUERY similar_cases_hybrid(LIST<float> query_vector, DATETIME as_of,
+                                             STRING channel, STRING pattern,
+                                             DOUBLE exposure_usd, INT k, INT ann_k)
+  FOR GRAPH $GRAPH SYNTAX v3
+{
+  // THE QUERY WORTH SHOWING. One statement does ANN over 5,565 case embeddings and then keeps
+  // only the neighbours that are structurally comparable and legally visible - closed before the
+  // cutoff, same channel, exposure inside the same band. Vector search and graph filtering in
+  // the same execution, against one store.
+  //
+  // The order matters and is the opposite of what a vector database forces. Retrieve a wide ANN
+  // candidate set (`ann_k`, a few hundred), then narrow: the analyst notes are templated, so
+  // similarity alone returns near-random neighbours with uniformly high scores. Filtering after
+  // a wide retrieve keeps the structural constraint authoritative while still letting the text
+  // choose between comparable cases.
+  //
+  // `as_of` is not an optimisation. In the closed-case backtest, a case closed after the one
+  // being replayed would hand the agent the answer it is being asked to produce.
+  MapAccum<Vertex, Float> @@distances;
+  DOUBLE lo;
+  DOUBLE hi;
+  lo = exposure_usd * 0.4;
+  hi = exposure_usd * 2.5;
+
+  candidates = vectorSearch({ClosedCase.notes_v}, query_vector, ann_k,
+                            {distance_map: @@distances});
+
+  eligible = SELECT cc FROM candidates:cc
+             WHERE cc.closed_at < as_of
+               AND (channel == "" OR cc.channel == channel)
+               AND (pattern == "" OR cc.pattern == pattern)
+               AND (exposure_usd <= 0.0 OR (cc.exposure_usd >= lo AND cc.exposure_usd <= hi))
+             ORDER BY @@distances.get(cc) ASC
+             LIMIT k;
+
+  PRINT eligible;
+  PRINT @@distances AS distances;
+}
+
+CREATE OR REPLACE QUERY case_neighbours(STRING graph_case_id, DATETIME as_of, INT k)
+  FOR GRAPH $GRAPH SYNTAX v3
+{
+  // FraudCase memory read back through the graph: given a case we have already written, which prior
+  // investigations are nearest to it? This is what makes "the next investigation can find the
+  // last one" testable rather than a claim - run it after case two and case one comes back.
+  MapAccum<Vertex, Float> @@distances;
+  ListAccum<VERTEX> @@seed_vec;
+
+  cases = {FraudCase.*};
+  seed = SELECT c FROM cases:c WHERE c.graph_case_id == graph_case_id;
+
+  // Search the closed history with the live case's own embedding.
+  neighbours = vectorSearch({ClosedCase.notes_v}, seed.summary_v, k,
+                            {distance_map: @@distances});
+  visible = SELECT cc FROM neighbours:cc WHERE cc.closed_at < as_of;
+
+  PRINT seed AS live_case;
+  PRINT visible AS neighbours;
+  PRINT @@distances AS distances;
+}

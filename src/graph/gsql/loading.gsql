@@ -1,0 +1,118 @@
+// Loading jobs. Reads the CSVs written by `python -m src.graph.export`.
+//
+//   gsql -g $GRAPH src/graph/gsql/loading.gsql
+//   python -m src.graph.deploy --load        (runs these through pyTigerGraph)
+//
+// WHY EXPORT PURPOSE-BUILT CSVs RATHER THAN LOAD THE ORIGINALS. `transactions.csv` is 675 MB and
+// 397 columns wide, of which the graph needs about twenty. The derived columns the schema depends
+// on - the as-of amount percentile, the NEXT_TXN chain, the novelty flags, the filtered
+// SHARES_DEVICE edge list - do not exist in the original file at all; they are built by
+// `features/build.py` and they have to be built the same way for both backends or the contract
+// test between them is meaningless. So the export step is not a convenience, it is the thing that
+// keeps the two backends honest.
+//
+// FREE-TIER CEILING. 590,742 transaction vertices plus ~590k NEXT_TXN edges plus ~145k device links
+// may not fit a free Savanna workspace. `export.py --subgraph` writes the documented cut instead:
+// every card involved in the 20 exam cases and the 5,565 closed cases at FULL history, plus the
+// entire Nov-Dec window. Every graded traversal stays exact; nothing is silently sampled.
+
+USE GRAPH $GRAPH
+
+// FILENAMEs are declared as TAGS with no path. A `"ANY:file.csv"` default makes the engine look
+// for the file on its own filesystem, and on Savanna that resolves inside
+// /home/tigergraph/tigergraph/app, which the engine refuses as a sensitive directory. The files
+// are POSTed from this machine instead, so the tag is bound at run time.
+CREATE LOADING JOB load_fraud_graph FOR GRAPH $GRAPH {
+  DEFINE FILENAME f_customers;
+  DEFINE FILENAME f_cards;
+  DEFINE FILENAME f_txns;
+  DEFINE FILENAME f_devices;
+  DEFINE FILENAME f_regions;
+  DEFINE FILENAME f_domains;
+  DEFINE FILENAME f_closed;
+  DEFINE FILENAME f_next;
+  DEFINE FILENAME f_on_device;
+  DEFINE FILENAME f_shares;
+  DEFINE FILENAME f_involves;
+  DEFINE FILENAME f_policy;
+
+  // --- vertices ---------------------------------------------------------------------------
+  LOAD f_customers TO VERTEX Customer VALUES($"customer_id", $"n_cards", $"n_txns",
+                                             $"first_seen", $"last_seen")
+    USING header="true", separator=",";
+
+  LOAD f_cards TO VERTEX PaymentCard VALUES($"card_key", $"card_id", $"customer_id", $"provenance",
+                                     $"n_txns", $"network", $"card_type")
+    USING header="true", separator=",";
+
+  LOAD f_txns TO VERTEX Transaction VALUES($"txn_id", $"ts", $"amount", $"product_cd",
+                                           $"channel", $"risk_score", $"addr1",
+                                           $"p_emaildomain", $"card_key", $"customer_id",
+                                           $"amt_pctile_prior", $"amt_mean_prior",
+                                           $"amt_max_prior", $"new_region", $"new_product",
+                                           $"prior_txns_1h", $"prior_txns_24h",
+                                           $"secs_since_prev", $"txn_seq", $"next_txn_id")
+    USING header="true", separator=",";
+
+  LOAD f_devices TO VERTEX DeviceProfile VALUES($"device_profile", $"is_full",
+                                                $"global_card_count", $"global_customer_count",
+                                                $"n_txns", $"first_seen", $"last_seen")
+    USING header="true", separator=",";
+
+  LOAD f_regions TO VERTEX BillingRegion VALUES($"addr1", $"n_txns")
+    USING header="true", separator=",";
+
+  LOAD f_domains TO VERTEX EmailDomain VALUES($"domain", $"n_txns")
+    USING header="true", separator=",";
+
+  LOAD f_closed TO VERTEX ClosedCase VALUES($"case_id", $"customer_id", $"card_id",
+                                            $"opened_at", $"closed_at", $"outcome", $"pattern",
+                                            $"exposure_usd", $"n_txns", $"actions_taken",
+                                            $"report_filed", $"channel", $"product_cd",
+                                            $"analyst_notes", _)
+    USING header="true", separator=",";
+
+  // Embeddings are written separately by `python -m src.graph.embed`, because they are produced
+  // by an API call rather than by the build, and re-embedding 5,565 analyst notes on every graph
+  // reload would be both slow and pointless - the notes do not change.
+  LOAD f_policy TO VERTEX PolicyChunk VALUES($"chunk_id", $"doc", $"section", $"title",
+                                             $"body", _)
+    USING header="true", separator=",";
+
+  // --- edges ------------------------------------------------------------------------------
+  LOAD f_cards TO EDGE OWNS VALUES($"customer_id", $"card_key")
+    USING header="true", separator=",";
+
+  LOAD f_txns TO EDGE USED_IN VALUES($"card_key", $"txn_id")
+    USING header="true", separator=",";
+
+  LOAD f_txns TO EDGE BILLED_TO VALUES($"txn_id", $"addr1")
+    WHERE $"addr1" != "" USING header="true", separator=",";
+
+  LOAD f_txns TO EDGE FROM_DOMAIN VALUES($"txn_id", $"p_emaildomain")
+    WHERE $"p_emaildomain" != "" USING header="true", separator=",";
+
+  // The NEXT_TXN chain, ordered by ts within a card. Built at load time so that burst and sequence
+  // evidence is one hop rather than a sort.
+  LOAD f_next TO EDGE NEXT_TXN VALUES($"from_txn_id", $"to_txn_id", $"secs_gap")
+    USING header="true", separator=",";
+
+  LOAD f_on_device TO EDGE ON_DEVICE VALUES($"txn_id", $"device_profile", $"device_state",
+                                            $"proxy")
+    USING header="true", separator=",";
+
+  // Pre-filtered: see queries_ring.gsql. The calibration lives in the edge set.
+  LOAD f_shares TO EDGE SHARES_DEVICE VALUES($"card_key_a", $"card_key_b", $"device_profile",
+                                             $"first_ts", $"last_ts", $"span_days",
+                                             $"n_customers")
+    USING header="true", separator=",";
+
+  LOAD f_closed TO EDGE HAS_CASE VALUES($"customer_id", $"case_id")
+    USING header="true", separator=",";
+
+  LOAD f_closed TO EDGE CASE_ON_CARD VALUES($"case_id", $"card_key")
+    WHERE $"card_key" != "" USING header="true", separator=",";
+
+  LOAD f_involves TO EDGE INVOLVES VALUES($"case_id", $"txn_id")
+    USING header="true", separator=",";
+}

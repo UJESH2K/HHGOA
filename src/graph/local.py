@@ -11,9 +11,11 @@ import json
 import os
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
-from ..features import rings
+from ..features import casesim, recurring, rings, testing
+from ..features.recurring import Recurrence
 from .interface import Baseline, CardSummary, GraphBackend, RingSignal
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -109,8 +111,24 @@ class LocalBackend(GraphBackend):
             amt_max_prior=none_if_nan(row.amt_max_prior),
             new_region=bool(row.new_region), new_product=bool(row.new_product),
             prior_txns_1h=int(row.prior_txns_1h), prior_txns_24h=int(row.prior_txns_24h),
-            known_regions=sorted({str(x) for x in prior.addr1.dropna().unique()}),
+            # `addr1` is a float column in pandas, so str() gives "204.0" for region 204. That
+            # is not a number, it is a code - and it was reaching the answer files as
+            # "Billing region 204.0 has never appeared on this card". The graph stores it
+            # normalised, so the contract test caught the disagreement.
+            known_regions=sorted({_region_code(x) for x in prior.addr1.dropna().unique()}),
             known_products=sorted(prior.ProductCD.dropna().unique().tolist()))
+
+    def recurring_charge(self, card_key: str, txn_id: str) -> Recurrence:
+        row = self._by_txn.loc[str(txn_id)]
+        g = self._by_card.get(card_key)
+        if g is None:
+            return Recurrence(False, reason="The card has no prior history to establish a "
+                                            "pattern in")
+        return recurring.detect(
+            g, amount=float(row.TransactionAmt), ts=row.ts,
+            product_cd=row.ProductCD if pd.notna(row.ProductCD) else None,
+            email_domain=row.P_emaildomain if pd.notna(row.P_emaildomain) else None,
+            n_prior_txns=int((g.ts < row.ts).sum()))
 
     # --- device / ring -----------------------------------------------------------------------
 
@@ -148,7 +166,10 @@ class LocalBackend(GraphBackend):
         j = self._ident_by_txn[self._ident_by_txn.device_profile.isin(my_profiles)]
         j = self.txns[self.txns.TransactionID.isin(j.TransactionID)]
         j = j[(j.ts >= window_start) & (j.ts < as_of)]
-        j = j.merge(self._ident_by_txn[["TransactionID", "device_profile"]], on="TransactionID")
+        # reset_index: `_ident_by_txn` keeps TransactionID as BOTH index and column, and
+        # merging on an ambiguous key raises rather than picking one.
+        j = j.merge(self._ident_by_txn[["TransactionID", "device_profile"]]
+                    .reset_index(drop=True), on="TransactionID")
 
         out: list[RingSignal] = []
         for prof, grp in j.groupby("device_profile"):
@@ -160,12 +181,21 @@ class LocalBackend(GraphBackend):
                 continue
             vols = [len(self._by_card.get(k, [])) for k in keys]
             ids = [self._card_by_key.loc[k, "card_id"] for k in keys]
+            global_cards = int(self.profiles.loc[
+                self.profiles.device_profile == prof, "global_card_count"].iloc[0])
+            strength = rings.link_strength(global_cards)
+            n_customers = grp.customer_id.nunique()
+            # A moderate-strength profile is a common-ish device model; two cards on one is a
+            # coincidence. Three unrelated cardholders inside the window is a pattern.
+            if strength == "moderate" and n_customers < rings.MIN_CUSTOMERS_FOR_MODERATE:
+                continue
+            if strength == "none":
+                continue
             out.append(RingSignal(
                 device_profile=prof, card_keys=keys,
                 card_ids=[i for i in ids if isinstance(i, str)],
-                n_cards=len(keys), n_customers=grp.customer_id.nunique(), span_days=round(span, 2),
-                global_card_count=int(self.profiles.loc[
-                    self.profiles.device_profile == prof, "global_card_count"].iloc[0]),
+                n_cards=len(keys), n_customers=n_customers, span_days=round(span, 2),
+                global_card_count=global_cards, strength=strength,
                 # a card with thousands of transactions touches many devices; if EVERY card on
                 # the profile is high-volume this is probably an artefact, not a ring
                 volume_artefact_risk=min(vols) >= 1000))
@@ -180,17 +210,16 @@ class LocalBackend(GraphBackend):
 
     def similar_closed_cases(self, *, as_of, channel=None, pattern=None, exposure_usd=None,
                              k: int = 5) -> pd.DataFrame:
+        """Structural filter, then the shared scorer in `features/casesim.py`.
+
+        Both backends call the same two functions on the same columns, which is what makes the
+        contract test able to prove they agree rather than merely look similar.
+        """
         pool = self.closed[self.closed.closed_at < as_of]
-        if pattern:
-            pool = pool[pool.pattern == pattern]
-        if exposure_usd is not None and len(pool):
-            lo, hi = exposure_usd * 0.4, exposure_usd * 2.5
-            band = pool[(pool.exposure_usd >= lo) & (pool.exposure_usd <= hi)]
-            if len(band) >= k:
-                pool = band
-        if exposure_usd is not None and len(pool):
-            pool = pool.assign(_d=(pool.exposure_usd - exposure_usd).abs()).sort_values("_d")
-        return pool.head(k).drop(columns=["_d"], errors="ignore")
+        staged = casesim.narrow(pool, channel=channel, pattern=pattern,
+                                exposure_usd=exposure_usd, k=k)
+        return casesim.score(staged, as_of=as_of, channel=channel, pattern=pattern,
+                             exposure_usd=exposure_usd, k=k)
 
     def card_testing_episode(self, card_key: str, as_of: pd.Timestamp) -> dict | None:
         if self.card_testing.empty:
@@ -198,14 +227,16 @@ class LocalBackend(GraphBackend):
         m = self.card_testing[self.card_testing.card_key == card_key]
         if m.empty:
             return None
-        m = m[(m.window_start < as_of) & (m.window_start >= as_of - pd.Timedelta(days=7))]
+        m = m[(m.window_start < as_of)
+              & (m.window_start >= as_of - pd.Timedelta(days=testing.LOOKBACK_DAYS))]
         if m.empty:
             return None
         r = m.iloc[0]
         return {"card_key": r.card_key, "n_small": int(r.n_small),
                 "max_follow_amt": float(r.max_follow_amt), "escalate": bool(r.escalate),
                 "window": [str(r.window_start), str(r.window_end)],
-                "small_txn_ids": r.small_txn_ids, "follow_txn_ids": r.follow_txn_ids}
+                "small_txn_ids": _id_list(r.small_txn_ids),
+                "follow_txn_ids": _id_list(r.follow_txn_ids)}
 
     # --- writes ------------------------------------------------------------------------------
 
@@ -225,6 +256,25 @@ class LocalBackend(GraphBackend):
                 if rec.get("graph_case_id") == graph_case_id:
                     return rec
         return None
+
+
+def _id_list(v) -> list[str]:
+    """Transaction-id columns must come back as lists of strings, whatever parquet returns."""
+    if v is None or isinstance(v, float):
+        return []
+    if isinstance(v, str):                      # tolerate parquet files written before the fix
+        return [t.strip().strip("'\"") for t in v.strip("[]").split(",") if t.strip()]
+    return [str(x) for x in v]
+
+
+def _region_code(v) -> str:
+    """Region codes as codes: 204.0 -> "204". Shared with `graph/export.py`, which does the
+    same normalisation on the way into TigerGraph."""
+    try:
+        f = float(v)
+        return str(int(f)) if f.is_integer() else str(f)
+    except (TypeError, ValueError):
+        return str(v)
 
 
 def none_if_nan(v):

@@ -1,0 +1,145 @@
+{
+  "case_id": "HHG-015",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.9,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3464869"
+    ],
+    "first_suspicious_txn_id": "3464869",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 599.94,
+    "similar_prior_cases": [
+      "CC-5541",
+      "CC-5419",
+      "CC-5084"
+    ],
+    "summary": "The evidence supports fraud on this risk score alert for card C03042-K1, at a fraud probability of 0.90 resting on 2 independent signal(s): $599.94 is the largest or near-largest amount this card has ever authorised - 100% of its 68 prior transactions were smaller; the transaction bills to a region this card has never used before. The activity fits out of region use: the transaction bills to a region this card has never used. The closest alternative was card_not_present_new_device (0.65 against 0.70): a card-not-present transaction on a device new to the account. Recommended actions: VERIFY_WITH_CUSTOMER, CREATE_CASE, with exposure of $599.94.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-015",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a online authorisation of $599.94 on 2016-11-17 14:03 under product code R, scored 0.77 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3464869"
+        ]
+      },
+      {
+        "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3464869 ($599.94, online) at 0.77. Review and decide.",
+        "source": "external",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3464869"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 68 transactions, $599.94 sits at the 100% percentile (mean $132.61, largest previously $550.03).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3464869"
+        ]
+      },
+      {
+        "claim": "Billing region 327 has never appeared on this card before; it has previously used 123, 126, 143, 170, 177, 184, 204, 225, 231, 264, 272, 299, 315, 325, 330, 337, 387, 433, 472, 476, 485.",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3464869"
+        ]
+      },
+      {
+        "claim": "0 prior authorisation(s) on this card in the preceding hour and 3 in the preceding 24 hours.",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3464869"
+        ]
+      },
+      {
+        "claim": "The transaction ran on device profile `Trident/7.0 | Windows 8.1 | ie 11.0 for desktop | 1680x1050`, reported as New to this account. That profile appears on 8 card(s) book-wide.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3464869",
+          "Trident/7.0 | Windows 8.1 | ie 11.0 for desktop | 1680x1050"
+        ]
+      },
+      {
+        "claim": "Only 0 prior charge(s) on this card fall within $12.00 of $599.94, which is too few to establish a recurring pattern",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3464869"
+        ]
+      },
+      {
+        "claim": "This customer has 3 closed investigation(s) before this alert: 2 confirmed fraud, 1 cleared. Patterns previously found: card_not_present_new_device.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C03042",
+          "CC-0615",
+          "CC-1313",
+          "CC-3886"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5541, CC-5419, CC-5084. The nearest, CC-5541, was a $583.76 online case closed as confirmed_fraud with pattern card_not_present_new_device.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5541",
+          "CC-5419",
+          "CC-5084"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.90 rests on the bank's own evidence with no cardholder response on record; the policy authorises asking (section 5) and reserves a block for R2"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy 3a: case opened for the internal record"
+      }
+    ],
+    "final": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.90 rests on the bank's own evidence with no cardholder response on record; the policy authorises asking (section 5) and reserves a block for R2"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy 3a: case opened for the internal record"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "No regulatory filing is required: policy 3a needs confirmed or strongly suspected fraud together with an aggravating condition (exposure over $1,000, a shared origin across accounts, or an undocumented pattern), and this case meets none of them.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Probability 0.90 is outside the 0.15-0.85 band on 2 independent pieces of evidence.",
+  "tool_calls": 11,
+  "tokens": 0,
+  "latency_s": 0.12
+}

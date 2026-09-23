@@ -1,0 +1,146 @@
+{
+  "case_id": "HHG-016",
+  "case": {
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.526,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3534820"
+    ],
+    "first_suspicious_txn_id": "3534820",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 59.67,
+    "similar_prior_cases": [
+      "CC-5528",
+      "CC-5513",
+      "CC-5277"
+    ],
+    "summary": "The evidence is not sufficient to decide on this customer report alert for card C09988-K1, at a fraud probability of 0.53 resting on 1 independent signal(s): the cardholder does not recognise the transaction (arrived as the trigger). The activity fits card not present new device: a card-not-present transaction on a device new to the account. The closest alternative was card_not_present_fraud (0.40 against 0.65): a card-not-present transaction; the new device makes the new-device variant the better fit. Recommended actions: STEP_UP_AUTH, VERIFY_WITH_CUSTOMER, BLOCK_CARD, CREATE_CASE, with exposure of $59.67.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-016",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a online authorisation of $59.67 on 2016-12-11 22:39 under product code C, scored 0.37 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3534820"
+        ]
+      },
+      {
+        "claim": "The cardholder reported this transaction as unrecognised: Customer C09988 message: 'I never made this $59.67 purchase. Please check my card.' Refers to 3534820.",
+        "source": "customer",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3534820"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 48 transactions, $59.67 sits at the 75% percentile (mean $39.80, largest previously $94.70).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3534820"
+        ]
+      },
+      {
+        "claim": "The transaction ran on device profile `Windows | ? | edge 16.0 | ?`, reported as New to this account. That profile appears on 163 card(s) book-wide.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3534820",
+          "Windows | ? | edge 16.0 | ?"
+        ]
+      },
+      {
+        "claim": "2 prior charges of about $59.67 recur every 0.0 days, which matches no standard billing cadence",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3534820"
+        ]
+      },
+      {
+        "claim": "This customer has no closed investigations before this alert.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C09988"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5528, CC-5513, CC-5277. The nearest, CC-5528, was a $60.08 online case closed as confirmed_fraud with pattern card_not_present_new_device.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5528",
+          "CC-5513",
+          "CC-5277"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "STEP_UP_AUTH",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.53 (<0.7); verify before any block"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.53 (<0.7); verify before any block"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      }
+    ],
+    "final": [
+      {
+        "action": "STEP_UP_AUTH",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.53 (<0.7); verify before any block"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.53 (<0.7); verify before any block"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "No regulatory filing is required: policy 3a needs confirmed or strongly suspected fraud together with an aggravating condition (exposure over $1,000, a shared origin across accounts, or an undocumented pattern), and this case meets none of them.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
+  "tool_calls": 11,
+  "tokens": 0,
+  "latency_s": 0.06
+}

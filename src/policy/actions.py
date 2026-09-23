@@ -39,6 +39,7 @@ class Route(str, Enum):
 BLOCK_CARD_L2_THRESHOLD = 2500.0   # policy 2: BLOCK_CARD is L2 above this exposure
 SAR_EXPOSURE_THRESHOLD = 1000.0    # policy 3a: one of the report triggers
 CASE_PROBABILITY_THRESHOLD = 0.30  # policy 3a: open a case at or above this
+BLOCK_PROBABILITY_THRESHOLD = 0.70  # inferred, not quoted - see should_block_card
 
 _FIXED_ROUTES = {
     Action.DECLINE_TRANSACTION: Route.L1,
@@ -137,8 +138,53 @@ def should_create_case(*, fraud_probability: float, evidence_requested: bool,
             or customer_disputes)
 
 
+def should_block_card(*, verdict: str, fraud_probability: float, n_independent_signals: int,
+                      customer_confirmed: bool, matches_recurring_pattern: bool,
+                      card_testing: bool = False) -> bool:
+    """SUPERSEDED - not used by `rules.evaluate()`. Kept only to document a wrong turn.
+
+    This inferred, from the action distribution in `closed_cases_history.csv`, that a confident
+    fraud finding should block the card. Reading Fraud Policy v1.0 showed that is not what the
+    policy says: BLOCK_CARD comes from R2, R5 and R10 only, and R1 exists precisely to stop a
+    bank blocking a legitimate customer on its own suspicion. `evaluate()` now recommends
+    VERIFY_WITH_CUSTOMER in that situation instead, which is what section 5 authorises without
+    approval, and lets R2 or R3 decide once there is an answer.
+
+    An action distribution is evidence about what usually happened, not about what is permitted.
+    """
+    """Protect the card once fraud is established, whatever route the case arrived by.
+
+    WHY THIS GATE EXISTS. R1-R10 are all conditional on a customer response or a specific
+    pattern, so a case that reaches a confident fraud determination from graph evidence alone
+    fell through every one of them and produced CREATE_CASE with no protective action at all.
+    Run over the exam pack, that was HHG-015: $599.94, probability 0.90, a region the card had
+    never used, verdict fraud - and a recommendation to open a case and do nothing. The closed
+    history says what should happen instead: 4,268 of 5,565 investigations end in
+    CREATE_CASE|BLOCK_CARD, and only 900 (the cleared ones) end without a block.
+
+    CAVEAT, AND IT MATTERS. Unlike R1-R10 and the two 3a gates, this threshold is inferred from
+    the action distribution in `closed_cases_history.csv` rather than quoted from the Fraud
+    Policy, because the policy document ships with the dataset and the dataset is not on this
+    machine yet. Reconcile it against the policy text before the graded run, and if the policy
+    words it differently, the policy wins.
+
+    Three brakes, all from rules that ARE in the policy, because a gate inferred from an action
+    distribution must never override a rule that deliberately chose a narrower response:
+
+      - R3, a cardholder who confirms the transaction.
+      - R7, a disputed charge matching the cardholder's own recurring pattern - "do not block".
+      - R5, card testing, which prescribes DECLINE_TRANSACTION and STEP_UP_AUTH and reserves the
+        block for the specific case where a purchase over $100 has already cleared. R5 owns the
+        action set for the pattern it detects; this gate must stay out of its way.
+    """
+    if customer_confirmed or matches_recurring_pattern or card_testing:
+        return False
+    return (verdict == "fraud"
+            or (fraud_probability >= BLOCK_PROBABILITY_THRESHOLD and n_independent_signals >= 2))
+
+
 def should_file_report(*, verdict: str, fraud_probability: float, exposure_usd: float,
-                       ring_signal: bool, pattern: str) -> bool:
+                       ring_signal: bool, pattern: str, ring_strength: str = "strong") -> bool:
     """Policy 3a: a report is a regulatory filing. Most cases never need one.
 
     Requires confirmed-or-strongly-suspected fraud AND at least one aggravating condition.
@@ -148,6 +194,10 @@ def should_file_report(*, verdict: str, fraud_probability: float, exposure_usd: 
     strong = verdict == "fraud" or fraud_probability >= 0.70
     if not strong:
         return False
+    # A moderate shared-device link is not one of policy 3a's aggravating conditions: those are
+    # exposure over $1,000, a connection to a shared origin or another customer's FRAUD, or a
+    # coordinated/undocumented pattern. Shared use of a common device model is none of them.
+    strong_ring = ring_signal and ring_strength != "moderate"
     return (exposure_usd > SAR_EXPOSURE_THRESHOLD
-            or ring_signal
+            or strong_ring
             or pattern == "undocumented")

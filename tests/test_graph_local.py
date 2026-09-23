@@ -143,3 +143,31 @@ def test_case_write_then_read_back(be, tmp_path):
     got = local.read_case("CASE-TEST-1")
     assert got and got["verdict"] == "fraud"
     assert local.read_case("CASE-DOES-NOT-EXIST") is None
+
+
+# --- R7 evidence: recurring charges ---------------------------------------------------------
+
+def test_recurring_charge_returns_a_reasoned_answer_for_every_exam_case(be):
+    """R7 is the only brake on R2, so this must answer - with a reason - on all 20.
+
+    Not asserting which cases match: that is a finding, not a fixture. Asserting that the
+    detector runs against real history, never claims a match without naming the cadence and the
+    prior charges it found, and never cites a transaction at or after the flagged one.
+    """
+    pack = pd.read_parquet(os.path.join(DATA, "case_pack.parquet"))
+    matched = []
+    for row in pack.itertuples():
+        card = be.resolve_card(txn_id=str(row.flagged_txn_id))
+        assert card is not None, row.case_id
+        r = be.recurring_charge(card.card_key, str(row.flagged_txn_id))
+        assert r.reason or r.matches, f"{row.case_id}: no reason given"
+        if r.matches:
+            matched.append(row.case_id)
+            assert r.cadence and r.interval_days > 0
+            assert len(r.prior_txn_ids) >= 2
+            flagged_ts = pd.Timestamp(be.get_transaction(str(row.flagged_txn_id))["ts"])
+            for tid in r.prior_txn_ids:
+                assert pd.Timestamp(be.get_transaction(tid)["ts"]) < flagged_ts
+    # a detector that fires on every case is not a detector
+    assert len(matched) < len(pack)
+    print(f"\nrecurring match on {len(matched)}/{len(pack)}: {matched}")

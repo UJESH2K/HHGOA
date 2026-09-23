@@ -35,11 +35,55 @@ EXPECTED = {"customers": 13553, "cards": 14893, "txns": 590742,
             "identity": 144432, "closed_cases": 5565}
 
 
+def enrich_closed_cases(closed: pd.DataFrame, txns: pd.DataFrame) -> pd.DataFrame:
+    """Add `anchor_txn_id`, `channel` and `product_cd` to each closed case.
+
+    `closed_cases_history.csv` records no channel, but hybrid retrieval needs to filter
+    structurally before it ranks - an in-person dispute and an online CNP episode are not
+    comparable prior cases however similar their analyst notes read. The anchor is
+    `first_fraud_txn_id` where it exists (null on exactly the 900 cleared cases) and otherwise
+    the first id in `txn_ids`.
+    """
+    def anchor(row) -> str | None:
+        v = row.first_fraud_txn_id
+        if pd.notna(v):
+            return str(int(float(v)))
+        ids = [t.strip() for t in str(row.txn_ids or "").split("|") if t.strip()]
+        return ids[0] if ids else None
+
+    out = closed.copy()
+    out["anchor_txn_id"] = out.apply(anchor, axis=1)
+    lookup = txns.set_index(txns.TransactionID.astype(str))
+    out["channel"] = out.anchor_txn_id.map(lookup.channel)
+    out["product_cd"] = out.anchor_txn_id.map(lookup.ProductCD)
+    return out
+
+
 def log(msg: str) -> None:
     print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
 def run(data_in: str = DATA_IN, data_out: str = DATA_OUT) -> dict:
+    # Preflight, because a bare FileNotFoundError 600 lines into a traceback does not tell
+    # anyone what to do about it. Every command in this project that depends on the dataset
+    # should name the dataset.
+    missing = [f for f in ("transactions.csv", "identity.csv", "closed_cases_history.csv",
+                           "case_pack.csv")
+               if not os.path.exists(os.path.join(data_in, f))]
+    if missing:
+        raise SystemExit("\n".join([
+            "",
+            f"The organizers' dataset is not in {data_in}",
+            f"  missing: {', '.join(missing)}",
+            "",
+            "Put the folder there, keeping its name exactly. It is gitignored, so copying it in",
+            "is safe. Nothing downstream can run without it.",
+            "",
+            "To work without it, use the synthetic fixture - same schema, same case ids:",
+            "  python -m src.fixtures.generate",
+            "  python -m src.agent.run --data data_fixture --out cases_fixture",
+            "",
+        ]))
     os.makedirs(data_out, exist_ok=True)
 
     log("reading transactions.csv (675 MB, core columns only)")
@@ -55,6 +99,10 @@ def run(data_in: str = DATA_IN, data_out: str = DATA_OUT) -> dict:
     closed["closed_at"] = pd.to_datetime(closed.closed_at)
     pack = pd.read_csv(os.path.join(data_in, "case_pack.csv"))
     pack["opened_at"] = pd.to_datetime(pack.opened_at)
+
+    log("enriching closed cases with the channel of their anchor transaction")
+    closed = enrich_closed_cases(closed, txns)
+    log(f"  channel resolved on {closed.channel.notna().sum():,} of {len(closed):,} closed cases")
 
     log("resolving card_id (anchor from case files, infer for single-card customers)")
     cards = resolve_card_ids(txns, closed=closed, pack=pack, strict=True)
@@ -84,8 +132,12 @@ def run(data_in: str = DATA_IN, data_out: str = DATA_OUT) -> dict:
     cards.to_parquet(os.path.join(data_out, "cards.parquet"), index=False)
     profiles.to_parquet(os.path.join(data_out, "device_profiles.parquet"), index=False)
     if len(ct):
-        ct.assign(small_txn_ids=ct.small_txn_ids.astype(str),
-                  follow_txn_ids=ct.follow_txn_ids.astype(str)
+        # Keep the id lists as LISTS of strings. `.astype(str)` would store "[3514030, ...]"
+        # and hand a string back to `card_testing_episode`, where a list of transaction ids
+        # belongs - and those ids land in `affected_txn_ids`, which is validated against the
+        # dataset. Parquet stores list columns natively, so no cast is needed.
+        ct.assign(small_txn_ids=ct.small_txn_ids.map(lambda xs: [str(x) for x in xs]),
+                  follow_txn_ids=ct.follow_txn_ids.map(lambda xs: [str(x) for x in xs])
                   ).to_parquet(os.path.join(data_out, "card_testing.parquet"), index=False)
 
     counts = {"customers": txns.customer_id.nunique(), "cards": len(cards),
@@ -94,9 +146,19 @@ def run(data_in: str = DATA_IN, data_out: str = DATA_OUT) -> dict:
             "specific_profiles": specific}
 
 
-def check_gate(counts: dict) -> bool:
+def check_gate(counts: dict, expected: dict | None = EXPECTED) -> bool:
+    """Assert the load against known row counts.
+
+    `expected=None` prints the counts without judging them, which is what the synthetic fixture
+    needs: it runs this same pipeline over ~3,000 rows, and failing a gate calibrated to
+    590,742 would say nothing except that the fixture is not the real dataset.
+    """
+    if expected is None:
+        for k, got in counts.items():
+            print(f"  [    ] {k:<13} {got:>9,}")
+        return True
     ok = True
-    for k, want in EXPECTED.items():
+    for k, want in expected.items():
         got = counts[k]
         flag = "OK " if got == want else "FAIL"
         if got != want:

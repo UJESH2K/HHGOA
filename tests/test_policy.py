@@ -74,12 +74,75 @@ def test_r2_denial_blocks_and_opens_a_case():
     assert route_for(Action.BLOCK_CARD, 268.43) is Route.L1
 
 
+def test_r2_fires_on_a_customer_report_trigger_without_asking_again():
+    """The dispute arrived as the trigger, so it is already on the record.
+
+    The regression this guards: with R2 keyed on `customer_response == "denied"` alone, all
+    eight customer-report cases in the exam pack produced CREATE_CASE and nothing else - no
+    block, no protective action - because nobody had answered a question that was never asked.
+    """
+    d = evaluate(PolicyContext(trigger_type="customer_report", fraud_probability=0.82,
+                               verdict="fraud", exposure_usd=482.12, n_independent_signals=2))
+    assert Action.BLOCK_CARD.value in d.action_names
+    assert Action.CREATE_CASE.value in d.action_names
+    assert any(r.reason.startswith("R2") for r in d.recommendations)
+
+
+def test_r2_is_still_braked_by_r7_on_a_recurring_charge():
+    d = evaluate(PolicyContext(trigger_type="customer_report", matches_recurring_pattern=True,
+                               fraud_probability=0.2, verdict="legitimate", exposure_usd=39.08,
+                               n_independent_signals=2))
+    assert Action.BLOCK_CARD.value not in d.action_names
+    assert Action.WARN_CUSTOMER.value in d.action_names
+
+
+def test_r2_stays_silent_when_nobody_disputed_anything():
+    d = evaluate(PolicyContext(trigger_type="risk_score", fraud_probability=0.9, verdict="fraud",
+                               exposure_usd=500, n_independent_signals=2))
+    assert not any(r.reason.startswith("R2") for r in d.recommendations)
+
+
 def test_r2_denial_with_ring_also_files():
     d = evaluate(PolicyContext(fraud_probability=0.86, verdict="fraud", customer_response="denied",
                                exposure_usd=268.43, ring_signal=True, ring_element="a shared device profile",
                                n_independent_signals=3))
     assert Action.FILE_REPORT.value in d.action_names
     assert Action.MONITOR_CONNECTED_CARDS.value in d.action_names
+
+
+def test_a_confident_finding_verifies_rather_than_blocks_on_the_banks_own_evidence():
+    """HHG-015 shape: $599.94, probability 0.90, a region the card had never used, risk-score
+    trigger, no cardholder contact. Every one of R1-R10 is conditional on a customer response or
+    a specific pattern, so the case matches none of them.
+
+    The policy's answer is NOT to block - BLOCK_CARD comes from R2, R5 and R10 only, and R1
+    exists to stop exactly that. It is to ask, which section 5 authorises without approval, and
+    let R2 or R3 settle it. So the initial recommendation is a verification step and the block,
+    if it comes, comes from the answer.
+    """
+    d = evaluate(PolicyContext(trigger_type="risk_score", verdict="fraud",
+                               fraud_probability=0.90, n_independent_signals=2,
+                               exposure_usd=599.94, pattern="out_of_region_use"))
+    assert Action.VERIFY_WITH_CUSTOMER.value in d.action_names
+    assert Action.BLOCK_CARD.value not in d.action_names
+    assert any(r.reason.startswith("R1") for r in d.recommendations)
+
+
+def test_no_second_verification_once_the_cardholder_has_answered():
+    """R2 owns the case after a denial; asking again is delay, not evidence."""
+    d = evaluate(PolicyContext(trigger_type="risk_score", verdict="fraud",
+                               fraud_probability=0.90, n_independent_signals=2,
+                               customer_response="denied", exposure_usd=599.94))
+    assert Action.BLOCK_CARD.value in d.action_names
+    assert any(r.reason.startswith("R2") for r in d.recommendations)
+
+
+def test_a_confirmation_closes_without_any_block():
+    d = evaluate(PolicyContext(verdict="fraud", fraud_probability=0.9,
+                               n_independent_signals=3, customer_response="confirmed",
+                               exposure_usd=400))
+    assert Action.BLOCK_CARD.value not in d.action_names
+    assert Action.CLOSE_NO_FRAUD.value in d.action_names
 
 
 def test_r3_confirmation_closes():

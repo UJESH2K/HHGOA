@@ -1,0 +1,204 @@
+{
+  "case_id": "HHG-010",
+  "case": {
+    "status": "escalated",
+    "verdict": "fraud",
+    "fraud_probability": 0.886,
+    "pattern": "undocumented",
+    "pattern_description": "Coordinated use of a single rare device profile across 17 cards belonging to different customers within a two-week window, with no shared billing region or product pattern. It fits none of the five documented typologies: the cards are not being tested, the activity is not confined to one cardholder's account, and the anomaly is the link between accounts rather than any single transaction.",
+    "affected_txn_ids": [
+      "3506725"
+    ],
+    "first_suspicious_txn_id": "3506725",
+    "connected_card_ids": [
+      "C00854-K2",
+      "C02354-K2",
+      "C02375-K1",
+      "C03185-K1",
+      "C05245-K2",
+      "C05704-K2",
+      "C06224-K2",
+      "C07997-K1",
+      "C08918-K2",
+      "C09241-K2",
+      "C10422-K2",
+      "C11000-K2",
+      "C11309-K1",
+      "C11539-K2"
+    ],
+    "connected_device_profiles": [
+      "MacOS | Mac OS X 10_13_4 | safari generic | 1440x900",
+      "Windows | Windows 10 | edge 16.0 | 1366x768"
+    ],
+    "exposure_usd": 1000.03,
+    "similar_prior_cases": [
+      "CC-5147",
+      "CC-5311",
+      "CC-5048"
+    ],
+    "summary": "The evidence supports fraud on this risk score alert for card C10434-K1, at a fraud probability of 0.89 resting on 2 independent signal(s): $1,000.03 is the largest or near-largest amount this card has ever authorised - 100% of its 33 prior transactions were smaller; a fully specified device profile links 17 cards across 17 different customers inside a 14-day window; the profile appears on 27 cards book-wide, so it is a real link rather than a rare one. The activity fits undocumented: a rare device profile links 17 cards belonging to 17 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The closest alternative was card_not_present_new_device (0.65 against 0.90): a card-not-present transaction on a device new to the account. Recommended actions: VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST, with exposure of $1,000.03.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-010",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a online authorisation of $1,000.03 on 2016-12-02 15:18 under product code R, scored 0.90 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3506725"
+        ]
+      },
+      {
+        "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3506725 ($1,000.03, online) at 0.90. Review and decide.",
+        "source": "external",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3506725"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 33 transactions, $1,000.03 sits at the 100% percentile (mean $131.25, largest previously $670.04).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3506725"
+        ]
+      },
+      {
+        "claim": "The transaction ran on device profile `Windows | Windows 10 | edge 16.0 | 1366x768`, reported as New to this account. That profile appears on 209 card(s) book-wide.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3506725",
+          "Windows | Windows 10 | edge 16.0 | 1366x768"
+        ]
+      },
+      {
+        "claim": "Only 0 prior charge(s) on this card fall within $20.00 of $1,000.03, which is too few to establish a recurring pattern",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3506725"
+        ]
+      },
+      {
+        "claim": "device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900` links 17 cards across 17 customers within 12.6 days, and appears on only 27 cards book-wide.",
+        "source": "graph",
+        "ref": "query:ring_signals",
+        "entity_ids": [
+          "3506725",
+          "MacOS | Mac OS X 10_13_4 | safari generic | 1440x900",
+          "C00854-K2",
+          "C02354-K2",
+          "C02375-K1",
+          "C03185-K1",
+          "C05245-K2",
+          "C05704-K2",
+          "C06224-K2",
+          "C07997-K1",
+          "C08918-K2",
+          "C09241-K2",
+          "C10422-K2",
+          "C10434-K1",
+          "C11000-K2",
+          "C11309-K1",
+          "C11539-K2"
+        ]
+      },
+      {
+        "claim": "This customer has 1 closed investigation(s) before this alert: 0 confirmed fraud, 1 cleared. Patterns previously found: none.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C10434",
+          "CC-0873"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5147, CC-5311, CC-5048. The nearest, CC-5147, was a $999.91 online case closed as confirmed_fraud with pattern card_not_present_fraud.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5147",
+          "CC-5311",
+          "CC-5048"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.89 rests on the bank's own evidence with no cardholder response on record; the policy authorises asking (section 5) and reserves a block for R2"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud; monitoring every card that shares it"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R6: device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
+      }
+    ],
+    "final": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.89 rests on the bank's own evidence with no cardholder response on record; the policy authorises asking (section 5) and reserves a block for R2"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud; monitoring every card that shares it"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R6: device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900` links several cards across different customers in one window; the profile is common enough that shared use is not yet shared fraud"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": true,
+    "reason": "R9: coordinated or repeated abuse fitting none of the known patterns",
+    "narrative": "Customer C10434, holder of card C10434-K1. 1 transaction(s) totalling $1,000.03 are reported as suspicious. The activity occurred between 2016-12-02 and 2016-12-02. The activity was online and ran on device profile `MacOS | Mac OS X 10_13_4 | safari generic | 1440x900`. The pattern identified is undocumented. a rare device profile links 17 cards belonging to 17 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The assessment rests on: $1,000.03 is the largest or near-largest amount this card has ever authorised - 100% of its 33 prior transactions were smaller; a fully specified device profile links 17 cards across 17 different customers inside a 14-day window; the profile appears on 27 cards book-wide, so it is a real link rather than a rare one. The resulting fraud probability is 0.89. The investigation was opened following risk score. Real-time model scored transaction 3506725 ($1,000.03, online) at 0.90. Review and decide. The shared origin also touches card(s) C00854-K2, C02354-K2, C02375-K1, C03185-K1, C05245-K2, C05704-K2, C06224-K2, C07997-K1, C08918-K2, C09241-K2, C10422-K2, C11000-K2, C11309-K1, C11539-K2, held by other customers, which is why this filing covers activity beyond a single account.",
+    "subjects": [
+      "C10434"
+    ],
+    "total_amount_usd": 1000.03,
+    "activity_dates": [
+      "2016-12-02",
+      "2016-12-02"
+    ]
+  },
+  "stop_reason": "Probability 0.89 is outside the 0.15-0.85 band on 2 independent pieces of evidence.",
+  "tool_calls": 11,
+  "tokens": 0,
+  "latency_s": 0.11
+}

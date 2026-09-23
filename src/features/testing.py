@@ -24,6 +24,7 @@ SMALL_AMOUNT = 5.0      # R5's "often under $5"
 WINDOW_HOURS = 1.0      # R5's "within an hour"
 FOLLOW_HOURS = 24.0     # how long after the burst we look for the larger purchase
 ESCALATE_ABOVE = 100.0  # R5: "if a purchase over $100 has already cleared, recommend BLOCK_CARD"
+LOOKBACK_DAYS = 7       # how far back a burst still counts as THIS episode (see episode_for_card)
 
 
 def detect(txns: pd.DataFrame, small_amount: float = SMALL_AMOUNT,
@@ -75,24 +76,36 @@ def detect(txns: pd.DataFrame, small_amount: float = SMALL_AMOUNT,
 
 
 def episode_for_card(hits: pd.DataFrame, card_key: str, at: pd.Timestamp | None = None,
-                     within_days: int = 7) -> dict | None:
+                     within_days: int = LOOKBACK_DAYS) -> dict | None:
     """The testing episode relevant to a card at a point in time, or None.
 
     `at` bounds relevance: C11923 has a burst in August and an alert in December. That burst is
     prior history worth citing, not the current episode - so it is not returned for a December
     investigation.
+
+    The window looks BACKWARDS ONLY (`at - within_days <= window_start < at`). A burst that
+    starts after the flagged moment is the investigation's own future, and every read in this
+    codebase is as-of. `graph/local.card_testing_episode` uses the same bounds; the two must not
+    drift apart, because one is the backtest engine and the other is the graph query.
     """
     if hits.empty:
         return None
     m = hits[hits.card_key == card_key]
     if at is not None:
-        lo, hi = at - pd.Timedelta(days=within_days), at + pd.Timedelta(days=within_days)
-        m = m[(m.window_start >= lo) & (m.window_start <= hi)]
+        m = m[(m.window_start >= at - pd.Timedelta(days=within_days))
+              & (m.window_start < at)]
     if m.empty:
         return None
     r = m.iloc[0]
+    # ONE SHAPE FOR BOTH BACKENDS. This used to return `txn_ids` while the parquet backend
+    # returned `small_txn_ids` / `follow_txn_ids`, so the agent - which reads the latter - would
+    # have raised KeyError the first time a card-testing case ran through TigerGraph. The
+    # contract test found it; the fix is that there is only one shape.
+    small = [str(i) for i in r.small_txn_ids]
+    follow = [str(i) for i in r.follow_txn_ids]
     return dict(card_key=r.card_key,
-                txn_ids=[str(i) for i in (list(r.small_txn_ids) + list(r.follow_txn_ids))],
+                small_txn_ids=small, follow_txn_ids=follow,
+                txn_ids=small + follow,
                 n_small=int(r.n_small), max_follow_amt=float(r.max_follow_amt),
                 escalate=bool(r.escalate),
                 window=[str(r.window_start), str(r.window_end)])

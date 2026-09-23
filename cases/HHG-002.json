@@ -1,0 +1,126 @@
+{
+  "case_id": "HHG-002",
+  "case": {
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.76,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3478782"
+    ],
+    "first_suspicious_txn_id": "3478782",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 292.36,
+    "similar_prior_cases": [
+      "CC-5484",
+      "CC-5557",
+      "CC-5446"
+    ],
+    "summary": "The evidence is not sufficient to decide on this risk score alert for card C11891-K1, at a fraud probability of 0.76 resting on 1 independent signal(s): $292.36 is the largest or near-largest amount this card has ever authorised - 100% of its 35 prior transactions were smaller. The activity fits card not present fraud: a card-not-present transaction on a device the account has used before, or with no device record at all. No other documented pattern fits the evidence. Recommended actions: VERIFY_WITH_CUSTOMER, CREATE_CASE, with exposure of $292.36.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-002",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a online authorisation of $292.36 on 2016-11-22 17:27 under product code C, scored 0.79 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3478782"
+        ]
+      },
+      {
+        "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3478782 ($292.36, online) at 0.79. Review and decide.",
+        "source": "external",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3478782"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 35 transactions, $292.36 sits at the 100% percentile (mean $44.66, largest previously $121.32).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3478782"
+        ]
+      },
+      {
+        "claim": "No device or connection record exists for this transaction, which is expected for some online product codes and is not itself a signal.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3478782"
+        ]
+      },
+      {
+        "claim": "Only 0 prior charge(s) on this card fall within $5.85 of $292.36, which is too few to establish a recurring pattern",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3478782"
+        ]
+      },
+      {
+        "claim": "This customer has 1 closed investigation(s) before this alert: 1 confirmed fraud, 0 cleared. Patterns previously found: card_not_present_fraud.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C11891",
+          "CC-4160"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5484, CC-5557, CC-5446. The nearest, CC-5484, was a $292.94 online case closed as confirmed_fraud with pattern card_not_present_fraud.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5484",
+          "CC-5557",
+          "CC-5446"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.76 rests on the bank's own evidence with no cardholder response on record; the policy authorises asking (section 5) and reserves a block for R2"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy 3a: case opened for the internal record"
+      }
+    ],
+    "final": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.76 rests on the bank's own evidence with no cardholder response on record; the policy authorises asking (section 5) and reserves a block for R2"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy 3a: case opened for the internal record"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "No regulatory filing is required: policy 3a needs confirmed or strongly suspected fraud together with an aggravating condition (exposure over $1,000, a shared origin across accounts, or an undocumented pattern), and this case meets none of them.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
+  "tool_calls": 11,
+  "tokens": 0,
+  "latency_s": 0.03
+}

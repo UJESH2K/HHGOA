@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fraud Case Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* ===========================================================================
+   Tokens.
+
+   Light is the base palette; dark is SELECTED, not inverted - its own steps
+   against a dark surface. Both were run through the dataviz palette validator
+   rather than eyeballed.
+
+   Light  #A8231C / #B07A04 / #12805A / #2C5BD6  -> all six checks pass.
+   Dark   #C2393A / #C9A02A / #28A87F / #6C8BEC  -> passes chroma, normal-vision
+          separation, CVD separation and contrast. The amber sits at OKLCH L
+          0.724 against a 0.67 band ceiling: a deliberate trade, because pulling
+          it into the band collapsed red-vs-amber to deltaE 3.8 under
+          deuteranopia. Accessibility beats the aesthetic ceiling, and no status
+          colour is ever the only carrier of meaning here - every chip is
+          labelled with its word.
+
+   Neutrals carry a faint cool-green bias toward the accent rather than a pure
+   grey, so they read as chosen.
+   =========================================================================== */
+:root {
+  --ground:      #F1F3F2;
+  --surface:     #FFFFFF;
+  --surface-2:   #F8FAF9;
+  --surface-3:   #EDF0EF;
+  --ink:         #14191B;
+  --ink-2:       #4A5658;
+  --ink-3:       #778385;
+  --line:        #DCE1E0;
+  --line-strong: #C3CBC9;
+
+  --accent:      #2C5BD6;
+  --accent-soft: #E8EDFB;
+  --on-accent:   #FFFFFF;
+
+  --fraud:       #A8231C;
+  --fraud-soft:  #FAEBE9;
+  --uncertain:   #B07A04;
+  --uncertain-soft: #FBF2DE;
+  --legit:       #12805A;
+  --legit-soft:  #E4F3EC;
+
+  --band:        #D5DDDB;   /* the 0.15-0.85 uncertainty band on the instrument */
+
+  --radius:  6px;
+  --radius-s: 4px;
+  --ui:   "Instrument Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --prose:"Source Serif 4", Iowan Old Style, Georgia, serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #101415;
+    --surface:     #171C1D;
+    --surface-2:   #1C2223;
+    --surface-3:   #232A2B;
+    --ink:         #E9EEED;
+    --ink-2:       #9BA8A9;
+    --ink-3:       #6E7A7B;
+    --line:        #2A3132;
+    --line-strong: #3A4344;
+    --accent:      #6C8BEC;
+    --accent-soft: #1E2740;
+    --on-accent:   #0E1112;
+    --fraud:       #C2393A;
+    --fraud-soft:  #2E1A1B;
+    --uncertain:   #C9A02A;
+    --uncertain-soft: #2C2413;
+    --legit:       #28A87F;
+    --legit-soft:  #10241E;
+    --band:        #2E3739;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #101415; --surface: #171C1D; --surface-2: #1C2223; --surface-3: #232A2B;
+  --ink: #E9EEED; --ink-2: #9BA8A9; --ink-3: #6E7A7B;
+  --line: #2A3132; --line-strong: #3A4344;
+  --accent: #6C8BEC; --accent-soft: #1E2740; --on-accent: #0E1112;
+  --fraud: #C2393A; --fraud-soft: #2E1A1B;
+  --uncertain: #C9A02A; --uncertain-soft: #2C2413;
+  --legit: #28A87F; --legit-soft: #10241E;
+  --band: #2E3739;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 14px/1.5 var(--ui);
+  -webkit-font-smoothing: antialiased;
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-s); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* --- page frame ---------------------------------------------------------- */
+.masthead {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  padding-block: 14px;
+  padding-inline: 20px;
+  display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: baseline;
+}
+.masthead h1 {
+  margin: 0; font: 600 16px/1.2 var(--ui); letter-spacing: -0.01em;
+}
+.masthead .sub { color: var(--ink-3); font-size: 12px; }
+.runstrip { display: flex; flex-wrap: wrap; gap: 4px 22px; margin-left: auto; }
+.runstrip div { display: flex; flex-direction: column; gap: 1px; }
+.runstrip dt { font: 500 10px/1 var(--ui); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-3); }
+.runstrip dd { margin: 0; font: 500 14px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
+
+.console {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  gap: 0;
+  align-items: start;
+}
+@media (max-width: 900px) { .console { grid-template-columns: 1fr; } }
+
+/* --- the register (left) ------------------------------------------------- */
+.register {
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+  min-height: 100vh;
+}
+@media (max-width: 900px) { .register { border-right: 0; border-bottom: 1px solid var(--line); min-height: 0; } }
+.filters {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 12px 16px; border-bottom: 1px solid var(--line);
+  position: sticky; top: env(safe-area-inset-top, 0px); background: var(--surface); z-index: 2;
+}
+.filters button {
+  font: 500 11px/1 var(--ui); letter-spacing: 0.02em;
+  padding: 6px 9px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line-strong); background: transparent; color: var(--ink-2);
+}
+.filters button[aria-pressed="true"] {
+  background: var(--accent); border-color: var(--accent); color: var(--on-accent);
+}
+
+.caserow {
+  display: grid; grid-template-columns: 3px 1fr auto; gap: 0 12px;
+  width: 100%; text-align: left; cursor: pointer;
+  border: 0; border-bottom: 1px solid var(--line);
+  background: transparent; color: inherit;
+  padding: 0; font: inherit;
+}
+.caserow:hover { background: var(--surface-2); }
+.caserow[aria-current="true"] { background: var(--accent-soft); }
+.caserow .stripe { background: var(--line-strong); }
+.caserow.v-fraud .stripe { background: var(--fraud); }
+.caserow.v-uncertain .stripe { background: var(--uncertain); }
+.caserow.v-legitimate .stripe { background: var(--legit); }
+.caserow .body { padding: 11px 0 11px 4px; min-width: 0; }
+.caserow .tail { padding: 11px 14px 11px 0; text-align: right; }
+.caserow .id { font: 500 13px/1.3 var(--mono); }
+.caserow .meta { color: var(--ink-3); font-size: 11.5px; margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.caserow .p { font: 500 14px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
+.caserow .exp { color: var(--ink-3); font: 400 11px/1.4 var(--mono); font-variant-numeric: tabular-nums; }
+
+/* --- the record (right) -------------------------------------------------- */
+.record { padding-block: 22px; padding-inline: 24px; max-width: 900px; }
+@media (max-width: 560px) { .record { padding-inline: 16px; } }
+.record > section { margin-bottom: 26px; }
+.record h2 {
+  font: 500 10.5px/1 var(--ui); letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-3); margin: 0 0 10px;
+}
+.record h3 { font: 600 14px/1.3 var(--ui); margin: 0 0 4px; }
+
+.casehead { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: baseline; }
+.casehead .cid { font: 600 24px/1.1 var(--mono); letter-spacing: -0.02em; }
+.casehead .who { color: var(--ink-2); font-size: 13px; }
+.casehead .who code { font-family: var(--mono); font-size: 12.5px; color: var(--ink); }
+
+/* Verdict stamp: form as well as colour, so state reads without relying on hue. */
+.stamp {
+  display: inline-flex; align-items: center; gap: 7px;
+  font: 600 11px/1 var(--ui); letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 7px 11px; border-radius: var(--radius-s); border: 1.5px solid currentColor;
+}
+.stamp .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.v-fraud .stamp, .stamp.v-fraud { color: var(--fraud); background: var(--fraud-soft); }
+.v-uncertain .stamp, .stamp.v-uncertain { color: var(--uncertain); background: var(--uncertain-soft); }
+.v-legitimate .stamp, .stamp.v-legitimate { color: var(--legit); background: var(--legit-soft); }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font: 500 11px/1 var(--ui); padding: 5px 8px; border-radius: 999px;
+  border: 1px solid var(--line-strong); color: var(--ink-2); background: var(--surface-2);
+  white-space: nowrap;
+}
+.chip.route-auto { border-color: var(--legit); color: var(--legit); background: var(--legit-soft); }
+.chip.route-L1 { border-color: var(--uncertain); color: var(--uncertain); background: var(--uncertain-soft); }
+.chip.route-L2 { border-color: var(--fraud); color: var(--fraud); background: var(--fraud-soft); }
+.chip.src-graph { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+.panel {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 16px;
+}
+.panel + .panel { margin-top: 10px; }
+.prose { font: 400 15.5px/1.6 var(--prose); color: var(--ink); max-width: 66ch; }
+.prose.small { font-size: 14.5px; }
+
+/* --- instrument: probability on a scale with the uncertainty band -------- */
+.instrument { display: block; width: 100%; height: auto; }
+.instrument text { font: 400 10px var(--mono); fill: var(--ink-3); }
+.instrument text.val { font: 500 11px var(--mono); }
+
+/* --- driver contributions: diverging bars from a centre zero ------------- */
+.drivers { display: flex; flex-direction: column; gap: 7px; }
+.driver { display: grid; grid-template-columns: minmax(150px, 230px) minmax(0, 1fr) 52px; gap: 10px; align-items: center; }
+@media (max-width: 620px) { .driver { grid-template-columns: 1fr; gap: 2px; } }
+.driver .name { font: 400 12px/1.3 var(--mono); color: var(--ink-2); min-width: 0; }
+.driver .name b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-weight: 400; }
+.driver .name em { font: 400 10px/1.2 var(--ui); font-style: normal; color: var(--ink-3);
+  letter-spacing: 0.02em; }
+.driver .track { position: relative; height: 16px; background: var(--surface-3); border-radius: 2px; }
+.driver .zero { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--line-strong); }
+.driver .fill { position: absolute; top: 3px; height: 10px; }
+.driver .fill.pos { background: var(--fraud); border-radius: 0 var(--radius-s) var(--radius-s) 0; }
+.driver .fill.neg { background: var(--legit); border-radius: var(--radius-s) 0 0 var(--radius-s); }
+.driver.weak .fill { opacity: 0.4; }
+.driver .amt { font: 500 12px/1 var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+.driver .amt.pos { color: var(--fraud); }
+.driver .amt.neg { color: var(--legit); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; color: var(--ink-3); font-size: 11.5px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 12px; height: 4px; border-radius: 2px; display: inline-block; }
+
+/* --- action diff --------------------------------------------------------- */
+.diff { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 680px) { .diff { grid-template-columns: 1fr; } }
+.actions { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.actions li { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.actions .an { font: 500 12px/1.3 var(--mono); }
+.actions .why { flex-basis: 100%; color: var(--ink-3); font-size: 11.5px; }
+.actions li.added .an { color: var(--accent); }
+.actions li.added::before { content: "+"; font: 600 12px var(--mono); color: var(--accent); }
+.actions li.gone .an { color: var(--ink-3); text-decoration: line-through; }
+.actions li.gone::before { content: "\2212"; font: 600 12px var(--mono); color: var(--ink-3); }
+
+/* --- tables -------------------------------------------------------------- */
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+th { text-align: left; font: 500 10px/1 var(--ui); letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); padding: 0 10px 7px 0; white-space: nowrap; }
+td { padding: 8px 10px 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; padding-right: 0; }
+td.ref { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); white-space: nowrap; }
+
+.quote {
+  border-left: 2px solid var(--uncertain); background: var(--uncertain-soft);
+  padding: 12px 14px; border-radius: 0 var(--radius) var(--radius) 0;
+}
+.quote .tag { font: 600 10px/1 var(--ui); letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--uncertain); display: block; margin-bottom: 6px; }
+
+.tip {
+  position: fixed; z-index: 30; max-width: 320px; pointer-events: none;
+  background: var(--ink); color: var(--ground); padding: 8px 10px; border-radius: var(--radius-s);
+  font-size: 12px; line-height: 1.45; box-shadow: 0 6px 20px rgba(0,0,0,.22);
+}
+.empty { color: var(--ink-3); font-size: 13px; }
+.note { color: var(--ink-3); font-size: 11.5px; margin-top: 8px; }
+.banner {
+  background: var(--uncertain-soft); color: var(--uncertain);
+  border-bottom: 1px solid var(--line);
+  font: 500 11.5px/1.4 var(--ui); padding: 8px 20px;
+}
+</style>
+</head>
+<body>
+
+<div class="banner" id="banner" hidden></div>
+
+<header class="masthead">
+  <div>
+    <h1>Fraud Case Register</h1>
+    <div class="sub" id="runsub">loading</div>
+  </div>
+  <dl class="runstrip" id="runstrip"></dl>
+</header>
+
+<main class="console">
+  <aside class="register" aria-label="Case register">
+    <div class="filters" id="filters" role="group" aria-label="Filter cases"></div>
+    <div id="rows"></div>
+  </aside>
+  <section class="record" id="record" aria-live="polite"></section>
+</main>
+
+<script>
+/* ===========================================================================
+   Data. The page runs in two places from one file:
+     - served by src/ui/app.py, where it fetches the live case files
+     - standalone, where a build step inlines window.__CASES__ first
+   =========================================================================== */
+const state = { cases: {}, diag: {}, manifest: null, selected: null, filter: "all" };
+
+const money = n => "$" + Number(n || 0).toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+async function load() {
+  if (window.__CASES__) {
+    state.cases = window.__CASES__.cases || {};
+    state.diag = window.__CASES__.diagnostics || {};
+    state.manifest = window.__CASES__.manifest || null;
+    banner(window.__CASES__.banner);
+    return;
+  }
+  const r = await fetch("api/cases");
+  if (!r.ok) throw new Error("the case API returned " + r.status);
+  const d = await r.json();
+  state.cases = d.cases || {};
+  state.diag = d.diagnostics || {};
+  state.manifest = d.manifest || null;
+  banner(d.banner);
+}
+
+function banner(text) {
+  const el = document.getElementById("banner");
+  if (!text) { el.hidden = true; return; }
+  el.textContent = text;
+  el.hidden = false;
+}
+
+/* --- run summary ---------------------------------------------------------- */
+function renderRun() {
+  const m = state.manifest && state.manifest.run ? state.manifest.run : {};
+  const n = Object.keys(state.cases).length;
+  const filed = Object.values(state.cases).filter(c => c.sar && c.sar.file).length;
+  document.getElementById("runsub").textContent =
+    (state.manifest ? state.manifest.backend + " backend" : "no run manifest") +
+    (state.manifest && state.manifest.llm ? " · " + state.manifest.llm : " · deterministic, no model calls");
+
+  const tiles = [
+    ["cases", n + "/20"],
+    ["graph queries", (m.total_tool_calls || 0).toLocaleString()],
+    ["model calls", (m.total_llm_calls || 0).toLocaleString()],
+    ["cost", "$" + Number(m.total_cost_usd || 0).toFixed(4)],
+    ["wall clock", (m.total_latency_s || 0).toFixed(1) + "s"],
+    ["evidence from graph", Math.round((m.mean_deterministic_evidence_share || 0) * 100) + "%"],
+    ["reports filed", filed + "/" + n],
+  ];
+  document.getElementById("runstrip").innerHTML = tiles
+    .map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("");
+}
+
+/* --- register ------------------------------------------------------------- */
+const FILTERS = [
+  ["all", c => true],
+  ["fraud", c => c.case.verdict === "fraud"],
+  ["uncertain", c => c.case.verdict === "uncertain"],
+  ["legitimate", c => c.case.verdict === "legitimate"],
+  ["asked for evidence", c => (c.evidence_requests || []).length > 0],
+  ["report filed", c => c.sar && c.sar.file],
+];
+
+function renderFilters() {
+  document.getElementById("filters").innerHTML = FILTERS.map(([name]) => {
+    const count = Object.values(state.cases).filter(FILTERS.find(f => f[0] === name)[1]).length;
+    return `<button type="button" data-f="${esc(name)}" aria-pressed="${state.filter === name}">
+              ${esc(name)} <span style="opacity:.6">${count}</span></button>`;
+  }).join("");
+  document.querySelectorAll("#filters button").forEach(b => {
+    b.onclick = () => { state.filter = b.dataset.f; renderFilters(); renderRows(); };
+  });
+}
+
+function visibleCases() {
+  const pred = FILTERS.find(f => f[0] === state.filter)[1];
+  // Highest probability first: the register's job is to surface what needs attention.
+  return Object.values(state.cases).filter(pred)
+    .sort((a, b) => b.case.fraud_probability - a.case.fraud_probability);
+}
+
+function renderRows() {
+  const rows = visibleCases();
+  document.getElementById("rows").innerHTML = rows.length ? rows.map(c => {
+    const k = c.case;
+    const asked = (c.evidence_requests || []).length;
+    const bits = [k.pattern === "none" ? "no pattern claimed" : k.pattern.replace(/_/g, " ")];
+    if (asked) bits.push("asked " + asked);
+    if (c.sar && c.sar.file) bits.push("report filed");
+    return `<button class="caserow v-${esc(k.verdict)}" data-id="${esc(c.case_id)}"
+              aria-current="${state.selected === c.case_id}">
+      <span class="stripe"></span>
+      <span class="body">
+        <span class="id">${esc(c.case_id)}</span>
+        <span class="meta">${esc(bits.join(" · "))}</span>
+      </span>
+      <span class="tail">
+        <span class="p">${k.fraud_probability.toFixed(2)}</span><br>
+        <span class="exp">${k.exposure_usd ? money(k.exposure_usd) : "—"}</span>
+      </span>
+    </button>`;
+  }).join("") : `<p class="empty" style="padding:16px">No case matches this filter.</p>`;
+
+  document.querySelectorAll(".caserow").forEach(b => {
+    b.onclick = () => select(b.dataset.id);
+  });
+}
+
+/* --- the probability instrument ------------------------------------------
+   One value on a 0-1 scale, with the regions that actually govern the
+   decision drawn on it: the 0.15-0.85 band inside which the policy forbids a
+   confident call on a single signal, and the two verdict thresholds. Every
+   label names a value the scale reaches.
+   ------------------------------------------------------------------------- */
+function instrument(p, verdict) {
+  const W = 620, H = 74, L = 14, R = 26, y = 34, h = 13;
+  const x = v => L + v * (W - L - R);
+  const colour = verdict === "fraud" ? "var(--fraud)" : verdict === "legitimate" ? "var(--legit)" : "var(--uncertain)";
+  const ticks = [[0, "0"], [0.20, "0.20"], [0.70, "0.70"], [1, "1.0"]];
+  return `<svg class="instrument" viewBox="0 0 ${W} ${H}" role="img"
+    aria-label="Fraud probability ${p.toFixed(2)} on a zero to one scale; the uncertainty band runs from 0.15 to 0.85">
+    <rect x="${x(0)}" y="${y}" width="${x(1) - x(0)}" height="${h}" rx="2" fill="var(--surface-3)"></rect>
+    <rect x="${x(0.15)}" y="${y}" width="${x(0.85) - x(0.15)}" height="${h}" fill="var(--band)"></rect>
+    <text x="${(x(0.15) + x(0.85)) / 2}" y="${y - 8}" text-anchor="middle">uncertainty band 0.15 – 0.85</text>
+    ${ticks.map(([v, lab]) => `
+      <line x1="${x(v)}" y1="${y}" x2="${x(v)}" y2="${y + h + 4}" stroke="var(--line-strong)" stroke-width="1"></line>
+      <text x="${x(v)}" y="${y + h + 16}" text-anchor="middle">${lab}</text>`).join("")}
+    <text x="${x(0.20)}" y="${y + h + 27}" text-anchor="middle">legitimate at or below</text>
+    <text x="${x(0.70)}" y="${y + h + 27}" text-anchor="middle">fraud at or above</text>
+    <rect x="${x(Math.min(p, 1)) - 1.5}" y="${y - 5}" width="3" height="${h + 10}" rx="1.5" fill="${colour}"></rect>
+    <circle cx="${x(Math.min(p, 1))}" cy="${y + h / 2}" r="5.5" fill="${colour}" stroke="var(--surface)" stroke-width="2"></circle>
+    <text class="val" x="${x(Math.min(p, 1))}" y="${y - 12}" text-anchor="middle" fill="${colour}">${p.toFixed(2)}</text>
+  </svg>`;
+}
+
+/* --- driver contributions -------------------------------------------------
+   Diverging bars from a centre zero: the signals that raised the probability
+   to the right, the ones that lowered it to the left, each direct-labelled.
+   Sub-material contributions are shown faded and marked, because "this signal
+   is present but is not allowed to count as independent evidence" is one of
+   the more important things the page has to say.
+   ------------------------------------------------------------------------- */
+function drivers(assessment) {
+  const all = (assessment.all_contributions || []).filter(c => c.log_odds !== 0);
+  if (!all.length) return `<p class="empty">No signal moved the assessment away from the base rate of ${Number(assessment.prior).toFixed(2)}.</p>`;
+  const scale = Math.max(2.0, ...all.map(c => Math.abs(c.log_odds)));
+  const rows = all.sort((a, b) => Math.abs(b.log_odds) - Math.abs(a.log_odds)).map(c => {
+    const pct = (Math.abs(c.log_odds) / scale) * 50;
+    const pos = c.log_odds > 0;
+    return `<div class="driver ${c.material ? "" : "weak"}" data-tip="${esc(c.note)}">
+      <span class="name" title="${esc(c.signal)}"><b>${esc(c.signal)}</b>${c.material ? "" : "<em>not independent evidence</em>"}</span>
+      <span class="track"><span class="zero"></span>
+        <span class="fill ${pos ? "pos" : "neg"}" style="${pos ? `left:50%;width:${pct}%` : `right:50%;width:${pct}%`}"></span>
+      </span>
+      <span class="amt ${pos ? "pos" : "neg"}">${c.log_odds > 0 ? "+" : ""}${c.log_odds.toFixed(2)}</span>
+    </div>`;
+  }).join("");
+  return `<div class="drivers">${rows}</div>
+    <div class="legend">
+      <span><i style="background:var(--fraud)"></i> raises fraud probability</span>
+      <span><i style="background:var(--legit)"></i> lowers it</span>
+      <span>faded = below the materiality floor, so it cannot count as one of the two independent signals</span>
+      <span>log-odds, added to a prior of ${Number(assessment.prior).toFixed(2)}</span>
+    </div>`;
+}
+
+/* --- action diff ---------------------------------------------------------- */
+function actionList(list, other, mark) {
+  const names = new Set((other || []).map(a => a.action));
+  if (!list.length) return `<p class="empty">No action recommended.</p>`;
+  return `<ul class="actions">` + list.map(a => {
+    const cls = mark && !names.has(a.action) ? mark : "";
+    return `<li class="${cls}"><span class="an">${esc(a.action)}</span>
+      <span class="chip route-${esc(a.route)}">${esc(a.route)}</span>
+      <span class="why">${esc(a.reason)}</span></li>`;
+  }).join("") + `</ul>`;
+}
+
+/* --- the record ----------------------------------------------------------- */
+function renderRecord(id) {
+  const c = state.cases[id];
+  const d = state.diag[id] || {};
+  const el = document.getElementById("record");
+  if (!c) { el.innerHTML = `<p class="empty">Select a case.</p>`; return; }
+  const k = c.case, nba = c.next_best_actions || {initial: [], final: []};
+  const a = d.assessment || {prior: 0.3, all_contributions: [], families: []};
+  const changed = JSON.stringify(nba.initial) !== JSON.stringify(nba.final);
+
+  const parts = [];
+
+  parts.push(`<section class="casehead v-${esc(k.verdict)}">
+    <span class="cid">${esc(c.case_id)}</span>
+    <span class="stamp v-${esc(k.verdict)}"><span class="dot"></span>${esc(k.verdict)}</span>
+    <span class="chip">${esc((d.trigger && d.trigger.type || "").replace(/_/g, " ") || "trigger unknown")}</span>
+    <span class="chip">${esc(k.status.replace(/_/g, " "))}</span>
+    <span class="who">customer <code>${esc(d.card && d.card.card_id ? d.card.card_id.split("-")[0] : "—")}</code>
+      · card <code>${esc(d.card && d.card.card_id || "not citable")}</code>
+      · flagged txn <code>${esc(d.trigger && d.trigger.flagged_txn_id || "—")}</code></span>
+  </section>`);
+
+  parts.push(`<section>
+    <h2>Assessment</h2>
+    <div class="panel">
+      ${instrument(k.fraud_probability, k.verdict)}
+      <p class="note">${a.n_independent_signals || 0} independent signal${(a.n_independent_signals || 0) === 1 ? "" : "s"}
+        ${(a.families || []).length ? "(" + esc(a.families.join(", ")) + ")" : ""}.
+        ${a.clamped_to_band ? "Held inside the band because it rested on a single family of evidence." : ""}
+        ${a.override ? esc(a.override) + "." : ""}</p>
+    </div>
+    <div class="panel">${drivers(a)}</div>
+  </section>`);
+
+  parts.push(`<section>
+    <h2>Summary</h2>
+    <div class="panel"><p class="prose">${esc(k.summary)}</p></div>
+  </section>`);
+
+  const pat = d.pattern || {};
+  parts.push(`<section>
+    <h2>Pattern</h2>
+    <div class="panel">
+      <h3>${esc(k.pattern === "none" ? "No pattern claimed" : k.pattern.replace(/_/g, " "))}</h3>
+      <p class="prose small">${esc(pat.rationale || "")}</p>
+      ${k.pattern_description ? `<p class="prose small" style="margin-top:8px">${esc(k.pattern_description)}</p>` : ""}
+      ${(pat.alternatives || []).length ? `<div class="scroll" style="margin-top:12px"><table>
+        <thead><tr><th>alternative</th><th>score</th><th>why it lost</th></tr></thead>
+        <tbody>${pat.alternatives.slice(0, 4).map(alt => `<tr>
+          <td style="font-family:var(--mono);font-size:11.5px">${esc(alt.pattern)}</td>
+          <td class="num">${Number(alt.score).toFixed(2)}</td>
+          <td>${esc(alt.rejected || alt.rationale)}</td></tr>`).join("")}</tbody></table></div>` : ""}
+    </div>
+  </section>`);
+
+  parts.push(`<section>
+    <h2>Next best action ${changed ? "· changed after evidence" : ""}</h2>
+    <div class="diff">
+      <div class="panel"><h3>Before requesting evidence</h3>${actionList(nba.initial || [], nba.final, "gone")}</div>
+      <div class="panel"><h3>After</h3>${actionList(nba.final || [], nba.initial, "added")}</div>
+    </div>
+    <p class="note">What changed: ${esc(nba.what_changed)}</p>
+  </section>`);
+
+  const reqs = c.evidence_requests || [];
+  const voi = (d.evidence_value || []).flatMap(l => l.options || []);
+  parts.push(`<section>
+    <h2>Evidence requested</h2>
+    ${reqs.length ? reqs.map(r => `<div class="panel">
+        <h3>${esc(r.type.replace(/_/g, " "))} <span class="chip">after step ${esc(r.asked_after_step)}</span></h3>
+        <div class="quote" style="margin-top:10px">
+          <span class="tag">assumed response</span>
+          <span class="prose small">${esc(r.assumed_response)}</span>
+        </div>
+      </div>`).join("") : `<div class="panel"><p class="empty">No evidence was requested.</p></div>`}
+    ${voi.length ? `<div class="panel"><h3>Every option the agent weighed</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>request</th><th>expected change</th><th>friction</th><th>net</th><th>reasoning</th></tr></thead>
+        <tbody>${voi.map(o => `<tr>
+          <td style="font-family:var(--mono);font-size:11.5px">${esc(o.request_type)}${o.selected ? " ✓" : ""}</td>
+          <td class="num">${Number(o.expected_decision_change).toFixed(2)}</td>
+          <td class="num">${Number(o.friction).toFixed(2)}</td>
+          <td class="num">${Number(o.net_value) > 0 ? "+" : ""}${Number(o.net_value).toFixed(2)}</td>
+          <td>${esc(o.rationale)}</td></tr>`).join("")}</tbody></table></div>
+      <p class="note">Expected change is how far the recommended action would move, weighted by how
+        likely each answer is. Friction is the cost of asking. The agent asks only when the
+        difference is positive.</p></div>` : ""}
+  </section>`);
+
+  parts.push(`<section>
+    <h2>Evidence · ${(k.evidence || []).length} items</h2>
+    <div class="panel"><div class="scroll"><table>
+      <thead><tr><th>claim</th><th>source</th><th>query</th></tr></thead>
+      <tbody>${(k.evidence || []).map(e => `<tr>
+        <td>${esc(e.claim)}</td>
+        <td><span class="chip ${e.source === "graph" ? "src-graph" : ""}">${esc(e.source)}</span></td>
+        <td class="ref">${esc(e.ref)}</td></tr>`).join("")}</tbody></table></div></div>
+  </section>`);
+
+  const links = [];
+  if ((k.connected_card_ids || []).length) links.push(`<tr><td>connected cards</td><td class="ref">${k.connected_card_ids.map(esc).join(", ")}</td></tr>`);
+  if ((k.connected_device_profiles || []).length) links.push(`<tr><td>shared device profiles</td><td class="ref">${k.connected_device_profiles.map(esc).join("<br>")}</td></tr>`);
+  if ((k.similar_prior_cases || []).length) links.push(`<tr><td>similar prior cases</td><td class="ref">${k.similar_prior_cases.map(esc).join(", ")}</td></tr>`);
+  if ((k.affected_txn_ids || []).length) links.push(`<tr><td>affected transactions</td><td class="ref">${k.affected_txn_ids.map(esc).join(", ")}</td></tr>`);
+  links.push(`<tr><td>written to graph</td><td class="ref">${k.written_to_graph ? "yes · " + esc(k.graph_case_id) : "no"}</td></tr>`);
+  parts.push(`<section><h2>Connections and memory</h2>
+    <div class="panel"><div class="scroll"><table><tbody>${links.join("")}</tbody></table></div></div></section>`);
+
+  const sar = c.sar || {};
+  parts.push(`<section>
+    <h2>Suspicious activity report</h2>
+    <div class="panel">
+      ${sar.file ? `<h3>Filed · ${money(sar.total_amount_usd)} · ${esc((sar.activity_dates || []).join(" to "))}</h3>
+        <p class="note">${esc(sar.reason)}</p>
+        <p class="prose" style="margin-top:12px">${esc(sar.narrative)}</p>
+        <p class="note">Subjects: ${(sar.subjects || []).map(esc).join(", ")}</p>`
+      : `<h3>Not filed</h3><p class="prose small">${esc(sar.reason)}</p>`}
+    </div>
+  </section>`);
+
+  const m = d.meter || {};
+  const stages = Object.entries(m.by_stage || {});
+  parts.push(`<section>
+    <h2>How the investigation stopped, and what it cost</h2>
+    <div class="panel">
+      <p class="prose small">${esc(c.stop_reason)}</p>
+      <div class="scroll" style="margin-top:12px"><table>
+        <thead><tr><th>stage</th><th>graph queries</th><th>model calls</th><th>tokens</th><th>seconds</th></tr></thead>
+        <tbody>${stages.map(([name, r]) => `<tr>
+          <td>${esc(name.replace(/_/g, " "))}</td>
+          <td class="num">${r.tool_calls || 0}</td>
+          <td class="num">${r.llm_calls || 0}</td>
+          <td class="num">${(r.tokens || 0).toLocaleString()}</td>
+          <td class="num">${Number(r.wall_seconds || r.tool_seconds || 0).toFixed(3)}</td></tr>`).join("")}
+        <tr><td><strong>case total</strong></td>
+          <td class="num"><strong>${c.tool_calls}</strong></td>
+          <td class="num"><strong>${m.llm_calls || 0}</strong></td>
+          <td class="num"><strong>${(c.tokens || 0).toLocaleString()}</strong></td>
+          <td class="num"><strong>${Number(c.latency_s).toFixed(2)}</strong></td></tr>
+        </tbody></table></div>
+    </div>
+  </section>`);
+
+  parts.push(`<section>
+    <h2>Decision log</h2>
+    <div class="panel"><ol class="prose small" style="margin:0;padding-left:20px">
+      ${(d.decisions || []).map(x => `<li style="margin-bottom:6px">${esc(x)}</li>`).join("")}
+    </ol></div>
+  </section>`);
+
+  el.innerHTML = parts.join("");
+  wireTips();
+}
+
+/* --- hover layer on the driver bars -------------------------------------- */
+let tipEl = null;
+function wireTips() {
+  document.querySelectorAll("[data-tip]").forEach(node => {
+    node.addEventListener("pointerenter", ev => {
+      if (!tipEl) { tipEl = document.createElement("div"); tipEl.className = "tip"; document.body.appendChild(tipEl); }
+      tipEl.textContent = node.dataset.tip;
+      tipEl.hidden = false;
+      const r = node.getBoundingClientRect();
+      tipEl.style.left = Math.min(ev.clientX + 12, window.innerWidth - 340) + "px";
+      tipEl.style.top = Math.max(8, r.top - 8) + "px";
+    });
+    node.addEventListener("pointerleave", () => { if (tipEl) tipEl.hidden = true; });
+  });
+}
+
+function select(id) {
+  state.selected = id;
+  renderRows();
+  renderRecord(id);
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+load().then(() => {
+  renderRun();
+  renderFilters();
+  const first = visibleCases()[0];
+  state.selected = first ? first.case_id : null;
+  renderRows();
+  renderRecord(state.selected);
+}).catch(err => {
+  document.getElementById("record").innerHTML =
+    `<section><h2>Could not load the cases</h2><div class="panel">
+      <p class="prose small">${esc(err.message)}</p>
+      <p class="note">Run <code>python -m src.agent.run --data data_fixture --out cases_fixture</code>
+      first, then start the console with <code>python -m src.ui.app --cases cases_fixture</code>.</p>
+    </div></section>`;
+});
+</script>
+</body>
+</html>

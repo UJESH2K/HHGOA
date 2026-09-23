@@ -1,0 +1,162 @@
+{
+  "case_id": "HHG-007",
+  "case": {
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.513,
+    "pattern": "account_takeover",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3514948"
+    ],
+    "first_suspicious_txn_id": "3514948",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 111.92,
+    "similar_prior_cases": [
+      "CC-5360",
+      "CC-5507",
+      "CC-5522"
+    ],
+    "summary": "The evidence is not sufficient to decide on this risk score alert for card C09933-K2, at a fraud probability of 0.51 resting on 0 independent signal(s): no signal in the available evidence moved the assessment materially. The activity fits account takeover: there is session-level evidence (a burst of authorisations around it) but the device is not new to the account. No other documented pattern fits the evidence. Recommended actions: STEP_UP_AUTH, VERIFY_WITH_CUSTOMER, CREATE_CASE, with exposure of $111.92.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-007",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a in-person authorisation of $111.92 on 2016-12-05 00:46 under product code W, scored 0.87 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3514948"
+        ]
+      },
+      {
+        "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3514948 ($111.92, in billing region 264.0) at 0.87. Review and decide.",
+        "source": "external",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3514948"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 2,431 transactions, $111.92 sits at the 71% percentile (mean $124.74, largest previously $2,529.78).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3514948"
+        ]
+      },
+      {
+        "claim": "0 prior authorisation(s) on this card in the preceding hour and 16 in the preceding 24 hours.",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3514948"
+        ]
+      },
+      {
+        "claim": "The transaction is card present, so no device or connection record exists - true of every in-person transaction in the book, and not a signal.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3514948"
+        ]
+      },
+      {
+        "claim": "6 prior charges of about $111.92 exist on this card but their spacing is irregular (intervals 53d, 16d, 42d, 9d, 32d), so this is a repeated amount rather than a recurring charge",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3514948"
+        ]
+      },
+      {
+        "claim": "This customer has 19 closed investigation(s) before this alert: 18 confirmed fraud, 1 cleared. Patterns previously found: account_takeover, out_of_region_use.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C09933",
+          "CC-0104",
+          "CC-0657",
+          "CC-0765",
+          "CC-1228",
+          "CC-1524",
+          "CC-1682",
+          "CC-2565",
+          "CC-2834",
+          "CC-2986",
+          "CC-3136",
+          "CC-3439",
+          "CC-3821",
+          "CC-4196",
+          "CC-4277",
+          "CC-4455",
+          "CC-4597",
+          "CC-4787",
+          "CC-5092",
+          "CC-5521"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5360, CC-5507, CC-5522. The nearest, CC-5360, was a $113.92 in_person case closed as confirmed_fraud with pattern out_of_region_use.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5360",
+          "CC-5507",
+          "CC-5522"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "STEP_UP_AUTH",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.51 (<0.7); verify before any block"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.51 (<0.7); verify before any block"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy 3a: case opened for the internal record"
+      }
+    ],
+    "final": [
+      {
+        "action": "STEP_UP_AUTH",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.51 (<0.7); verify before any block"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal at probability 0.51 (<0.7); verify before any block"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy 3a: case opened for the internal record"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "No regulatory filing is required: policy 3a needs confirmed or strongly suspected fraud together with an aggravating condition (exposure over $1,000, a shared origin across accounts, or an undocumented pattern), and this case meets none of them.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
+  "tool_calls": 10,
+  "tokens": 0,
+  "latency_s": 0.06
+}

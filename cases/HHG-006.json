@@ -1,0 +1,134 @@
+{
+  "case_id": "HHG-006",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.901,
+    "pattern": "account_takeover",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3476682"
+    ],
+    "first_suspicious_txn_id": "3476682",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 482.12,
+    "similar_prior_cases": [
+      "CC-5345",
+      "CC-5480",
+      "CC-5369"
+    ],
+    "summary": "The evidence supports fraud on this customer report alert for card C07297-K1, at a fraud probability of 0.90 resting on 3 independent signal(s): $482.12 is the largest or near-largest amount this card has ever authorised - 97% of its 101 prior transactions were smaller; the cardholder does not recognise the transaction (arrived as the trigger); 3 prior authorisations on this card in the preceding hour. The activity fits account takeover: the transaction runs on a device new to the account together with a burst of authorisations around it, which points at control of the account rather than use of the card alone. The closest alternative was card_not_present_new_device (0.65 against 0.85): a card-not-present transaction on a device new to the account. Recommended actions: BLOCK_CARD, CREATE_CASE, with exposure of $482.12.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-006",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a online authorisation of $482.12 on 2016-11-21 20:30 under product code C, scored 0.25 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3476682"
+        ]
+      },
+      {
+        "claim": "The cardholder reported this transaction as unrecognised: Customer C07297 message: 'I never made this $482.12 purchase. Please check my card.' Refers to 3476682.",
+        "source": "customer",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3476682"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 101 transactions, $482.12 sits at the 97% percentile (mean $115.15, largest previously $1,104.00).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3476682"
+        ]
+      },
+      {
+        "claim": "3 prior authorisation(s) on this card in the preceding hour and 3 in the preceding 24 hours.",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3476682"
+        ]
+      },
+      {
+        "claim": "The transaction ran on device profile `Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080`, reported as New to this account. That profile appears on 547 card(s) book-wide.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3476682",
+          "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080"
+        ]
+      },
+      {
+        "claim": "2 prior charges of about $482.12 recur every 0.0 days, which matches no standard billing cadence",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3476682"
+        ]
+      },
+      {
+        "claim": "This customer has no closed investigations before this alert.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C07297"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5345, CC-5480, CC-5369. The nearest, CC-5345, was a $474.99 online case closed as confirmed_fraud with pattern card_not_present_new_device.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5345",
+          "CC-5480",
+          "CC-5369"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: the cardholder reported this transaction as unrecognised"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "No regulatory filing is required: policy 3a needs confirmed or strongly suspected fraud together with an aggravating condition (exposure over $1,000, a shared origin across accounts, or an undocumented pattern), and this case meets none of them.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Probability 0.90 is outside the 0.15-0.85 band on 3 independent pieces of evidence.",
+  "tool_calls": 11,
+  "tokens": 0,
+  "latency_s": 0.06
+}

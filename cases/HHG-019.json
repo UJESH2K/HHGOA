@@ -1,0 +1,182 @@
+{
+  "case_id": "HHG-019",
+  "case": {
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.81,
+    "pattern": "undocumented",
+    "pattern_description": "Coordinated use of a single rare device profile across 3 cards belonging to different customers within a two-week window, with no shared billing region or product pattern. It fits none of the five documented typologies: the cards are not being tested, the activity is not confined to one cardholder's account, and the anomaly is the link between accounts rather than any single transaction.",
+    "affected_txn_ids": [
+      "3503878"
+    ],
+    "first_suspicious_txn_id": "3503878",
+    "connected_card_ids": [
+      "C06224-K2",
+      "C11309-K1"
+    ],
+    "connected_device_profiles": [
+      "Windows | other | chrome 61.0 | 1280x720"
+    ],
+    "exposure_usd": 99.92,
+    "similar_prior_cases": [
+      "CC-5512",
+      "CC-5518",
+      "CC-5455"
+    ],
+    "summary": "The evidence is not sufficient to decide on this risk score alert for card C07987-K2, at a fraud probability of 0.81 resting on 1 independent signal(s): a rare, fully specified device profile links 3 cards across 3 different customers inside a 14-day window. The activity fits undocumented: a rare device profile links 3 cards belonging to 3 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The closest alternative was card_not_present_new_device (0.65 against 0.90): a card-not-present transaction on a device new to the account. Recommended actions: VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST, with exposure of $99.92.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-019",
+    "evidence": [
+      {
+        "claim": "The flagged transaction is a online authorisation of $99.92 on 2016-12-01 17:28 under product code R, scored 0.90 by the bank's model.",
+        "source": "graph",
+        "ref": "query:get_transaction",
+        "entity_ids": [
+          "3503878"
+        ]
+      },
+      {
+        "claim": "The investigation was triggered by risk score: Real-time model scored transaction 3503878 ($99.92, online) at 0.90. Review and decide.",
+        "source": "external",
+        "ref": "case_pack.trigger",
+        "entity_ids": [
+          "3503878"
+        ]
+      },
+      {
+        "claim": "Against this card's own prior history of 219 transactions, $99.92 sits at the 40% percentile (mean $194.01, largest previously $1,586.94).",
+        "source": "graph",
+        "ref": "query:card_baseline",
+        "entity_ids": [
+          "3503878"
+        ]
+      },
+      {
+        "claim": "The transaction ran on device profile `Windows | other | chrome 61.0 | 1280x720`, reported as New to this account. That profile appears on 5 card(s) book-wide.",
+        "source": "graph",
+        "ref": "query:device_for_transaction",
+        "entity_ids": [
+          "3503878",
+          "Windows | other | chrome 61.0 | 1280x720"
+        ]
+      },
+      {
+        "claim": "4 prior charges of about $99.92 exist on this card but their spacing is irregular (intervals 8d, 73d, 25d), so this is a repeated amount rather than a recurring charge",
+        "source": "graph",
+        "ref": "query:recurring_charge",
+        "entity_ids": [
+          "3503878"
+        ]
+      },
+      {
+        "claim": "device profile `Windows | other | chrome 61.0 | 1280x720` links 3 cards across 3 customers within 2.0 days, and appears on only 5 cards book-wide.",
+        "source": "graph",
+        "ref": "query:ring_signals",
+        "entity_ids": [
+          "3503878",
+          "Windows | other | chrome 61.0 | 1280x720",
+          "C06224-K2",
+          "C07987-K2",
+          "C11309-K1"
+        ]
+      },
+      {
+        "claim": "This customer has 4 closed investigation(s) before this alert: 3 confirmed fraud, 1 cleared. Patterns previously found: card_not_present_fraud, out_of_region_use.",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer",
+        "entity_ids": [
+          "C07987",
+          "CC-2011",
+          "CC-2087",
+          "CC-2860",
+          "CC-5026"
+        ]
+      },
+      {
+        "claim": "The closest prior investigations by channel, exposure and recency are CC-5512, CC-5518, CC-5455. The nearest, CC-5512, was a $100.01 online case closed as confirmed_fraud with pattern card_not_present_fraud.",
+        "source": "graph",
+        "ref": "query:similar_closed_cases",
+        "entity_ids": [
+          "CC-5512",
+          "CC-5518",
+          "CC-5455"
+        ]
+      }
+    ]
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.81 rests on the bank's own evidence with no cardholder response on record; the policy authorises asking (section 5) and reserves a block for R2"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: several cards show fraud from device profile `Windows | other | chrome 61.0 | 1280x720`; monitoring every card that shares it"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R6: several cards show fraud from device profile `Windows | other | chrome 61.0 | 1280x720`"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R6: several cards show fraud from device profile `Windows | other | chrome 61.0 | 1280x720`"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
+      }
+    ],
+    "final": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.81 rests on the bank's own evidence with no cardholder response on record; the policy authorises asking (section 5) and reserves a block for R2"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: several cards show fraud from device profile `Windows | other | chrome 61.0 | 1280x720`; monitoring every card that shares it"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R6: several cards show fraud from device profile `Windows | other | chrome 61.0 | 1280x720`"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R6: several cards show fraud from device profile `Windows | other | chrome 61.0 | 1280x720`"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": true,
+    "reason": "R6: several cards show fraud from device profile `Windows | other | chrome 61.0 | 1280x720`",
+    "narrative": "Customer C07987, holder of card C07987-K2 and 1 other card(s) on the same account. 1 transaction(s) totalling $99.92 are reported as suspicious. The activity occurred between 2016-12-01 and 2016-12-01. The activity was online and ran on device profile `Windows | other | chrome 61.0 | 1280x720`. The pattern identified is undocumented. a rare device profile links 3 cards belonging to 3 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The assessment rests on: a rare, fully specified device profile links 3 cards across 3 different customers inside a 14-day window. The resulting fraud probability is 0.81. The investigation was opened following risk score. Real-time model scored transaction 3503878 ($99.92, online) at 0.90. Review and decide. The shared origin also touches card(s) C06224-K2, C11309-K1, held by other customers, which is why this filing covers activity beyond a single account.",
+    "subjects": [
+      "C07987"
+    ],
+    "total_amount_usd": 99.92,
+    "activity_dates": [
+      "2016-12-01",
+      "2016-12-01"
+    ]
+  },
+  "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
+  "tool_calls": 11,
+  "tokens": 0,
+  "latency_s": 0.14
+}

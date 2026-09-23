@@ -1,0 +1,1462 @@
+{
+  "generated_at": "2026-09-23T15:04:10",
+  "backend": "local",
+  "data_dir": "C:\\Users\\aadit\\OneDrive\\Documents\\GitHub\\fraud_analysis\\data",
+  "llm": null,
+  "note": "deterministic run - no model calls",
+  "run": {
+    "cases": 20,
+    "total_cost_usd": 0,
+    "mean_cost_usd": 0.0,
+    "max_cost_usd": 0,
+    "total_tokens": 0,
+    "total_tool_calls": 215,
+    "total_llm_calls": 0,
+    "total_latency_s": 19.0,
+    "mean_latency_s": 0.95,
+    "mean_cache_hit_rate": 0.0,
+    "mean_deterministic_evidence_share": 0.8545,
+    "failed_tool_calls": 0
+  },
+  "cases": [
+    {
+      "case_id": "HHG-017",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 2.05,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 7,
+        "external": 1
+      },
+      "deterministic_evidence_share": 0.875,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.078,
+          "wall_seconds": 0.078
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.031,
+          "wall_seconds": 0.031
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-015",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 1.8,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 8,
+        "external": 1
+      },
+      "deterministic_evidence_share": 0.8889,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.125,
+          "wall_seconds": 0.125
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-006",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 1.66,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 7,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.875,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.047,
+          "wall_seconds": 0.063
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-014",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 1.59,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 8,
+        "external": 1,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.8,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.14,
+          "wall_seconds": 0.14
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-002",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 1.44,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 6,
+        "external": 1
+      },
+      "deterministic_evidence_share": 0.8571,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.031,
+          "wall_seconds": 0.031
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-018",
+      "tool_calls": 10,
+      "tokens": 0,
+      "latency_s": 1.39,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 8,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.8889,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 8,
+          "tool_seconds": 0.14,
+          "wall_seconds": 0.14
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-019",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 1.25,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 7,
+        "external": 1
+      },
+      "deterministic_evidence_share": 0.875,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.141,
+          "wall_seconds": 0.141
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-010",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 1.09,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 7,
+        "external": 1
+      },
+      "deterministic_evidence_share": 0.875,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.109,
+          "wall_seconds": 0.109
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-020",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 0.97,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 6,
+        "external": 1,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.75,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.047,
+          "wall_seconds": 0.047
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-001",
+      "tool_calls": 10,
+      "tokens": 0,
+      "latency_s": 0.92,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 7,
+        "external": 1,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.7778,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 8,
+          "tool_seconds": 0.046,
+          "wall_seconds": 0.046
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-007",
+      "tool_calls": 10,
+      "tokens": 0,
+      "latency_s": 0.88,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 7,
+        "external": 1
+      },
+      "deterministic_evidence_share": 0.875,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 8,
+          "tool_seconds": 0.047,
+          "wall_seconds": 0.047
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.016
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-005",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 0.81,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 6,
+        "external": 1
+      },
+      "deterministic_evidence_share": 0.8571,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.047,
+          "wall_seconds": 0.047
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-013",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 0.77,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 7,
+        "external": 1,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.7778,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.125,
+          "wall_seconds": 0.125
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-003",
+      "tool_calls": 10,
+      "tokens": 0,
+      "latency_s": 0.64,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 7,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.875,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 8,
+          "tool_seconds": 0.125,
+          "wall_seconds": 0.125
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-016",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 0.52,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 6,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.8571,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.062,
+          "wall_seconds": 0.062
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-012",
+      "tool_calls": 10,
+      "tokens": 0,
+      "latency_s": 0.45,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 8,
+        "external": 1
+      },
+      "deterministic_evidence_share": 0.8889,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 8,
+          "tool_seconds": 0.141,
+          "wall_seconds": 0.141
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-008",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 0.3,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 7,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.875,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.031,
+          "wall_seconds": 0.031
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-009",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 0.27,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 6,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.8571,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.062,
+          "wall_seconds": 0.062
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-011",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 0.19,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 8,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.8889,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.125,
+          "wall_seconds": 0.125
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.0,
+          "wall_seconds": 0.0
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    },
+    {
+      "case_id": "HHG-004",
+      "tool_calls": 11,
+      "tokens": 0,
+      "latency_s": 0.06,
+      "llm_calls": 0,
+      "cost_usd": 0,
+      "cache_hit_rate": 0.0,
+      "failed_tool_calls": 0,
+      "evidence_by_source": {
+        "graph": 7,
+        "customer": 1
+      },
+      "deterministic_evidence_share": 0.875,
+      "unpriced_models": [],
+      "by_stage": {
+        "investigate": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 9,
+          "tool_seconds": 0.047,
+          "wall_seconds": 0.047
+        },
+        "update_memory": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "tool_calls": 2,
+          "tool_seconds": 0.015,
+          "wall_seconds": 0.015
+        },
+        "assess": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "gather_more_evidence": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "take_action": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        },
+        "explain": {
+          "llm_calls": 0,
+          "tokens": 0,
+          "cost_usd": 0.0,
+          "wall_seconds": 0.0
+        }
+      },
+      "by_model": {},
+      "tools": [
+        "graph.card_baseline",
+        "graph.card_testing_episode",
+        "graph.device_for_transaction",
+        "graph.get_customer",
+        "graph.get_transaction",
+        "graph.prior_cases_for_customer",
+        "graph.read_case",
+        "graph.recurring_charge",
+        "graph.ring_signals",
+        "graph.similar_closed_cases",
+        "graph.write_case"
+      ]
+    }
+  ]
+}

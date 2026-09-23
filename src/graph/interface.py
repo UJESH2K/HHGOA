@@ -21,6 +21,8 @@ from typing import Any
 
 import pandas as pd
 
+from ..features.recurring import Recurrence
+
 
 @dataclass
 class CardSummary:
@@ -63,6 +65,7 @@ class RingSignal:
     span_days: float
     global_card_count: int
     volume_artefact_risk: bool
+    strength: str = "strong"        # strong | moderate - see features/rings.link_strength
 
     @property
     def element(self) -> str:
@@ -96,6 +99,17 @@ class GraphBackend(ABC):
     @abstractmethod
     def card_baseline(self, card_key: str, txn_id: str) -> Baseline:
         """Where this transaction sits in its own card's prior distribution."""
+
+    @abstractmethod
+    def recurring_charge(self, card_key: str, txn_id: str) -> Recurrence:
+        """Does this transaction match a recurring charge already established on the card?
+
+        Policy R7's evidence, and the only brake on R2 - which blocks the card on every dispute.
+        Eight of the 20 exam cases arrive as customer reports, so without this every one of them
+        blocks, including the three whose amounts sit in the bottom third of their own card's
+        history. See `features/recurring.py` for what "recurring" can and cannot mean in a
+        dataset with no merchant column.
+        """
 
     # --- device / ring -----------------------------------------------------------------------
     @abstractmethod
