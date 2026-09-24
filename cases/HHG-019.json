@@ -2,8 +2,8 @@
   "case_id": "HHG-019",
   "case": {
     "status": "escalated",
-    "verdict": "uncertain",
-    "fraud_probability": 0.81,
+    "verdict": "fraud",
+    "fraud_probability": 0.969,
     "pattern": "undocumented",
     "pattern_description": "Coordinated use of a single rare device profile across 3 cards belonging to different customers within a two-week window, with no shared billing region or product pattern. It fits none of the five documented typologies: the cards are not being tested, the activity is not confined to one cardholder's account, and the anomaly is the link between accounts rather than any single transaction.",
     "affected_txn_ids": [
@@ -23,7 +23,7 @@
       "CC-5518",
       "CC-5455"
     ],
-    "summary": "The evidence is not sufficient to decide on this risk score alert for card C07987-K2, at a fraud probability of 0.81 resting on 1 independent signal(s): a rare, fully specified device profile links 3 cards across 3 different customers inside a 14-day window. The activity fits undocumented: a rare device profile links 3 cards belonging to 3 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The closest alternative was card_not_present_new_device (0.65 against 0.90): a card-not-present transaction on a device new to the account. Recommended actions: VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST, with exposure of $99.92.",
+    "summary": "The evidence supports fraud on this risk score alert for card C07987-K2, at a fraud probability of 0.97 resting on 2 independent signal(s): step-up authentication was requested and failed; a rare, fully specified device profile links 3 cards across 3 different customers inside a 14-day window. The activity fits undocumented: a rare device profile links 3 cards belonging to 3 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The closest alternative was card_not_present_new_device (0.65 against 0.90): a card-not-present transaction on a device new to the account. Additional evidence was requested (step_up_auth) because it was the cheapest question whose answer could change the recommendation. Recommended actions: VERIFY_WITH_CUSTOMER, MONITOR_CONNECTED_CARDS, CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST, with exposure of $99.92.",
     "written_to_graph": true,
     "graph_case_id": "CASE-HHG-019",
     "evidence": [
@@ -101,10 +101,24 @@
           "CC-5518",
           "CC-5455"
         ]
+      },
+      {
+        "claim": "SIMULATED (no response data is provided with this dataset): the step-up challenge is not completed. Assumed because it is the most likely answer at this point in the investigation (p=0.70 under the response model in src/agent/voi.py), given a fraud probability of 0.97 before the request.",
+        "source": "customer",
+        "ref": "evidence_request:step_up_auth",
+        "entity_ids": [
+          "3503878"
+        ]
       }
     ]
   },
-  "evidence_requests": [],
+  "evidence_requests": [
+    {
+      "type": "step_up_auth",
+      "asked_after_step": 3,
+      "assumed_response": "SIMULATED (no response data is provided with this dataset): the step-up challenge is not completed. Assumed because it is the most likely answer at this point in the investigation (p=0.70 under the response model in src/agent/voi.py), given a fraud probability of 0.97 before the request. Had the answer been the cardholder completes the step-up challenge (p=0.30), the recommendation would have moved to MONITOR_CONNECTED_CARDS with a fraud probability of 0.49."
+    }
+  ],
   "next_best_actions": {
     "initial": [
       {
@@ -121,23 +135,13 @@
         "action": "CREATE_CASE",
         "route": "auto",
         "reason": "R6: several cards show fraud from device profile `Windows | other | chrome 61.0 | 1280x720`"
-      },
-      {
-        "action": "FILE_REPORT",
-        "route": "L2",
-        "reason": "R6: several cards show fraud from device profile `Windows | other | chrome 61.0 | 1280x720`"
-      },
-      {
-        "action": "ESCALATE_TO_ANALYST",
-        "route": "auto",
-        "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
       }
     ],
     "final": [
       {
         "action": "VERIFY_WITH_CUSTOMER",
         "route": "auto",
-        "reason": "R1: probability 0.81 rests on the bank's own evidence with no cardholder response on record; the policy authorises asking (section 5) and reserves a block for R2"
+        "reason": "R1: probability 0.97 rests on the bank's own evidence with no cardholder response on record; the policy authorises asking (section 5) and reserves a block for R2"
       },
       {
         "action": "MONITOR_CONNECTED_CARDS",
@@ -160,12 +164,12 @@
         "reason": "R9: coordinated or repeated abuse fitting none of the known patterns"
       }
     ],
-    "what_changed": "nothing"
+    "what_changed": "After the step_up_auth response, the recommendation added ESCALATE_TO_ANALYST, FILE_REPORT."
   },
   "sar": {
     "file": true,
     "reason": "R6: several cards show fraud from device profile `Windows | other | chrome 61.0 | 1280x720`",
-    "narrative": "Customer C07987, holder of card C07987-K2 and 1 other card(s) on the same account. 1 transaction(s) totalling $99.92 are reported as suspicious. The activity occurred between 2016-12-01 and 2016-12-01. The activity was online and ran on device profile `Windows | other | chrome 61.0 | 1280x720`. The pattern identified is undocumented. A rare device profile links 3 cards belonging to 3 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The assessment rests on: a rare, fully specified device profile links 3 cards across 3 different customers inside a 14-day window. The resulting fraud probability is 0.81. The investigation was opened following risk score. Real-time model scored transaction 3503878 ($99.92, online) at 0.90. Review and decide. The shared origin also touches card(s) C06224-K2, C11309-K1, held by other customers, which is why this filing covers activity beyond a single account.",
+    "narrative": "Customer C07987, holder of card C07987-K2 and 1 other card(s) on the same account. 1 transaction(s) totalling $99.92 are reported as suspicious. The activity occurred between 2016-12-01 and 2016-12-01. The activity was online and ran on device profile `Windows | other | chrome 61.0 | 1280x720`. The pattern identified is undocumented. A rare device profile links 3 cards belonging to 3 different customers inside a tight window, which is coordinated activity across accounts rather than one cardholder's card being misused. The assessment rests on: step-up authentication was requested and failed; a rare, fully specified device profile links 3 cards across 3 different customers inside a 14-day window. The resulting fraud probability is 0.97. The investigation was opened following risk score. Real-time model scored transaction 3503878 ($99.92, online) at 0.90. Review and decide. The shared origin also touches card(s) C06224-K2, C11309-K1, held by other customers, which is why this filing covers activity beyond a single account.",
     "subjects": [
       "C07987"
     ],
@@ -175,8 +179,8 @@
       "2016-12-01"
     ]
   },
-  "stop_reason": "No further evidence request would change the recommended action: every policy-approved option (step_up_auth, customer_validation, analyst_info) was evaluated against its possible responses and none moved the decision by more than the cost of asking.",
+  "stop_reason": "Probability 0.97 is outside the 0.15-0.85 band on 2 independent pieces of evidence.",
   "tool_calls": 11,
   "tokens": 0,
-  "latency_s": 0.07
+  "latency_s": 0.05
 }

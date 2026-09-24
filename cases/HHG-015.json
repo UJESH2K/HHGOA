@@ -4,7 +4,7 @@
     "status": "closed_fraud",
     "verdict": "fraud",
     "fraud_probability": 0.9,
-    "pattern": "out_of_region_use",
+    "pattern": "card_not_present_new_device",
     "pattern_description": "",
     "affected_txn_ids": [
       "3464869"
@@ -18,7 +18,7 @@
       "CC-5419",
       "CC-5084"
     ],
-    "summary": "The evidence supports fraud on this risk score alert for card C03042-K1, at a fraud probability of 0.90 resting on 2 independent signal(s): $599.94 is the largest or near-largest amount this card has ever authorised - 100% of its 68 prior transactions were smaller; the transaction bills to a region this card has never used before. The activity fits out of region use: the transaction bills to a region this card has never used. The closest alternative was card_not_present_new_device (0.65 against 0.70): a card-not-present transaction on a device new to the account. Recommended actions: VERIFY_WITH_CUSTOMER, CREATE_CASE, with exposure of $599.94.",
+    "summary": "The evidence supports fraud on this risk score alert for card C03042-K1, at a fraud probability of 0.90 resting on 2 independent signal(s): $599.94 is the largest or near-largest amount this card has ever authorised - 100% of its 68 prior transactions were smaller; the transaction bills to a region this card has never used before. The activity fits card not present new device: a card-not-present transaction on a device new to the account. The closest alternative was card_not_present_fraud (0.40 against 0.65): a card-not-present transaction; the new device makes the new-device variant the better fit. Recommended actions: VERIFY_WITH_CUSTOMER, CREATE_CASE, with exposure of $599.94.",
     "written_to_graph": true,
     "graph_case_id": "CASE-HHG-015",
     "evidence": [
@@ -141,5 +141,5 @@
   "stop_reason": "Probability 0.90 is outside the 0.15-0.85 band on 2 independent pieces of evidence.",
   "tool_calls": 11,
   "tokens": 0,
-  "latency_s": 0.06
+  "latency_s": 0.05
 }

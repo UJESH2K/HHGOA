@@ -378,6 +378,9 @@ details > summary::-webkit-details-marker { display: none; }
 .facts-grid h3 { font: 600 15px var(--ui); margin: 0 0 6px; }
 .facts-grid p, .facts-grid li { color: var(--ink-2); font-size: 13px; }
 .facts-grid ul { margin: 0; padding-left: 18px; }
+/* ?facecam: keep the bottom-right corner free for a presenter's camera overlay */
+.facecam .copilot { right: auto; left: 16px; }
+.facecam .fab { right: auto; left: 18px; }
 footer.foot { max-width: 1440px; margin: 0 auto; padding: 18px 20px 90px; color: var(--ink-3); font-size: 11.5px;
   display: flex; flex-wrap: wrap; gap: 6px 18px; }
 </style>
@@ -1392,6 +1395,7 @@ $("theme").onclick = () => {
   document.documentElement.dataset.theme = next;
   try { localStorage.setItem("tidewatch-theme", next); } catch (e) {}
 };
+if (/[?&]facecam(=|&|$)/.test(location.search)) document.documentElement.classList.add("facecam");
 try { const t = localStorage.getItem("tidewatch-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
 addEventListener("hashchange", route);
 document.addEventListener("keydown", ev => {

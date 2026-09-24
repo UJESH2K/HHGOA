@@ -11,12 +11,12 @@ it. It never makes the decision.
 
 | | |
 |---|---|
-| 20 graded cases | 5 fraud · 10 uncertain · 5 legitimate · 3 reports filed · 0 validator errors |
-| Speed | **~50 ms per case** on the warm parquet engine (all 20 in about 1 s of investigation time); ~3 s per case against Savanna, with independent GSQL reads sent in concurrent waves |
+| 20 graded cases | 6 fraud · 9 uncertain · 5 legitimate · 3 reports filed · 0 validator errors |
+| Speed | **~40 ms per case** on the warm parquet engine (all 20 in about 1 s of investigation time); ~3 s per case against Savanna, with independent GSQL reads sent in concurrent waves |
 | Cost | **$0.00** model spend on decisions. The copilot costs about $0.02 a question on a cached prefix |
 | Graph | 590,742 transactions · 144,432 device records · 575,849 `NEXT_TXN` · 128,852 `SHARES_DEVICE` on Savanna 4.2.5; all 20 cases written back as `FraudCase` vertices and read back before they count |
 | Autonomous track | a live monitor over the 4,462 high-risk alerts in the book: runs what policy routes `auto`, queues `L1`/`L2` for a human |
-| Tests | 273 passing, plus a two-backend contract suite (parquet vs GSQL) |
+| Tests | 276 passing, plus a two-backend contract suite (parquet vs GSQL) |
 
 The 20 answer files are in [`cases/`](cases/). The live console is `src/ui/`.
 
@@ -55,14 +55,14 @@ serve the recorded runs: the answer files, their timed traces, a monitor session
 the live engine, and copilot answers recorded on the flagship cases. All of it is labelled as
 recorded wherever it appears.
 
-- **Static (GitHub Pages):** `python -m src.ui.build_static` writes `docs/index.html`. In the repo
+- **Static (Vercel or GitHub Pages):** `python -m src.ui.build_static` writes `docs/index.html`. On Vercel, import the repo; `vercel.json` already points it at `docs/`. On GitHub Pages, in the repo
   settings, go to Pages and choose *Deploy from branch*, `main`, folder `/docs`.
 - **Server (Render):** `render.yaml` is a one-click blueprint. Set `ANTHROPIC_API_KEY` in the
   dashboard to turn on the live copilot. `COPILOT_DAILY_BUDGET_USD` and `COPILOT_PER_HOUR` cap
   spending on a public URL.
 - **Everything live:** run `python -m src.ui.app` on a machine that has `data/`.
 
-Design notes: [`STRATEGY.md`](STRATEGY.md) · [`PLAN.md`](PLAN.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md).
+Write-up: [`BLOG.md`](BLOG.md) · demo plan: [`DEMO.md`](DEMO.md) · video script: [`SCRIPT.md`](SCRIPT.md) · design notes: [`STRATEGY.md`](STRATEGY.md), [`PLAN.md`](PLAN.md), [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ---
 

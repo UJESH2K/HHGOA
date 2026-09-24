@@ -252,8 +252,13 @@ def test_case_write_and_read_back(backends):
               "evidence": [{"claim": "x", "source": "graph", "ref": "test", "entity_ids": []}],
               "decisions": ["written by the contract test"]}
     gid = tg.write_case(record)
-    back = tg.read_case(gid)
-    assert back is not None, "the case was written but cannot be read back"
-    assert back["verdict"] == "uncertain"
-    assert back["actions"] == ["MONITOR_CARD"]
-    assert back["evidence"] and back["evidence"][0]["source"] == "graph"
+    try:
+        back = tg.read_case(gid)
+        assert back is not None, "the case was written but cannot be read back"
+        assert back["verdict"] == "uncertain"
+        assert back["actions"] == ["MONITOR_CARD"]
+        assert back["evidence"] and back["evidence"][0]["source"] == "graph"
+    finally:
+        # Leave the graph as the graded run left it: 20 FraudCase vertices, not 21. Without this
+        # every test run left a stray case in the case memory the next investigation reads.
+        tg.conn.delVerticesById("FraudCase", gid)

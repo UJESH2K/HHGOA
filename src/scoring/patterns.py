@@ -113,9 +113,19 @@ def _candidates(i: RubricInput, s: RubricScore) -> list[Candidate]:
                                       "qualifying sequence at its flagged moment"))
 
     # --- out of region ---------------------------------------------------------------------
-    if i.new_region:
+    # The policy defines this pattern as CARD-PRESENT purchases in a new region, and the closed
+    # history agrees without exception: all 955 out_of_region_use cases are in person, and not
+    # one online case carries the label. An online purchase billed to a new region is
+    # card-not-present fraud; the region still counts as evidence in the rubric, it just does
+    # not name the pattern. (HHG-015 was an online R-product purchase labelled out of region.)
+    if i.new_region and card_present:
         out.append(Candidate(OUT_OF_REGION, 0.70,
                              "the transaction bills to a region this card has never used"))
+    elif i.new_region:
+        why = ("the region is new to the card, but the purchase is online - the policy's "
+               "out-of-region pattern is card-present use, and all 955 closed cases with it are "
+               "in person")
+        out.append(Candidate(OUT_OF_REGION, 0.0, why, rejected=why))
     else:
         why = ("the billing region is one the card already uses" if i.known_region
                else "no billing region is recorded on this transaction, and a missing region is "
@@ -193,8 +203,13 @@ def _candidates(i: RubricInput, s: RubricScore) -> list[Candidate]:
     # unseen high-risk alerts replayed through the live monitor - 30% against a closed-case base
     # rate of 0.16% - and filed a report on every one through R9.
     strong_link = i.ring_strength != "moderate"
+    #
+    # And it takes the rubric's VERDICT, not its raw probability. A case can sit above 0.70 on a
+    # single family of evidence and still be held `uncertain` - that is the rubric's rule that
+    # one family never decides a case - and naming a new typology, with the report R9 attaches,
+    # on a case the engine itself calls undecided is a contradiction (HHG-019: 0.81, one family).
     if (i.ring_signal and strong_link and not i.ring_volume_artefact
-            and s.probability >= FRAUD_AT):
+            and s.verdict == "fraud"):
         out.append(Candidate(UNDOCUMENTED, 0.90 if cross_account else 0.75,
                              f"a rare device profile links {i.ring_n_cards} cards"
                              + (f" belonging to {i.ring_n_customers} different customers"
@@ -211,8 +226,9 @@ def _candidates(i: RubricInput, s: RubricScore) -> list[Candidate]:
                            "a shared origin")
         elif i.ring_volume_artefact:
             missing.append("the shared origin is a volume artefact, not a link")
-        if s.probability < FRAUD_AT:
-            missing.append(f"the assessment is not confident enough ({s.probability:.2f})")
+        if s.verdict != "fraud":
+            missing.append(f"the assessment has not reached a fraud verdict ({s.verdict} at "
+                           f"{s.probability:.2f})")
         out.append(Candidate(UNDOCUMENTED, 0.0, "; ".join(missing),
                              rejected="R9 attaches a regulatory filing to this pattern and 9 of "
                                       "5,565 closed cases used it: " + "; ".join(missing)))

@@ -119,5 +119,5 @@
   "stop_reason": "Probability 0.04 is outside the 0.15-0.85 band on 2 independent pieces of evidence.",
   "tool_calls": 11,
   "tokens": 0,
-  "latency_s": 0.16
+  "latency_s": 0.13
 }

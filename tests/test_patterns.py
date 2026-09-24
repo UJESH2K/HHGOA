@@ -215,3 +215,19 @@ def test_to_json_lists_the_alternatives_without_repeating_the_choice():
 def test_classification_is_deterministic():
     i, v = verdict_for(device_state="New", proxy="HIDDEN")
     assert classify(i, score(i)).to_json() == v.to_json()
+
+
+def test_an_online_purchase_in_a_new_region_is_not_out_of_region():
+    """The policy's out-of-region pattern is card-present use; all 955 closed cases are in person.
+
+    HHG-015 - an online R-product purchase billed to a new region - was labelled out of region.
+    """
+    _, v = verdict_for(channel="online", new_region=True, device_state="New")
+    assert v.pattern != OUT_OF_REGION
+    rejected = next(c for c in v.candidates if c.pattern == OUT_OF_REGION)
+    assert "online" in rejected.rejected
+
+
+def test_an_in_person_purchase_in_a_new_region_is_still_out_of_region():
+    _, v = verdict_for(channel="in_person", new_region=True)
+    assert v.pattern == OUT_OF_REGION

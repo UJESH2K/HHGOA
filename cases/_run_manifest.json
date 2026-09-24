@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-23T19:43:40",
+  "generated_at": "2026-09-24T22:01:27",
   "backend": "local",
   "data_dir": "C:\\Users\\aadit\\OneDrive\\Documents\\GitHub\\fraud_analysis\\data",
   "llm": null,
@@ -12,10 +12,10 @@
     "total_tokens": 0,
     "total_tool_calls": 215,
     "total_llm_calls": 0,
-    "total_latency_s": 0.9,
-    "mean_latency_s": 0.05,
+    "total_latency_s": 0.7,
+    "mean_latency_s": 0.04,
     "mean_cache_hit_rate": 0.0,
-    "mean_deterministic_evidence_share": 0.8589,
+    "mean_deterministic_evidence_share": 0.8541,
     "failed_tool_calls": 0
   },
   "cases": [
@@ -23,7 +23,7 @@
       "case_id": "HHG-017",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.16,
+      "latency_s": 0.13,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -40,8 +40,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.038,
-          "wall_seconds": 0.039
+          "tool_seconds": 0.026,
+          "wall_seconds": 0.027
         },
         "update_memory": {
           "llm_calls": 0,
@@ -95,7 +95,7 @@
       "case_id": "HHG-015",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.06,
+      "latency_s": 0.05,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -112,8 +112,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.061,
-          "wall_seconds": 0.061
+          "tool_seconds": 0.051,
+          "wall_seconds": 0.051
         },
         "update_memory": {
           "llm_calls": 0,
@@ -185,7 +185,7 @@
           "cost_usd": 0.0,
           "tool_calls": 9,
           "tool_seconds": 0.013,
-          "wall_seconds": 0.014
+          "wall_seconds": 0.013
         },
         "update_memory": {
           "llm_calls": 0,
@@ -239,7 +239,7 @@
       "case_id": "HHG-014",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.07,
+      "latency_s": 0.05,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -256,8 +256,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.063,
-          "wall_seconds": 0.063
+          "tool_seconds": 0.044,
+          "wall_seconds": 0.044
         },
         "update_memory": {
           "llm_calls": 0,
@@ -311,7 +311,7 @@
       "case_id": "HHG-002",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.02,
+      "latency_s": 0.01,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -328,8 +328,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.015,
-          "wall_seconds": 0.016
+          "tool_seconds": 0.011,
+          "wall_seconds": 0.011
         },
         "update_memory": {
           "llm_calls": 0,
@@ -383,7 +383,7 @@
       "case_id": "HHG-018",
       "tool_calls": 10,
       "tokens": 0,
-      "latency_s": 0.08,
+      "latency_s": 0.05,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -400,8 +400,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.073,
-          "wall_seconds": 0.075
+          "tool_seconds": 0.045,
+          "wall_seconds": 0.047
         },
         "update_memory": {
           "llm_calls": 0,
@@ -421,7 +421,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.001
+          "wall_seconds": 0.0
         },
         "take_action": {
           "llm_calls": 0,
@@ -454,16 +454,17 @@
       "case_id": "HHG-019",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.07,
+      "latency_s": 0.05,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
       "failed_tool_calls": 0,
       "evidence_by_source": {
         "graph": 7,
-        "external": 1
+        "external": 1,
+        "customer": 1
       },
-      "deterministic_evidence_share": 0.875,
+      "deterministic_evidence_share": 0.7778,
       "unpriced_models": [],
       "by_stage": {
         "investigate": {
@@ -471,8 +472,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.062,
-          "wall_seconds": 0.065
+          "tool_seconds": 0.045,
+          "wall_seconds": 0.045
         },
         "update_memory": {
           "llm_calls": 0,
@@ -526,7 +527,7 @@
       "case_id": "HHG-010",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.06,
+      "latency_s": 0.05,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -543,8 +544,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.056,
-          "wall_seconds": 0.057
+          "tool_seconds": 0.043,
+          "wall_seconds": 0.044
         },
         "update_memory": {
           "llm_calls": 0,
@@ -616,8 +617,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.016,
-          "wall_seconds": 0.017
+          "tool_seconds": 0.013,
+          "wall_seconds": 0.013
         },
         "update_memory": {
           "llm_calls": 0,
@@ -671,7 +672,7 @@
       "case_id": "HHG-001",
       "tool_calls": 10,
       "tokens": 0,
-      "latency_s": 0.02,
+      "latency_s": 0.01,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -689,8 +690,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.013,
-          "wall_seconds": 0.013
+          "tool_seconds": 0.01,
+          "wall_seconds": 0.011
         },
         "update_memory": {
           "llm_calls": 0,
@@ -761,7 +762,7 @@
           "cost_usd": 0.0,
           "tool_calls": 8,
           "tool_seconds": 0.013,
-          "wall_seconds": 0.014
+          "wall_seconds": 0.013
         },
         "update_memory": {
           "llm_calls": 0,
@@ -814,7 +815,7 @@
       "case_id": "HHG-005",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.02,
+      "latency_s": 0.01,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -831,8 +832,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.014,
-          "wall_seconds": 0.014
+          "tool_seconds": 0.012,
+          "wall_seconds": 0.012
         },
         "update_memory": {
           "llm_calls": 0,
@@ -852,7 +853,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.001
+          "wall_seconds": 0.0
         },
         "take_action": {
           "llm_calls": 0,
@@ -886,7 +887,7 @@
       "case_id": "HHG-013",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.06,
+      "latency_s": 0.04,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -904,8 +905,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.061,
-          "wall_seconds": 0.061
+          "tool_seconds": 0.039,
+          "wall_seconds": 0.041
         },
         "update_memory": {
           "llm_calls": 0,
@@ -959,7 +960,7 @@
       "case_id": "HHG-003",
       "tool_calls": 10,
       "tokens": 0,
-      "latency_s": 0.06,
+      "latency_s": 0.05,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -976,8 +977,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.06,
-          "wall_seconds": 0.061
+          "tool_seconds": 0.05,
+          "wall_seconds": 0.05
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1030,7 +1031,7 @@
       "case_id": "HHG-016",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.02,
+      "latency_s": 0.01,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -1047,8 +1048,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.015,
-          "wall_seconds": 0.015
+          "tool_seconds": 0.013,
+          "wall_seconds": 0.013
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1102,7 +1103,7 @@
       "case_id": "HHG-012",
       "tool_calls": 10,
       "tokens": 0,
-      "latency_s": 0.06,
+      "latency_s": 0.05,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -1119,8 +1120,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 8,
-          "tool_seconds": 0.055,
-          "wall_seconds": 0.055
+          "tool_seconds": 0.046,
+          "wall_seconds": 0.046
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1191,7 +1192,7 @@
           "cost_usd": 0.0,
           "tool_calls": 9,
           "tool_seconds": 0.013,
-          "wall_seconds": 0.014
+          "wall_seconds": 0.013
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1211,7 +1212,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.001
+          "wall_seconds": 0.0
         },
         "take_action": {
           "llm_calls": 0,
@@ -1245,7 +1246,7 @@
       "case_id": "HHG-009",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.02,
+      "latency_s": 0.01,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -1262,8 +1263,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.015,
-          "wall_seconds": 0.015
+          "tool_seconds": 0.012,
+          "wall_seconds": 0.013
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1283,7 +1284,7 @@
           "llm_calls": 0,
           "tokens": 0,
           "cost_usd": 0.0,
-          "wall_seconds": 0.001
+          "wall_seconds": 0.0
         },
         "take_action": {
           "llm_calls": 0,
@@ -1317,7 +1318,7 @@
       "case_id": "HHG-011",
       "tool_calls": 11,
       "tokens": 0,
-      "latency_s": 0.07,
+      "latency_s": 0.05,
       "llm_calls": 0,
       "cost_usd": 0,
       "cache_hit_rate": 0.0,
@@ -1334,8 +1335,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.068,
-          "wall_seconds": 0.068
+          "tool_seconds": 0.053,
+          "wall_seconds": 0.051
         },
         "update_memory": {
           "llm_calls": 0,
@@ -1406,8 +1407,8 @@
           "tokens": 0,
           "cost_usd": 0.0,
           "tool_calls": 9,
-          "tool_seconds": 0.014,
-          "wall_seconds": 0.016
+          "tool_seconds": 0.019,
+          "wall_seconds": 0.021
         },
         "update_memory": {
           "llm_calls": 0,

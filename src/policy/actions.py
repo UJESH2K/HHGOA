@@ -191,7 +191,11 @@ def should_file_report(*, verdict: str, fraud_probability: float, exposure_usd: 
     Closed-case history rate is 7.1% (397 of 5,565) - an agent filing on a third of the exam
     pack is mis-calibrated no matter how good the narrative reads.
     """
-    strong = verdict == "fraud" or fraud_probability >= 0.70
+    # "Confirmed or strongly suspected" is the rubric's fraud verdict. The raw probability alone
+    # is not enough: a case can sit above 0.70 on one family of evidence and still be held
+    # `uncertain`, and filing with a regulator on a case the engine calls undecided is the
+    # contradiction a reviewer would catch first (HHG-019 did exactly this).
+    strong = verdict == "fraud"
     if not strong:
         return False
     # A moderate shared-device link is not one of policy 3a's aggravating conditions: those are

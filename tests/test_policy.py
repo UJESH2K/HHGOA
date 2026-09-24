@@ -289,3 +289,16 @@ def test_stop_on_customer_response_and_on_loop_cap():
 def test_midband_keeps_investigating():
     stop, _ = should_stop(PolicyContext(fraud_probability=0.5, n_independent_signals=2), loop_count=0)
     assert not stop
+
+
+def test_no_report_on_a_case_the_rubric_holds_uncertain():
+    """'Strongly suspected' is the fraud verdict, not a raw probability over 0.70.
+
+    HHG-019 sat at 0.81 on one family of evidence - held uncertain by the rubric's own rule -
+    and still filed a regulatory report.
+    """
+    from src.policy.actions import should_file_report
+    assert not should_file_report(verdict="uncertain", fraud_probability=0.81, exposure_usd=99.92,
+                                  ring_signal=True, pattern="card_not_present_new_device")
+    assert should_file_report(verdict="fraud", fraud_probability=0.81, exposure_usd=1000.03,
+                              ring_signal=False, pattern="card_not_present_new_device")
