@@ -1,8 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "",
   "buildCommand": "",
   "outputDirectory": "docs",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "functions": {
+    "api/ask.js": { "maxDuration": 60, "includeFiles": "api/_copilot.json" },
+    "api/health.js": { "includeFiles": "api/_copilot.json" }
+  }
 }

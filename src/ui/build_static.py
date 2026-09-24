@@ -90,8 +90,34 @@ def record_copilot(cases_dir: str, case_ids: list[str], labels: list[str]) -> st
     return path
 
 
+def write_function_config(payload: dict, out_path: str = "api/_copilot.json") -> str:
+    """Everything the Vercel copilot function needs, generated from the Python copilot.
+
+    The system prompt, the policy text and each case's context come from src/agent/copilot.py,
+    so the deployed copilot answers exactly as the local one does. Precomputing the contexts
+    also means the function can only be asked about these cases - it takes a case id, never a
+    case body.
+    """
+    from ..agent import copilot
+    from ..agent.meter import PRICING
+
+    cfg = {
+        "model": copilot.MODEL, "effort": copilot.EFFORT, "max_tokens": copilot.MAX_TOKENS,
+        "system": copilot.SYSTEM + copilot._policy(),
+        "pricing": {m: list(p) for m, p in PRICING.items()},
+        "cases": {cid: copilot.case_context(answer, (payload["diagnostics"] or {}).get(cid))
+                  for cid, answer in payload["cases"].items()},
+    }
+    path = _abs(out_path)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(cfg, fh, ensure_ascii=False)
+    return path
+
+
 def build(cases_dir: str, out_path: str) -> str:
     payload = read_cases(cases_dir)     # includes the recorded monitor session, if any
+    write_function_config(payload)
     with open(CONSOLE, encoding="utf-8") as fh:
         html = fh.read()
     # `</` inside inlined JSON would close the script tag early; escape it.

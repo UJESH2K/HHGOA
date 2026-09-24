@@ -1,0 +1,13 @@
+# The deployment needs only the static console (docs/), the functions (api/) and package.json.
+data/
+data_fixture/
+cases_fixture/
+cases_tg/
+graph_csv/
+graph_csv_fixture/
+drive-download-*
+fixtures/
+analysis/
+tests/
+.env
+.env.*

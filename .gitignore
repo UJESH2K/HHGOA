@@ -35,3 +35,7 @@ venv/
 .idea/
 .DS_Store
 Thumbs.db
+
+# node (Vercel functions)
+node_modules/
+.vercel/

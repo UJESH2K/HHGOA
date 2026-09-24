@@ -1,0 +1,10 @@
+{
+  "name": "tidewatch-console",
+  "private": true,
+  "type": "module",
+  "description": "Vercel functions for the Tidewatch console: the Claude copilot (api/ask.js) and a health probe. The investigation itself is Python; see README.md.",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0"
+  }
+}

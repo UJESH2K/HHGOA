@@ -86,10 +86,12 @@ code { font-family: var(--mono); font-size: .92em; }
   border-bottom: 1px solid var(--line); }
 .top-in { display: flex; align-items: center; gap: 10px 22px; flex-wrap: wrap;
   padding: 10px 20px; max-width: 1440px; margin: 0 auto; }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
 .brand svg { flex: none; }
 .brand b { font: 600 19px/1 var(--display); letter-spacing: -.01em; }
 .brand small { display: block; font: 500 10.5px/1.2 var(--ui); color: var(--ink-3); letter-spacing: .02em; margin-top: 2px; }
+.brand-mark { width: 52px; height: 52px; display: block; }
+.brand-word { display: flex; flex-direction: column; justify-content: center; }
 .nav { display: flex; gap: 2px; background: var(--surface-3); padding: 3px; border-radius: 999px; }
 .nav a { text-decoration: none; color: var(--ink-2); font: 500 12.5px/1 var(--ui);
   padding: 8px 13px; border-radius: 999px; white-space: nowrap; }
@@ -392,8 +394,20 @@ footer.foot { max-width: 1440px; margin: 0 auto; padding: 18px 20px 90px; color:
 <header class="top">
   <div class="top-in">
     <a class="brand" href="#/overview" aria-label="Tidewatch home">
-      <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M5 19c3-4 6-4 9 0s6 4 9 0 4-3 4-3" stroke="var(--surface)" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="23" cy="10" r="3" fill="#F2A33A"/></svg>
-      <span><b>Tidewatch</b><small>agentic fraud investigation</small></span>
+      <svg class="brand-mark" viewBox="0 0 220 220" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="110" cy="110" r="94" fill="none" stroke="#0f2947" stroke-width="12"/>
+        <circle cx="60" cy="35" r="9" fill="#3cc6c9"/>
+        <circle cx="152" cy="33" r="10" fill="#f18a45"/>
+        <path d="M34 110c20-35 45-53 70-53 40 0 62 28 68 53 7 31-6 55-33 72-31 20-63 19-96-5-17-13-27-31-37-67z" fill="#0f2947" opacity="0.98"/>
+        <path d="M33 116c11-44 45-72 77-72 34 0 63 29 69 58 6 31-10 60-38 78-28 17-57 19-89 7-16-6-27-19-31-41 6 9 9 14 12 16z" fill="#48d1d4"/>
+        <path d="M46 118c22-23 36-33 65-35 42-2 73 11 86 30-26 1-46 10-66 29-22 20-51 27-86 15 1-14 4-23 1-39z" fill="#0f2947" opacity="0.9"/>
+        <path d="M183 111c-15-20-38-33-61-38 7 20 23 35 57 46 17 6 30 11 47 15-14-9-28-15-43-23z" fill="#48d1d4"/>
+        <circle cx="170" cy="93" r="8" fill="#48d1d4"/>
+        <path d="M131 80c17-17 37-21 63-14" stroke="#0f2947" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M166 115c22 4 40 20 57 39" stroke="#0f2947" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <circle cx="22" cy="161" r="7" fill="#3cc6c9"/>
+      </svg>
+      <span class="brand-word"><b>Tidewatch</b><small>agentic fraud investigation</small></span>
     </a>
     <nav class="nav" aria-label="Views">
       <a href="#/overview" data-v="overview">Overview</a>
